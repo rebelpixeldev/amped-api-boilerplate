@@ -1,0 +1,27 @@
+h1, h2, h3, h4, h5, h6{margin-top:0;}
+
+
+.app-wrapper{
+  display:flex; flex-direction: row; height:calc(100vh - #{$navbar-height});
+  .sidebar{
+    display:flex; width:300px; background:#666;
+    &.amped-container{
+      padding:$grid-gutter-width/2;
+    }
+    ul{margin:0; padding:0; list-style:none;}
+  }
+  .app-content-container{flex:1;}
+}
+
+.amped-container{
+  padding:$grid-gutter-width;
+}
+
+table{
+  tbody {
+    tr:nth-child(odd) {
+      background: #fafafa;
+    }
+  }
+}
+

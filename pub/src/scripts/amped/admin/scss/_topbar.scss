@@ -1,0 +1,11 @@
+amped-topbar{
+  //.navbar-default .navbar-nav > li:hover{
+  //  background:$navbar-default-link-hover-color;
+  //  &> a{color:#fff;}
+  //}
+  .dropdown{
+    &:hover, &:focus{
+      .dropdown-menu{display:block;}
+    }
+  }
+}

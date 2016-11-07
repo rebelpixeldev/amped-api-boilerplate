@@ -1,0 +1,8 @@
+#!/bin/bash
+
+nodemon -e scss -x \
+node-sass \
+  --include-path pub/src/scss \
+  --include-path pub/src/scripts/amped \
+  --include-path node_modules/bootstrap-sass/assets/stylesheets \
+  pub/src/scss/app.scss pub/dist/css/app.css

@@ -7,13 +7,12 @@
   </thead>
   <tbody>
     <tr *ngFor="let row of rows">
-      <td *ngFor="let header of headers">{{row[header] | truncate}}</td>
+      <td *ngFor="let header of headers">
+        <span title="{{row[header]}}">{{row[header] | truncate}}</span>
+      </td>
       <td>
-        <select name="" id="" (change)="onChange($event, row.id)">
-          <option value="">Modify</option>
-          <option value="edit">Edit</option>
-          <option value="delete">Delete</option>
-        </select>
+        <i class="fa fa-pencil" aria-hidden="true" (click)="onEditClick(row.id)"></i>
+        <i class="fa fa-trash" aria-hidden="true" (click)="onDeleteClick(row.id)"></i>
       </td>
     </tr>
   </tbody>

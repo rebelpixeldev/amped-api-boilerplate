@@ -62,6 +62,7 @@ class AmpedModel {
 
     // @TODO handle errors
     // @TODO handle filter params
+    console.log('getting data');
 
     let sendResponse = (data) => {
 
@@ -69,8 +70,7 @@ class AmpedModel {
       if (data === null)
         data = [];
       res.setHeader('Content-Type', 'application/json');
-
-      res.json(
+      res.feedback(
         this.isEditRoute(req.url) ?
         this.editSchema.slice(0).map((item) => {
           item.value = data[item.name] || '';
@@ -111,13 +111,10 @@ class AmpedModel {
           delete params.id;
           result.updateAttributes(params)
             .then(() => {
-              res.json({});
+              res.feedback();
             });
       });
 
-    // this.DB.update({id:params._id}, params, {}, (err, raw) => {
-
-    // });
   }
 
   deleteModelData(req, res) {
@@ -157,7 +154,7 @@ class AmpedModel {
 
   // @TODO make this a helper
   getParams(req) {
-    return Object.assign(req.body, req.params, url.parse(req.url, true).query);
+    return Object.assign({}, req.body, req.params, url.parse(req.url, true).query);
   }
 
   getEvent(evt) {

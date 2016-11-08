@@ -4,6 +4,7 @@
 const
   AmpedSocket         = require('./app/utils/AmpedSocket'),
   AmpedPassport       = require('./app/utils/AmpedPassport'),
+  ampedFeedback       = require('./app/utils/AmpedFeedback'),
   bodyParser          = require('body-parser'),
   compression         = require('compression'),
   dotenv              = require('dotenv').config(),
@@ -48,6 +49,8 @@ app.use(expressValidator());
 //     resave: false,
 //     saveUninitialized: true
 // }));
+
+app.use(ampedFeedback({token : true}));
 
 
 app.use(session({

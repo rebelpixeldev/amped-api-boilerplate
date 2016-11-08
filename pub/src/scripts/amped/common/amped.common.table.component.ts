@@ -26,13 +26,15 @@ export class AmpedTableComponent implements OnInit, OnChanges {
     this.sub.unsubscribe();
   }
   
-  onChange(evt : any, id : string){
-  
-    console.log();
-    if ( evt.target.value === 'edit' )
-      this.router.navigate(['/edit', this.model, id]);
-    
+  onEditClick(id : string){
+    this.router.navigate(['/edit', this.model, id]);
   }
+  
+  onDeleteClick(id : string){
+    // this.router.navigate(['/edit', this.model, id]);
+    console.log('@TODO need to build a confirm alert to ask if the user wants to delete');
+  }
+  
   
   ngOnChanges(changes :any){
     if( typeof this.data !== 'undefined' && this.data.length > 0 ) {

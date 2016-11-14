@@ -2,18 +2,42 @@ import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
-  moduleId: module.id,
   selector: 'amped-table',
-  templateUrl: 'templates/amped.common.table.component.html'
+  template: `
+    <table class="table">
+      <thead>
+      <tr>
+        <th *ngFor="let header of headers">{{header | slugtotitle}}</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let row of rows | ampedfilter : headers : filter">
+        <td *ngFor="let header of headers">
+          <span *ngIf="header !== 'photo' && header !== 'image'" title="{{row[header]}}">{{row[header] | truncate}}</span>
+          <img *ngIf="header == 'photo' || header == 'image'" src="{{row[header]}}" style="height:40px;" title="{{header}}" />
+        </td>
+        <td>
+          <i *ngIf="enableCrud" class="fa fa-pencil pointer" aria-hidden="true" (click)="onEditClick(row.id)"></i>
+          <i *ngIf="enableCrud" class="fa fa-trash pointer" aria-hidden="true" (click)="onDeleteClick(row.id)"></i>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  `
 })
 export class AmpedTableComponent implements OnInit, OnChanges {
   
-  @Input() data: Array<any>;
+  @Input() data       : Array<any>;
+  @Input() title      : string;
+  @Input() enableCrud : boolean = true;
   
-  private headers : Array<string> = [];
-  private rows : Array<Object> = [];
-  private sub : any;
-  private model : string;
+  @Input() filter     : string;
+  
+  private headers     : Array<string> = [];
+  private rows        : Array<Object> = [];
+  private sub         : any;
+  private model       : string;
   
   constructor(private router : Router, private route: ActivatedRoute) {
   }
@@ -34,7 +58,6 @@ export class AmpedTableComponent implements OnInit, OnChanges {
     // this.router.navigate(['/edit', this.model, id]);
     console.log('@TODO need to build a confirm alert to ask if the user wants to delete');
   }
-  
   
   ngOnChanges(changes :any){
     if( typeof this.data !== 'undefined' && this.data.length > 0 ) {

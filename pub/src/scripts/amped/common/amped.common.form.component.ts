@@ -1,7 +1,5 @@
 import {Component, OnInit, Input, Output, OnChanges} from '@angular/core';
-import {FormGroup, FormControl, FormBuilder, Validators} from '@angular/forms';
-
-import { AmpedFormsService } from './amped.forms.service';
+import {FormGroup, FormControl, FormBuilder, Validators, ReactiveFormsModule} from '@angular/forms';
 
 interface FieldInterface{
   label     : String;
@@ -10,6 +8,11 @@ interface FieldInterface{
   type      : String;
   required  : Boolean;
   options   : Array<any>;
+}
+
+interface FormDataInterface{
+  action : string;
+  fields : Array<Object>;
 }
 
 @Component({
@@ -59,7 +62,7 @@ interface FieldInterface{
 })
 export class AmpedFormComponent implements OnInit, OnChanges {
   
-  @Input() data: any;
+  @Input() data: FormDataInterface = {action:'', fields:[]};
   
   public formControls     : any = {};
   public fields           : Array<FieldInterface> = [];
@@ -67,16 +70,15 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   
   private _fieldDefaults  : Object = { label : 'My Field', name : 'my_field', value : '', type : 'text', required:false, options : [] };
   
-  constructor(private _fb: FormBuilder, private formService : AmpedFormsService) {}
+  constructor(private _fb: FormBuilder) {}
   
   ngOnInit() {
-    if( typeof this.data.fields !== 'undefined' )
+    
       this.buildForm();
     
   }
   
   ngOnChanges(changes :any){
-    if( typeof this.data.fields !== 'undefined' )
       this.buildForm();
     // @TODO use an Observable
     
@@ -87,24 +89,27 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
   
   buildForm(){
-    this.mapDataDefaults();
-    this.formControls = this.fields.reduce((ret : any, field : FieldInterface , i : Number) => {
-      ret[field.name.toString()] = field.required ?
-        new FormControl(field.value, Validators.required) :
-        new FormControl(field.value );
-      return ret;
-    }, {});
+    if( typeof this.data.fields !== 'undefined' ) {
+      this.mapDataDefaults();
+      this.formControls = this.fields.reduce((ret: any, field: FieldInterface, i: Number) => {
+        ret[field.name.toString()] = field.required ?
+          new FormControl(field.value, Validators.required) :
+          new FormControl(field.value);
+        return ret;
+      }, {});
+      this.form = new FormGroup(this.formControls);
+    }
     
     console.log('FIELDS', this.fields);
   
-    this.form = new FormGroup(this.formControls);
+    
   }
   
   onSubmit() {
     console.log('Submit');
     console.log(this.form.value);
   
-    this.formService.submitForm(this.data.action, this.form.value);
+    // this.formService.submitForm(this.data.action, this.form.value);
     
     
   }

@@ -9,12 +9,13 @@ class UserController {
 
   constructor(app, socket) {
     this.app = app;
-    this.model = new User(app, socket);
   }
 
   setupRoutes() {
     this.app.get('/login', this.home.bind(this));
     this.app.get('/profile', AmpedPassport.isLoggedIn, this.profile.bind(this));
+
+    this.app.get('/user', this.getUser.bind(this));
 
   }
 
@@ -22,6 +23,9 @@ class UserController {
     res.render('index');
   }
 
+  getUser(req, res){
+    res.feedback(req.user || {});
+  }
 
   profile(req, res) {
     res.render('profile', {

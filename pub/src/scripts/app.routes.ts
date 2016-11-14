@@ -2,12 +2,13 @@ import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { HomepageComponent }  from './app.homepage';
-import { AmpedCrudFormComponent } from './amped/forms/amped.forms.crudform.component';
-import { AmpedCrudTableComponent } from './amped/forms/amped.forms.crudtable.component';
+
+import { crudRoutes } from './amped/crud/amped.crud.routes';
+import { authRoutes } from './amped/auth/amped.auth.routes';
 
 export const appRoutes: Routes = [
-  { path: 'edit/:model', component: AmpedCrudTableComponent },
-  { path: 'edit/:model/:id', component: AmpedCrudFormComponent },
+  ...authRoutes,
+  ...crudRoutes,
   { path: '', component: HomepageComponent, pathMatch: 'full' },
 ];
 

@@ -3,6 +3,7 @@
  */
 const
   AmpedSocket         = require('./app/utils/AmpedSocket'),
+  AmpedConnector      = require('./app/utils/AmpedConnector'),
   AmpedPassport       = require('./app/utils/AmpedPassport'),
   ampedFeedback       = require('./app/utils/AmpedFeedback'),
   bodyParser          = require('body-parser'),
@@ -18,6 +19,8 @@ const
   session             = require('express-session'),
   swig                = require('swig');
 
+const
+  MongoStore = require('connect-mongo')(session);
 
 /**
  * Create Express server.
@@ -27,7 +30,6 @@ const
   server          = http.createServer(app),
   io              = require('socket.io')(server),
   socket          = new AmpedSocket(io);
-
 
 
 /**
@@ -40,30 +42,31 @@ app.set('views', path.join(__dirname, '/app/views/'));
 app.use(express.static(path.join(__dirname, 'pub')));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 app.use(compression());
+
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(expressValidator());
-// app.use(session({
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: true
-// }));
-
-app.use(ampedFeedback({token : true}));
-
 
 app.use(session({
   resave: true,
   saveUninitialized: true,
   secret: 'abc123',
-  // store: new MongoStore({
-  //   url: process.env.MONGODB_URI || process.env.MONGOLAB_URI,
-  //   autoReconnect: true
-  // })
+  store: new MongoStore({
+    url: 'mongodb://localhost:27017/rebelpixel',
+    autoReconnect: true
+  })
 }));
 
+app.use(ampedFeedback({token : true}));
+
+
+
+
+AmpedConnector.buildModels(app, socket);
 new AmpedPassport(app, socket);
+
+
 app.use(flash());
 /**
  * Error Handler.

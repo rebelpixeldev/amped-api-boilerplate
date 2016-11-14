@@ -5,7 +5,9 @@ import 'rxjs/add/operator/toPromise';
 @Component({
     selector: 'my-app',
     template:
-      `<amped-topbar></amped-topbar>
+      `
+        <span defaultOverlayTarget></span>
+        <amped-topbar></amped-topbar>
         <div class="app-wrapper">
           <div class="sidebar amped-container">
               <ul>

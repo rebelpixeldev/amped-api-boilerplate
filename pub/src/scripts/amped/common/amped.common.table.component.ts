@@ -7,7 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
     <table class="table">
       <thead>
       <tr>
-        <th *ngFor="let header of headers">{{header | slugtotitle}}</th>
+        <th *ngFor="let header of headers">{{header | format : 'slugtotitle'}}</th>
         <th></th>
       </tr>
       </thead>

@@ -12,6 +12,10 @@ class Users extends AmpedModel{
 
     get schema(){
         return {
+          amp_account_id : {
+            type : sequelize.INTEGER,
+            user_editable : false
+          },
           provider      : {
             type : sequelize.STRING,
             user_editable : false
@@ -30,8 +34,6 @@ class Users extends AmpedModel{
           photo         : sequelize.STRING
         }
     }
-
-    get buildCrudRoutes(){return true;}
 }
 
 module.exports = Users;

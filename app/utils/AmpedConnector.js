@@ -1,10 +1,17 @@
 'use strict';
 
 const
-  connection = null,
-  fs = require('fs'),
-  path = require('path'),
-  Sequelize = require('sequelize');
+  AmpedAuthorization  = require('./AmpedAuthorization'),
+  AmpedAcl            = require('./AmpedAcl'),
+  connection          = null,
+  fs                  = require('fs'),
+  path                = require('path'),
+  Sequelize           = require('sequelize');
+
+
+
+let models = {},
+    modelMap = {};
 
 
 class AmpedConnector {
@@ -33,23 +40,34 @@ class AmpedConnector {
   static buildModels(app, socket) {
     const
       connection = AmpedConnector.getConnection(),
-      modelPath = path.join(__dirname, '../models'),
-      modelMap = {};
+      modelPath = path.join(__dirname, '../models'); // @TODO pass a reference
 
     const dirs = fs.readdirSync(modelPath);
-      dirs.forEach((filename) => {
-        console.log(filename);
+    models = dirs.reduce((carry, filename) => {
+      if ( filename.toLowerCase() !== 'ampedmodel.js') {
         const
           clss = require(path.join(modelPath, filename)),
           instance = new clss(app, socket);
 
-        modelMap[instance.modelName] = instance.getModel();
-      });
+        modelMap[instance.cleanModelName] = instance.getModel();
+        carry[instance.cleanModelName] = instance;
+      }
+      return carry;
+    }, {});
 
+
+
+  }
+
+  static addMiddleware(app, socket){
     app.use((req, res, next) => {
-        req.db = modelMap;
+      req.db = modelMap;
       next();
-    })
+    });
+
+    app.use(AmpedAuthorization());
+
+    Object.keys(models).forEach(key => models[key].addRoutes());
   }
 
 }

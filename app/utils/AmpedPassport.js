@@ -45,6 +45,7 @@ class AmpedPassport {
   deserialize() {
     this.passport.deserializeUser((req, id, done) => {
       // @TODO handle error
+      console.log(req.db);
       req.db.users.findById(id)
         .then(function (user) {
           done(null, user);
@@ -92,8 +93,6 @@ class AmpedPassport {
             } else {
               // if the user isnt in our database, create a new user
 
-              console.log(profile);
-
               const userObj = {
                 service_id: profile.id,
                 token: this.generateToken(128),
@@ -124,16 +123,7 @@ class AmpedPassport {
                 })
                 .catch((err) => {
                     done(err); // @TODO handle error
-                })
-              // var newUser = new req.db.users(userObj);
-              //
-              //
-              // // save the user
-              // newUser.save((err) => {
-              //   if (err)
-              //     throw err;
-              //
-              // });
+                });
             }
           });
         });

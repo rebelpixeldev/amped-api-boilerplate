@@ -49,7 +49,6 @@ module.exports = function (params) {
   const feedback = new AmpedFeedback(params);
 
   return (req, res, next) => {
-    console.log('HEYY');
       res.feedback = feedback.onFeedback.bind(feedback, req, res);
       next();
   }

@@ -22,13 +22,17 @@ class AmpedModel {
     this.socket = socket;
     this.editSchema = this.buildEditSchema();
 
-    this.setupRoutes();
     this.registerSchema();
+
+
+    // this.setupRoutes();
   }
 
-  setupRoutes() {
+  addRoutes() {
 
-
+    console.log('Adding routes');
+    console.log(this);
+    console.log(this.route);
     if (this.buildCrudRoutes) {
       this.app.route(this.route)
         .get(this.getModelData.bind(this))
@@ -174,16 +178,24 @@ class AmpedModel {
     return query;
   }
 
+  get tablePrefix(){
+    return 'amp_';
+  }
+
   get connection() {
     return connection;
   }
 
   get route() {
-    return '/api/' + this.modelName
+    return '/api/' + this.cleanModelName;
+  }
+
+  get cleanModelName(){
+    return this.modelName.replace(this.tablePrefix, '');
   }
 
   get modelName() {
-    return this.constructor.name.toLowerCase()
+    return this.tablePrefix + this.constructor.name.toLowerCase()
   }
 
   get schema() {

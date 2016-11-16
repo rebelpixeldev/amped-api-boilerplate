@@ -60,10 +60,8 @@ app.use(session({
 
 app.use(ampedFeedback({token : true}));
 
-
-
-
 AmpedConnector.buildModels(app, socket);
+AmpedConnector.addMiddleware(app, socket);
 new AmpedPassport(app, socket);
 
 

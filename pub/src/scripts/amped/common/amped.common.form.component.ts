@@ -19,44 +19,60 @@ interface FormDataInterface{
   moduleId: module.id,
   selector: 'amped-form',
   template: `
-    <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
+
+    <md-card>
+       <md-card-title>Editing {{model}}</md-card-title>   
+       <md-card-content>
+            <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
       
-      <div *ngFor="let field of fields">
-        
-        <div [ngSwitch]="field.type">
-        
-            <div *ngSwitchCase="'hidden'" class="col-xs-12">
-                 <input type="hidden" [formControlName]="field.name" />
-            </div>
-            
-            <div *ngSwitchCase="'text'" class="col-xs-12">
-              <label for="">{{field.label}}</label>
-                 <input type="text" class="form-control" [formControlName]="field.name" />
-            </div>
-            
-            <div *ngSwitchCase="'number'" class="col-xs-12">
-              <label for="">{{field.label}}</label>
-                 <input type="number" class="form-control" [formControlName]="field.name" />
-            </div>
-            
-            <div *ngSwitchCase="'email'" class="col-xs-12">
-              <label for="">{{field.label}}</label>
-                 <input type="email" class="form-control" [formControlName]="field.name" />
-            </div>
-            
-            <div *ngSwitchCase="'select'" class="col-xs-12">
-                <label for="">{{field.label}}</label>
-                <select class="form-control" [formControlName]="field.name">
-                    <option *ngFor="let option of field.options" [value]="option.value">{{option.label}}</option>
-                </select>
-            </div>
-            
-        </div>
-      </div>
-      
-      <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Save</button>
-  
-    </form>
+              <div *ngFor="let field of fields">
+                
+                <div [ngSwitch]="field.type">
+                    <!-- Hidden input -->
+                    <div *ngSwitchCase="'hidden'" class="col-xs-12">
+                         <input type="hidden" [formControlName]="field.name" />
+                    </div>
+                    
+                    <!-- Text input -->
+                    <div *ngSwitchCase="'text'" class="col-xs-12">
+                        <md-input placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
+                    </div>
+                    <!-- Number input -->
+                    <div *ngSwitchCase="'number'" class="col-xs-12">
+                      <label for="">{{field.label}}</label>
+                         <input type="number" class="form-control" [formControlName]="field.name" />
+                    </div>
+                    <!-- Email input -->
+                    <div *ngSwitchCase="'email'" class="col-xs-12">
+                      <label for="">{{field.label}}</label>
+                         <input type="email" class="form-control" [formControlName]="field.name" />
+                    </div>
+                    <!-- Email input -->
+                    <div *ngSwitchCase="'image'" class="col-xs-12">
+                      <amp-file-upload-display [data]="field.value"></amp-file-upload-display>
+                      <!--<img [src]="field.value" alt="">-->
+                    </div>
+                    
+                    
+                    <div *ngSwitchCase="'select'" class="col-xs-12">
+                        <label for="">{{field.label}}</label>
+                        <select class="form-control" [formControlName]="field.name">
+                            <option *ngFor="let option of field.options" [value]="option.value">{{option.label}}</option>
+                        </select>
+                    </div>
+                    
+                </div>
+              </div>
+              
+              <button md-raised-button color="primary"  type="submit" [disabled]="!form.valid">Save</button>
+          
+            </form>
+       </md-card-content>
+       <!--<md-card-actions>-->
+            <!--<button md-button>LIKE</button>-->
+            <!--<button md-button>SHARE</button>-->
+       <!--</md-card-actions>-->
+    </md-card>
 
   `
 })
@@ -89,6 +105,7 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
   
   buildForm(){
+    console.log('BUILDING FORM', this.data);
     if( typeof this.data.fields !== 'undefined' ) {
       this.mapDataDefaults();
       this.formControls = this.fields.reduce((ret: any, field: FieldInterface, i: Number) => {
@@ -99,10 +116,6 @@ export class AmpedFormComponent implements OnInit, OnChanges {
       }, {});
       this.form = new FormGroup(this.formControls);
     }
-    
-    console.log('FIELDS', this.fields);
-  
-    
   }
   
   onSubmit() {

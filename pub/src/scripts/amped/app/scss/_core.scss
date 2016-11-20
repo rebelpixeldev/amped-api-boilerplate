@@ -1,15 +1,20 @@
-h1, h2, h3, h4, h5, h6{margin-top:0;}
+@import "loader";
 
+$navbar-height : 50px;
+$grid-gutter-width : 30px;
+
+// Include non-theme styles for core.
+@include md-core();
+
+// Define a theme.
+$primary: md-palette($md-deep-purple);
+$accent:  md-palette($md-amber, A200, A100, A400);
+@include angular-material-theme(md-light-theme($primary, $accent));
+
+h1, h2, h3, h4, h5, h6{margin-top:0;}
 
 .app-wrapper{
   display:flex; flex-direction: row; height:calc(100vh - #{$navbar-height});
-  .sidebar{
-    display:flex; width:300px; background:#666;
-    &.amped-container{
-      padding:$grid-gutter-width/2;
-    }
-    ul{margin:0; padding:0; list-style:none;}
-  }
   .app-content-container{flex:1;}
 }
 
@@ -17,13 +22,7 @@ h1, h2, h3, h4, h5, h6{margin-top:0;}
   padding:$grid-gutter-width;
 }
 
-table{
-  tbody {
-    tr:nth-child(odd) {
-      background: #fafafa;
-    }
-  }
-}
+.fill-remaining-space{flex: 1 1 auto;}
 
 bs-modal-container{
   &> div:not(.modal-dialog){width:768px; position:relative; left:50%; transform:translateX(-50%); top:10vh;}
@@ -33,4 +32,26 @@ bs-modal-container{
   modal-body{display:none}
 }
 
+
+/**
+* angular material overrides
+*/
+// @TODO figure out where and what all the color variables are
+[md-raised-button]{cursor:pointer !important;}
+md-input{cursor:text;}
+md-sidenav-layout{background:#E0E0E0 !important;} // @TODO bad important
+
+table{
+  width:100%; border-collapse: collapse;
+  th{
+    font-size:0.8rem; color:rgba(0,0,0,0.54); height:64px; vertical-align:middle; font-weight:normal; text-align:left;
+    &.numeric{text-align:right;}
+  }
+  td{
+    font-size:0.9rem; color:rgba(0,0,0,0.87); height:48px; vertical-align:middle;
+    &.action-cell{text-align:right}
+    md-icon{cursor:pointer; }
+  }
+  tr{border-bottom:solid 1px #E0E0E0;}
+}
 

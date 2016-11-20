@@ -3,6 +3,7 @@ const
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   AmpedConnector = require('./AmpedConnector'),
   passport = require('passport'),
+  request = require('request'),
   User = require('../models/Users');
 
 class AmpedPassport {
@@ -91,11 +92,21 @@ class AmpedPassport {
               // if a user is found, log them in
               return done(null, user);
             } else {
-              // if the user isnt in our database, create a new user
 
+              /**
+               * Create user flow
+               * @TODO This can proabaly be cleaned up quite a bit
+               * @TODO account for invited accounts. Decide whether the user still gets an account or they are just added to the invited account
+               *
+               * create user with the account and photo ids of 0
+               * create an account with the users name as the name of the account
+               * update account id on the user
+               * Call the uploads service and download their profile picture
+               * update the photo id on the user
+               */
               const userObj = {
                 service_id: profile.id,
-                token: this.generateToken(128),
+                token: this.generateToken(64),
                 display_name: profile.displayName,
                 users_name: {
                   givenName: profile.name.givenName,
@@ -105,24 +116,40 @@ class AmpedPassport {
                   ret.push(val.value);
                   return ret;
                 }, []),
-                photos: profile.photos.reduce((ret, val) => {
-                  ret.push(val.value.split('?')[0]);
-                  return ret;
-                }, []),
+                photo : 0,
+                account : 0,
                 provider: 'google',
 
               };
 
-              userObj.photo = userObj.photos[0];
+              // userObj.photo = userObj.photos[0];
               userObj.email = userObj.emails[0];
-
 
               req.db.users.create(userObj)
                 .then((user) => {
-                  done(null, user);
+
+                  req.db.accounts.create({
+                    name : profile.displayName
+                  }).then((account) => {
+
+                    user.updateAttributes({
+                      account_id : account.id
+                    }).then(() => {
+                      // @TODO url should come from config
+                      request(`http://localhost:3000/uploads/upload?remote_url=${profile.photos[0].value.split('?')[0]}&token=${user.token}`, (err, resp, body) => {
+                        // @TODO catch if success is false
+                        const fileInfo = JSON.parse(body).response;
+                        console.log(fileInfo);
+
+                        user.updateAttributes({
+                          photo : fileInfo.id
+                        }).then(() => done(err, user));
+                      })
+                    })
+                  })
                 })
                 .catch((err) => {
-                    done(err); // @TODO handle error
+                  done(err); // @TODO handle error
                 });
             }
           });

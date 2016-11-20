@@ -3,9 +3,11 @@
 //@TODO create two way binding for database entries
 
 const
-  AmpedConnector = require('../utils/AmpedConnector'),
-  sequelize = require('sequelize'),
-  url = require('url');
+  AmpedConnector    = require('../utils/AmpedConnector'),
+  acl               = require('../utils/AmpedAcl')({}),
+  sequelize         = require('sequelize'),
+  url               = require('url'),
+  util              = require('../utils/AmpedUtil');
 
 
 const typeMap = {
@@ -30,13 +32,13 @@ class AmpedModel {
 
   addRoutes() {
 
-    console.log('Adding routes');
-    console.log(this);
-    console.log(this.route);
     if (this.buildCrudRoutes) {
-      this.app.route(this.route)
-        .get(this.getModelData.bind(this))
-        .post(this.createModelData.bind(this));
+
+      this.app.get(this.route, acl.can('view', this.modelName), this.getModelData.bind(this));
+
+      // this.app.route(this.route, acl.can('view', this.model))
+      //   .get(this.getModelData.bind(this))
+      //   .post(this.createModelData.bind(this));
 
       this.app.route(this.route + '/:_id')
         .get(this.getModelData.bind(this))
@@ -51,45 +53,58 @@ class AmpedModel {
 
   registerSchema() {
     // try {
-    this.DB = AmpedConnector.getConnection().define(this.modelName, this.schemaData);
+    this.DB = AmpedConnector.getConnection().define(this.modelName, this.schemaData, Object.assign({}, this.defaultDefineOptions, this.defineOptions));
+
     // } catch (e){
     //     this.DB = AmpedConnector.getConnection().model(this.constructor.name);
     // }
   }
+
+  addRelations(models){}
 
   /**
    * Routes
    */
   getModelData(req, res) {
 
-    const params = this.getParams(req);
+    const params = util.getParams(req);
 
     // @TODO handle errors
     // @TODO handle filter params
     console.log('getting data');
 
-    let sendResponse = (data) => {
+    if ( this.getQuery() !== false ){
+      this.getQuery(req, res, params);
+    } else {
+
+      (typeof params._id === 'undefined' ?
+        this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
+        this.DB.findOne({where: AmpedModel.buildQuery({id: params._id})}, this.queryIncludes))
+        .then(this.sendResponse.bind(this, req, res))
+        .catch((err) => {
+          console.log('ERROR', err);
+        });
+    }
+
+  }
+
+  sendResponse(req, res, data){
 
 
-      if (data === null)
-        data = [];
-      res.setHeader('Content-Type', 'application/json');
-      res.feedback(
-        this.isEditRoute(req.url) ?
+    if (data === null)
+      data = [];
+    res.setHeader('Content-Type', 'application/json');
+    res.feedback(
+      this.isEditRoute(req.url) ?
         this.editSchema.slice(0).map((item) => {
           item.value = data[item.name] || '';
-        return item;
-      }) : data);
-    };
+          return item;
+        }) : data);
+    return null;
+  };
 
-    (typeof params._id === 'undefined' ?
-      this.DB.findAll({where : AmpedModel.buildQuery({})}) :
-      this.DB.findOne({where: AmpedModel.buildQuery({id: params._id})}))
-      .then(sendResponse)
-      .catch((err) => {
-        console.log('ERROR', err);
-      });
-
+  getQuery(params){
+    return false;
   }
 
   createModelData(req, res) {
@@ -108,7 +123,7 @@ class AmpedModel {
   updateModelData(req, res) {
     // @TODO Check values being sent against the schema
     // @TODO handle errors
-    const params = this.getParams(req);
+    const params = util.getParams(req);
 
     this.DB.findById(params.id)
       .then((result) => {
@@ -145,7 +160,7 @@ class AmpedModel {
         const row = this.schema[field];
 
       if ( typeof row.user_editable === 'undefined' || row.user_editable )
-        ret = [...ret, {type: typeMap[row.key], label: this.colNameToLabel(field), name : field}];
+        ret = [...ret, {type: row.field_type || typeMap[row.key], label: this.colNameToLabel(field), name : field}];
 
       return ret;
 
@@ -154,11 +169,6 @@ class AmpedModel {
 
   colNameToLabel(field){
     return field.replace('_', ' ');
-  }
-
-  // @TODO make this a helper
-  getParams(req) {
-    return Object.assign({}, req.body, req.params, url.parse(req.url, true).query);
   }
 
   getEvent(evt) {
@@ -172,6 +182,8 @@ class AmpedModel {
   getModel() {
     return this.DB;
   }
+
+  get queryIncludes(){return []}
 
   static buildQuery(query) {
     // return Object.assign({deleted_at : { $exists : false}}, query);
@@ -187,16 +199,12 @@ class AmpedModel {
   }
 
   get route() {
-    return '/api/' + this.cleanModelName;
+    return '/api/' + this.modelName;
   }
 
-  get cleanModelName(){
-    return this.modelName.replace(this.tablePrefix, '');
-  }
-
-  get modelName() {
-    return this.tablePrefix + this.constructor.name.toLowerCase()
-  }
+  get modelName(){ return this.baseName; }
+  get tableName() { return this.tablePrefix + this.baseName; }
+  get baseName(){ return util.pascalToUnderscore(this.constructor.name) }
 
   get schema() {
     return {};
@@ -210,6 +218,19 @@ class AmpedModel {
     return true;
   }
 
+  get defineOptions(){
+    return {};
+  }
+
+  get defaultDefineOptions(){
+    return {
+      underscored : true,
+      paranoid : true,
+      freezeTable : true,
+      tableName : this.tableName
+    }
+  }
+
   get defaultSchema() {
     return {
       created_at: {type: sequelize.DATE, user_editable : false},
@@ -218,6 +239,8 @@ class AmpedModel {
       deleted_by: {type: sequelize.INTEGER, user_editable : false}
     }
   }
+
+  get getQuery() { return false; }
 
 }
 

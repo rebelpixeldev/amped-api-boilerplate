@@ -1,11 +1,17 @@
-amped-topbar{
+md-toolbar{
   //.navbar-default .navbar-nav > li:hover{
   //  background:$navbar-default-link-hover-color;
   //  &> a{color:#fff;}
   //}
+
+  md-toolbar-row > div{
+    display:flex;
+  }
   .dropdown{
     &:hover, &:focus{
       .dropdown-menu{display:block;}
     }
   }
+
+  [md-icon-button]{margin-top:12px;}
 }

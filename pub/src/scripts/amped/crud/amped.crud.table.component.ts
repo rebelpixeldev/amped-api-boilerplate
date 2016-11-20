@@ -6,14 +6,22 @@ import { AmpedFormsService }  from './amped.crud.service';
   moduleId: module.id,
   selector: 'amped-crud-table',
   template: `
-  <div class="row">
-    <div class="col-sm-10">
-      <h1 class="pull-left">Edit {{model | format : 'capitalize' : 'another one'}}</h1>
-      <input type="text" [(ngModel)]="filter" placeholder="Filter data" class="pull-left form-control" style="width:300px; margin-top:6px; margin-left:25px;" />
-    </div>
-    <amped-add-new></amped-add-new>
-  </div>
-    <amped-table [data]="tableData" enableCrud="false"></amped-table>
+    <md-card>
+       <md-card-header>
+          <md-card-title><h1>Edit {{model | format : 'capitalize'}}</h1></md-card-title>
+          <span class="fill-remaining-space"></span>
+          
+          <md-input placeholder="Filter data" [(ngModel)]="filter">
+            <span md-suffix>
+              <md-icon>search</md-icon>
+            </span>
+          </md-input>
+          <amped-add-new></amped-add-new>
+       </md-card-header>
+       <md-card-content>
+          <amped-table [data]="tableData" enableCrud="true"></amped-table>
+       </md-card-content>
+    </md-card>
 `
 })
 export class AmpedCrudTableComponent implements OnInit {

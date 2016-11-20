@@ -1,3 +1,4 @@
+import { MaterialModule } from '@angular/material';
 import { NgModule }       from '@angular/core';
 import { FormsModule, ReactiveFormsModule }    from '@angular/forms';
 import { BrowserModule }  from '@angular/platform-browser';
@@ -10,12 +11,14 @@ import { AmpedFormatPipe } from './pipes/amped.common.format';
 import { AmpedTableComponent } from './amped.common.table.component';
 import { AmpedFormComponent } from './amped.common.form.component';
 
+import { AmpedFilesModule } from '../files/amped.files.module';
+
 // import { AmpedAuthService } from '../auth/amped.auth.service';
 
 import { AmpedService } from './amped.common.service';
 
 @NgModule({
-  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule],
+  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedFilesModule, MaterialModule.forRoot()],
   declarations  : [TruncatePipe, AmpedFilterPipe, AmpedFormatPipe, AmpedTableComponent, AmpedFormComponent],
   exports       : [TruncatePipe, AmpedFilterPipe, AmpedFormatPipe, AmpedTableComponent, AmpedFormComponent],
   providers     : [ AmpedService ]

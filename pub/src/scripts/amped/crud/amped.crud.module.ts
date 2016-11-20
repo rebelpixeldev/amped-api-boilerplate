@@ -1,3 +1,4 @@
+import { MaterialModule } from '@angular/material';
 import { NgModule }           from '@angular/core';
 import { CommonModule }       from '@angular/common';
 import { HttpModule }         from '@angular/http';
@@ -14,7 +15,7 @@ import { AmpedCrudAddnew } from './amped.crud.addnew';
 import { AmpedService } from '../common/amped.common.service';
 
 @NgModule({
-  imports         : [ CommonModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedCommonModule ],
+  imports         : [ CommonModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedCommonModule, MaterialModule.forRoot() ],
   declarations    : [ AmpedCrudFormComponent, AmpedCrudTableComponent, AmpedCrudAddnew ],
   exports         : [ AmpedCrudFormComponent, AmpedCrudTableComponent, AmpedCrudAddnew ],
   providers       : [ AmpedFormsService, AmpedService ],

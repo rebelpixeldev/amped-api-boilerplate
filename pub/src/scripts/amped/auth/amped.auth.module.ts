@@ -1,3 +1,4 @@
+import { MaterialModule } from '@angular/material';
 import { NgModule }       from '@angular/core';
 import { FormsModule, ReactiveFormsModule }    from '@angular/forms';
 import { BrowserModule }  from '@angular/platform-browser';
@@ -15,7 +16,7 @@ const exportDeclarations = [
 ];
 
 @NgModule({
-  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, RouterModule, MaterialModule.forRoot()],
   declarations  : exportDeclarations,
   exports       : exportDeclarations,
   providers     : [ AmpedAuthService, AmpedService ]

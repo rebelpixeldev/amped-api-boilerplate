@@ -10,6 +10,10 @@ class Accounts extends AmpedModel {
     this.app = app;
   }
 
+  addRelations(models){
+    models.accounts.getModel().hasMany(models.users.getModel());
+  }
+
   get schema() {
     return {
       name: sequelize.STRING,
@@ -21,12 +25,5 @@ class Accounts extends AmpedModel {
     }
   }
 }
-
-  // id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('amp_accounts_id_seq'::regclass),
-  // name CHARACTER VARYING(255),
-  // address CHARACTER VARYING(255),
-  // city CHARACTER VARYING(100),
-  // state CHARACTER VARYING(100),
-  // country CHARACTER VARYING(100)
 
 module.exports = Accounts;

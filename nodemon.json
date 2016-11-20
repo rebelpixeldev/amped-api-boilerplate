@@ -1,10 +1,10 @@
 {
   "watch": [
     "app/**",
-    "pub/**",
+    "pub/**"
   ],
   "env": {
     "NODE_ENV": "development"
   },
-  "ext": "js json"
+  "ext": "js json html"
 }

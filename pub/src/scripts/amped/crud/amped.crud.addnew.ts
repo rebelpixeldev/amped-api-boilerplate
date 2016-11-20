@@ -9,7 +9,7 @@ import { AmpedAlertsPrompts } from '../alerts/AmpedAlerts';
   moduleId: module.id,
   selector: 'amped-add-new',
   template: `
-        <button class="col-sm-2 btn btn-success btn-icon" (click)="onClick()">
+        <button md-raised-button color="primary" (click)="onClick()">
            <i class="fa fa-plus" aria-hidden="true"></i>{{label}}
         </button>`,
   providers : [ AmpedAlertsPrompts ]

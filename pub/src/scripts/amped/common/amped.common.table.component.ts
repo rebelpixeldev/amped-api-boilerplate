@@ -15,11 +15,20 @@ import { Router, ActivatedRoute } from '@angular/router';
       <tr *ngFor="let row of rows | ampedfilter : headers : filter">
         <td *ngFor="let header of headers">
           <span *ngIf="header !== 'photo' && header !== 'image'" title="{{row[header]}}">{{row[header] | truncate}}</span>
-          <img *ngIf="header == 'photo' || header == 'image'" src="{{row[header]}}" style="height:40px;" title="{{header}}" />
+          
+          <img md-card-avatar *ngIf="header == 'photo' || header == 'image'" src="{{row[header]}}" title="{{header}}" />
         </td>
-        <td>
-          <i *ngIf="enableCrud" class="fa fa-pencil pointer" aria-hidden="true" (click)="onEditClick(row.id)"></i>
-          <i *ngIf="enableCrud" class="fa fa-trash pointer" aria-hidden="true" (click)="onDeleteClick(row.id)"></i>
+        <td class="action-cell">
+        <button md-icon-button (click)="onEditClick(row.id)">
+          <md-icon >edit</md-icon>
+        </button>
+        <button md-icon-button (click)="onDeleteClick(row.id)">
+          <md-icon >delete</md-icon>
+        </button>
+          
+          
+          <!--<i *ngIf="enableCrud" class="fa fa-pencil pointer" aria-hidden="true" ></i>-->
+          <!--<i *ngIf="enableCrud" class="fa fa-trash pointer" aria-hidden="true" (click)="onDeleteClick(row.id)"></i>-->
         </td>
       </tr>
       </tbody>
@@ -43,6 +52,7 @@ export class AmpedTableComponent implements OnInit, OnChanges {
   }
   
   ngOnInit() {
+    console.log('TABLE INIT', this.data);
     this.sub = this.route.params.subscribe( (params : any) => this.model = params.model);
   }
   

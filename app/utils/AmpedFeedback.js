@@ -1,4 +1,5 @@
 'use strict';
+// @TODO make this an external npm module
 const
   url   = require('url');
 
@@ -37,6 +38,7 @@ class AmpedFeedback{
 
 
     res.json(resp);
+    return null;
 
   }
 

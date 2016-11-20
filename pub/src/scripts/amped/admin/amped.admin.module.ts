@@ -1,20 +1,28 @@
+import { MaterialModule } from '@angular/material';
 import { NgModule }       from '@angular/core';
 import { FormsModule, ReactiveFormsModule }    from '@angular/forms';
 import { BrowserModule }  from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 
-import { AmpedTopbarComponent } from './amped.admin.topbar.component';
+import { AmpedTopbar } from './amped.admin.topbar.component';
+import { AmpedSidebar } from './amped.admin.sidebar.component';
+import { AmpedUserThumb } from './amped.user.thumb.component';
 import { AmpedAuthService } from '../auth/amped.auth.service';
 
 const exportDeclarations = [
-  [ AmpedTopbarComponent ]
+  [ AmpedTopbar, AmpedSidebar, AmpedUserThumb ]
 ];
 
 
 @NgModule({
-  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports       : [
+    MaterialModule.forRoot(),
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule],
   declarations  : exportDeclarations,
   exports       : exportDeclarations,
   providers     : [ AmpedAuthService ]
 })
-export class AmpedAuthModule { }
+export class AmpedAdminModule { }

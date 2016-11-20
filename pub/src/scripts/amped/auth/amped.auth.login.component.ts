@@ -1,29 +1,42 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 
 import {Router, ActivatedRoute} from '@angular/router';
-import {cpus} from "os";
 
 @Component({
   moduleId: module.id,
   selector: 'amped-login-form',
   template: `
-      <div class="loginmodal-container">
-					<h1>Login to Your Account</h1><br>
-				  <form>
-					<input type="text" name="user" placeholder="Username">
-					<input type="password" name="pass" placeholder="Password">
-					<input type="submit" name="login" class="login loginmodal-submit" value="Login">
+    <md-card>
+       <md-card-header>
+          <md-card-title><h1>Amped Login</h1></md-card-title>
+       </md-card-header>
+       <md-card-content>
+          <form>
+          <md-input placeholder="Username">
+            <span md-suffix>
+              <md-icon>account_circle</md-icon>
+            </span>
+          </md-input>
+          <md-input placeholder="Password">
+            <span md-suffix>
+              <md-icon>lock</md-icon>
+            </span>
+          </md-input>
+          <button md-raised-button color="primary" type="submit">Login</button>
+            <!--<button md-raised-button type="submit" name="login" class="login loginmodal-submit" value="Login" color="primary"></button>-->
 				  </form>
 				  
-				  <hr> OR
+				  <span class="or"><span>OR</span></span>
 				  
-				  <a (click)="loginGoogle()" class="btn btn-primary"><i class="fa fa-google-plus" aria-hidden="true"></i>Login with Google</a>
-				  <a (click)="loginFacebook()" class="btn btn-facebook"><i class="fa fa-facebook" aria-hidden="true"></i>Login with Facebook</a>
+				  <a (click)="loginGoogle()" class="btn btn-primary" md-raised-button color="primary">Login with Google</a>
+				  <a (click)="loginFacebook()" class="btn btn-facebook" md-raised-button color="primary">Login with Facebook</a>
 					
 				  <div class="login-help">
 					<a routerLink="/register">Register</a> - <a routerLink="/passwordreset">Forgot Password</a>
 				  </div>
-				</div>
+       </md-card-content>
+    </md-card>
+
     `
 })
 export class AmpedAuthLoginComponent implements OnInit {

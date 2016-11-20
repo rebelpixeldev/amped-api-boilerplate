@@ -2,8 +2,9 @@
 
 const
   AmpedPassport = require('../utils/AmpedPassport'),
-  passport = require('passport'),
-  User = require('../models/Users');
+  AmpedAuth     = require('../utils/AmpedAuthorization'),
+  passport      = require('passport'),
+  User          = require('../models/Users');
 
 class UserController {
 
@@ -24,7 +25,7 @@ class UserController {
   }
 
   getUser(req, res){
-    res.feedback(req.user || {});
+    AmpedAuth.getUserByToken(req, req.user.token, res.feedback);
   }
 
   profile(req, res) {

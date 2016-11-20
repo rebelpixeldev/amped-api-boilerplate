@@ -9,13 +9,13 @@ export class AmpedFormatPipe implements PipeTransform {
     return this[method].apply(this, [val, ...Array.prototype.slice.call(arguments).slice(2)]);
   }
   
-  capitalize(value){
+  capitalize(value : string){
     return value.charAt(0).toUpperCase() + value.slice(1);
   }
   
-  slugtotitle(value){
+  slugtotitle(value : string){
     return value.toString()
       .replace(/(-|_|\.)/g, ' ')
-      .replace(/\b\w/g, function(l){ return l.toUpperCase() });
+      .replace(/\b\w/g, function(l : string){ return l.toUpperCase() });
   }
 }

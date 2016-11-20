@@ -7,7 +7,7 @@ import { AmpedService } from '../common/amped.common.service';
   selector: 'amped-topbar',
   templateUrl: 'templates/amped.admin.topbar.component.html'
 })
-export class AmpedTopbarComponent implements OnInit {
+export class AmpedTopbar implements OnInit {
   
   private user : any = {};
   

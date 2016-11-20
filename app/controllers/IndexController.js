@@ -4,7 +4,6 @@ class IndexController{
 
     constructor(app){
         this.app = app;
-      console.log('HEYY');
     }
 
     setupRoutes(){

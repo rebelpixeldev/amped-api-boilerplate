@@ -26,6 +26,7 @@
 
       // other libraries
       'rxjs':                      'npm:rxjs',
+      '@angular/material': 'npm:@angular/material/material.umd.js',
       'angular2-modal' : 'npm:angular2-modal',
       'angular2-modal/plugins/bootstrap' : 'npm:angular2-modal/bundles',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js'

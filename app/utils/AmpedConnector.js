@@ -1,4 +1,5 @@
 'use strict';
+// @TODO make external npm module
 
 const
   AmpedAuthorization  = require('./AmpedAuthorization'),
@@ -49,23 +50,25 @@ class AmpedConnector {
           clss = require(path.join(modelPath, filename)),
           instance = new clss(app, socket);
 
-        modelMap[instance.cleanModelName] = instance.getModel();
-        carry[instance.cleanModelName] = instance;
+        modelMap[instance.modelName] = instance.getModel();
+        carry[instance.modelName] = instance;
       }
       return carry;
     }, {});
 
 
+    Object.keys(models).forEach( key => models[key].addRelations(models));
 
   }
 
   static addMiddleware(app, socket){
     app.use((req, res, next) => {
       req.db = modelMap;
+      req.dbRef = models;
       next();
     });
 
-    app.use(AmpedAuthorization());
+    app.use(AmpedAuthorization.middleware());
 
     Object.keys(models).forEach(key => models[key].addRoutes());
   }

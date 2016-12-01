@@ -1,5 +1,11 @@
-import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import {
+  Component, OnInit, OnDestroy, Input, OnChanges, ViewChild, ElementRef,
+  ComponentFactoryResolver, ViewContainerRef, ComponentRef
+} from '@angular/core';
+import {Router, ActivatedRoute} from '@angular/router';
+import {DomSanitizer} from "@angular/platform-browser";
+import {MdMenu, MdMenuTrigger} from "@angular/material";
+import {JSONCell, ImageCell, TextCell} from "./amped.common.table.cells";
 
 @Component({
   selector: 'amped-table',
@@ -14,9 +20,7 @@ import { Router, ActivatedRoute } from '@angular/router';
       <tbody>
       <tr *ngFor="let row of rows | ampedfilter : headers : filter">
         <td *ngFor="let header of headers">
-          <span *ngIf="header !== 'photo' && header !== 'image'" title="{{row[header]}}">{{row[header] | truncate}}</span>
-          
-          <img md-card-avatar *ngIf="header == 'photo' || header == 'image'" src="{{row[header]}}" title="{{header}}" />
+          <amped-table-cell [header]="header" [row]="row"></amped-table-cell>
         </td>
         <td class="action-cell">
         <button md-icon-button (click)="onEditClick(row.id)">
@@ -35,58 +39,104 @@ import { Router, ActivatedRoute } from '@angular/router';
     </table>
   `
 })
-export class AmpedTableComponent implements OnInit, OnChanges {
+export class AmpedTable implements OnInit, OnChanges {
   
-  @Input() data       : Array<any>;
-  @Input() title      : string;
-  @Input() enableCrud : boolean = true;
+  @Input() data: Array<any>;
+  @Input() title: string;
+  @Input() enableCrud: boolean = true;
   
-  @Input() filter     : string;
+  @Input() filter: string;
   
-  private headers     : Array<string> = [];
-  private rows        : Array<Object> = [];
-  private sub         : any;
-  private model       : string;
+  private headers: Array<string> = [];
+  private rows: Array<Object> = [];
+  private sub: any;
+  private model: string;
   
-  constructor(private router : Router, private route: ActivatedRoute) {
+  constructor(private router: Router, private route: ActivatedRoute) {
   }
   
   ngOnInit() {
-    console.log('TABLE INIT', this.data);
-    this.sub = this.route.params.subscribe( (params : any) => this.model = params.model);
+    this.sub = this.route.params.subscribe((params: any) => this.model = params.model);
   }
   
   ngOnDestroy() {
     this.sub.unsubscribe();
   }
   
-  onEditClick(id : string){
+  onEditClick(id: string) {
     this.router.navigate(['/edit', this.model, id]);
   }
   
-  onDeleteClick(id : string){
+  onDeleteClick(id: string) {
     // this.router.navigate(['/edit', this.model, id]);
     console.log('@TODO need to build a confirm alert to ask if the user wants to delete');
   }
   
-  ngOnChanges(changes :any){
-    if( typeof this.data !== 'undefined' && this.data.length > 0 ) {
+  ngOnChanges(changes: any) {
+    if (typeof this.data !== 'undefined' && this.data.length > 0) {
       this.filterFields();
       this.setHeaders();
     }
     // @TODO use an Observable
-    
   }
   
-  filterFields(){
-    this.rows = this.data.slice(0).map(row =>{
-      delete row.created_at; delete row.updated_at; delete row.deleted_at; delete row.deleted_by;
+  filterFields() {
+    this.rows = this.data.slice(0).map(row => {
+      delete row.created_at;
+      delete row.updated_at;
+      delete row.deleted_at;
+      delete row.deleted_by;
       delete row.token;
       return row;
     });
   }
-  setHeaders(){
+  
+  setHeaders() {
     this.headers = Object.keys(this.data[0]);
   }
   
 }
+
+
+@Component({
+  moduleId: module.id,
+  selector: 'amped-table-cell',
+  template: `<div #elemContainer></div>`
+})
+export class AmpedTableCell {
+  
+  @Input() header: any;
+  @Input() row: any;
+  
+  private cellInstance : any;
+  
+  @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
+  
+  @ViewChild('elemContainer', {read: ViewContainerRef})
+  private elemContainer: any;
+  private componentReference : ComponentRef<any>;
+  private isViewInitialized: boolean = false;
+  
+  constructor(private componentFactoryResolver: ComponentFactoryResolver, private _sanitizer: DomSanitizer, protected resolver: ComponentFactoryResolver, elementRef: ElementRef) {
+  }
+  
+  ngOnInit() {
+    this.isViewInitialized = true;
+    let component : any = null;
+    
+    if ( this.header.indexOf('photo') > -1 || this.header.indexOf('image') > -1 )
+      // this.content = '<img md-card-avatar src="{{row[header]}}" title="{{header}}" />';
+      component = ImageCell;
+    else if (typeof this.row[this.header] === 'object') {
+      component = JSONCell;
+    } else {
+      component = TextCell;
+    }
+  
+    this.cellInstance = this.elemContainer.createComponent(this.componentFactoryResolver.resolveComponentFactory(component)).instance;
+    this.cellInstance.header = this.header;
+    this.cellInstance.row = this.row;
+    
+  }
+}
+

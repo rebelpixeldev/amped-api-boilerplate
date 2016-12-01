@@ -29,26 +29,26 @@ interface FormDataInterface{
                 
                 <div [ngSwitch]="field.type">
                     <!-- Hidden input -->
-                    <div *ngSwitchCase="'hidden'" class="col-xs-12">
+                    <div *ngSwitchCase="'hidden'" class="col-xs-12 amp-form-element">
                          <input type="hidden" [formControlName]="field.name" />
                     </div>
                     
                     <!-- Text input -->
-                    <div *ngSwitchCase="'text'" class="col-xs-12">
+                    <div *ngSwitchCase="'text'" class="col-xs-12 amp-form-element">
                         <md-input placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
                     </div>
                     <!-- Number input -->
-                    <div *ngSwitchCase="'number'" class="col-xs-12">
+                    <div *ngSwitchCase="'number'" class="col-xs-12 amp-form-element">
                       <label for="">{{field.label}}</label>
                          <input type="number" class="form-control" [formControlName]="field.name" />
                     </div>
                     <!-- Email input -->
-                    <div *ngSwitchCase="'email'" class="col-xs-12">
+                    <div *ngSwitchCase="'email'" class="col-xs-12 amp-form-element">
                       <label for="">{{field.label}}</label>
                          <input type="email" class="form-control" [formControlName]="field.name" />
                     </div>
                     <!-- Email input -->
-                    <div *ngSwitchCase="'image'" class="col-xs-12">
+                    <div *ngSwitchCase="'image'" class="col-xs-12 amp-form-element">
                       <amp-file-upload-display [data]="field.value"></amp-file-upload-display>
                       <!--<img [src]="field.value" alt="">-->
                     </div>

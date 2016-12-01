@@ -1,5 +1,6 @@
 'use strict';
 const
+  AmpedAuthorization = require('../utils/AmpedAuthorization'),
   AmpedModel = require('./AmpedModel'),
   sequelize = require('sequelize');
 
@@ -22,17 +23,18 @@ class Users extends AmpedModel {
    */
   getQuery(req, res, params){
     if ( typeof req !== 'undefined' ) {
+      console.log(typeof params._id === 'undefined');
       (typeof params._id === 'undefined' ?
         this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
-        this.DB.findOne({where: AmpedModel.buildQuery({id: params._id})}, this.queryIncludes))
+        this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), include: this.queryIncludes, raw: true})
+        .then(user => AmpedAuthorization.convertQueryRelations(user)))
         .then((user) => {
-          req.db.uploads.findOne({where: {id: user.dataValues.photo}})
+          req.db.uploads.findOne({where: {id: user.photo}})
             .then((photo) => {
-              user = user.dataValues;
               user.photo = photo;
               this.sendResponse(req, res, user);
             })
-        });
+        })
     }
     return true;
   }

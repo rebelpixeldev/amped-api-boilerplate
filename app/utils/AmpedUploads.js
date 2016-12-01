@@ -1,4 +1,4 @@
-// @TODO replace with generators
+// @TODO replace promises with generators
 'use strict';
 
 const
@@ -12,7 +12,7 @@ const
   url = require('url'),
   util = require('./AmpedUtil');
 
-
+// @TODO should come from global config
 const config = {
   uploads: {
     sourcefilePath : '/uploads/source',
@@ -35,36 +35,15 @@ class AmpedUploads {
   }
 
   static saveImage(req, tmpFilePath) {
-    console.log('SAVING IMAGE');
     return new Promise((resolve, reject) => {
-      console.log(tmpFilePath);
-
       AmpedUploads.getFileInfo(tmpFilePath)
         .then((info) => {
-
-          console.log(info);
           const
             filename = tmpFilePath.split('/').pop().split('|').pop().split('?')[0],
             extension = tmpFilePath.split('.').pop().split('?')[0];
-
-          console.log(filename);
-          console.log(extension);
-
-          console.log({
-            amp_account_id : req.user.account.id,
-            amp_user_id : req.user.id,
-            title : filename.replace('.'+extension, ''),
-            mime : fileUtil.extensionToMime(extension),
-            filename : filename,
-            extension : extension,
-            filesize : parseFloat(info.Filesize),
-            width : info.size.width,
-            height : info.size.height
-          });
-
           req.db.uploads.create({
-              amp_account_id : req.user.account.id,
-              amp_user_id : req.user.id,
+              amp_account_id : req.auth.account.id,
+              amp_user_id : req.auth.id,
               title : filename.replace('.'+extension, ''),
               mime : fileUtil.extensionToMime(extension),
               filename : filename,

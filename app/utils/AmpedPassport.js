@@ -136,6 +136,7 @@ class AmpedPassport {
                       account_id : account.id
                     }).then(() => {
                       // @TODO url should come from config
+                      // @TODO will error out, the GET route has been replaced with POST
                       request(`http://localhost:3000/uploads/upload?remote_url=${profile.photos[0].value.split('?')[0]}&token=${user.token}`, (err, resp, body) => {
                         // @TODO catch if success is false
                         const fileInfo = JSON.parse(body).response;

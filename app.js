@@ -64,7 +64,6 @@ AmpedConnector.buildModels(app, socket);
 AmpedConnector.addMiddleware(app, socket);
 new AmpedPassport(app, socket);
 
-
 app.use(flash());
 /**
  * Error Handler.

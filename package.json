@@ -49,6 +49,7 @@
     "express-validator": "^2.20.5",
     "foundation-sites": "^6.2.3",
     "gm": "^1.23.0",
+    "multer": "^1.2.0",
     "node-sass": "^3.11.1",
     "passport": "^0.3.2",
     "passport-google-oauth": "^1.0.0",

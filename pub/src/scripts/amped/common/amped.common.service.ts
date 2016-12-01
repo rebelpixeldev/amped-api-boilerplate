@@ -34,26 +34,14 @@ export class AmpedService {
     }
   }
   
-  request(url : any, data : any = {}, options : any = {} ){
+  request(url : any, data : any = {}, options : any = {}, reqMethod : string = 'get' ){
   
-    // this.appendToken(request)
-    //   .then(((asd  : any) => {
-    //       console.log(asd);
-    //   });
-    //
-    //
-    //   return new Promise((resolve, reject) => {
-    //     resolve({});
-    //   });
-    //
-    //
-    //
     return new Promise((resolve, reject) => {
       
       this.appendToken(url)
         .then( (url:string) => {
           
-          const method = (data.method || 'get').toLowerCase();
+          const method = (data.method || reqMethod).toLowerCase();
           delete data.method;
           
           
@@ -67,18 +55,7 @@ export class AmpedService {
               } else {
                 reject(resp.message);
               }
-            })
-      
-          // return req
-          //   .then((res : any) => res.json())
-          //   .then((res : AmpedRESTInterface) => {
-          //     console.log(res);
-          //     if ( res.success )
-          //       return res.response;
-          //     else
-          //       throw res.message;
-          //   })
-          //   .catch( (err : any) => console.log(err));
+            });
         })
     })
       

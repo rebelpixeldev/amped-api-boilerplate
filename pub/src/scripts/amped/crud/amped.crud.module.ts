@@ -11,11 +11,12 @@ import { AmpedCrudTableComponent } from './amped.crud.table.component';
 import { AmpedFormsService }  from './amped.crud.service';
 
 import { AmpedCommonModule } from '../common/amped.common.module';
+import { AmpedFilesModule } from '../files/amped.files.module';
 import { AmpedCrudAddnew } from './amped.crud.addnew';
 import { AmpedService } from '../common/amped.common.service';
 
 @NgModule({
-  imports         : [ CommonModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedCommonModule, MaterialModule.forRoot() ],
+  imports         : [ CommonModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedCommonModule, AmpedFilesModule, MaterialModule.forRoot() ],
   declarations    : [ AmpedCrudFormComponent, AmpedCrudTableComponent, AmpedCrudAddnew ],
   exports         : [ AmpedCrudFormComponent, AmpedCrudTableComponent, AmpedCrudAddnew ],
   providers       : [ AmpedFormsService, AmpedService ],

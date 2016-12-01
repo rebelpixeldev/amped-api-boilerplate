@@ -239,9 +239,6 @@ class AmpedModel {
       deleted_by: {type: sequelize.INTEGER, user_editable : false}
     }
   }
-
-  get getQuery() { return false; }
-
 }
 
 module.exports = AmpedModel;

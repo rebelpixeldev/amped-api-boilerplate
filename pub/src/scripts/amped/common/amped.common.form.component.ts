@@ -24,45 +24,43 @@ interface FormDataInterface{
        <md-card-title>Editing {{model}}</md-card-title>   
        <md-card-content>
             <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
-      
-              <div *ngFor="let field of fields">
-                
-                <div [ngSwitch]="field.type">
+              
+              <md-grid-list *ngFor="let row of fields" cols="{{row.length}}" rowHeight="60px" gutterSize="10">
+                <md-grid-tile *ngFor="let field of row" >
+                  <div [ngSwitch]="field.type" class="amped-form-element">
                     <!-- Hidden input -->
-                    <div *ngSwitchCase="'hidden'" class="col-xs-12 amp-form-element">
-                         <input type="hidden" [formControlName]="field.name" />
-                    </div>
-                    
+                         <input *ngSwitchCase="'hidden'" type="hidden" [formControlName]="field.name" />
                     <!-- Text input -->
-                    <div *ngSwitchCase="'text'" class="col-xs-12 amp-form-element">
-                        <md-input placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
-                    </div>
+                        <md-input *ngSwitchCase="'text'" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
+                        
+                        <!--<md-input *ngSwitchCase="'json_text'" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>-->
+                   
                     <!-- Number input -->
-                    <div *ngSwitchCase="'number'" class="col-xs-12 amp-form-element">
-                      <label for="">{{field.label}}</label>
-                         <input type="number" class="form-control" [formControlName]="field.name" />
-                    </div>
+                      <div *ngSwitchCase="'json_text'">
+                          <md-grid-list cols="{{getJsonFieldKeys(field.value).length}}" rowHeight="60px" gutterSize="10">
+                            <md-grid-tile *ngFor="let key of getJsonFieldKeys(field.value)">
+                              <md-input placeholder="{{field.value[key]}}"></md-input>
+                            </md-grid-tile>
+                          </md-grid-list>
+                      </div>
+                         <input *ngSwitchCase="'number'" type="number" class="form-control" [formControlName]="field.name" />
+                    
                     <!-- Email input -->
-                    <div *ngSwitchCase="'email'" class="col-xs-12 amp-form-element">
-                      <label for="">{{field.label}}</label>
-                         <input type="email" class="form-control" [formControlName]="field.name" />
-                    </div>
+                         <input *ngSwitchCase="'email'" type="email" class="form-control" [formControlName]="field.name" />
+                    
                     <!-- Email input -->
-                    <div *ngSwitchCase="'image'" class="col-xs-12 amp-form-element">
-                      <amp-file-upload-display [data]="field.value"></amp-file-upload-display>
+                      <amp-file-upload-display *ngSwitchCase="'image'" [data]="field.value"></amp-file-upload-display>
                       <!--<img [src]="field.value" alt="">-->
+                      <div *ngSwitchCase="'select'" class="col-xs-12">
+                          <label for="">{{field.label}}</label>
+                          <select class="form-control" [formControlName]="field.name">
+                              <option *ngFor="let option of field.options" [value]="option.value">{{option.label}}</option>
+                          </select>
+                      </div>
                     </div>
-                    
-                    
-                    <div *ngSwitchCase="'select'" class="col-xs-12">
-                        <label for="">{{field.label}}</label>
-                        <select class="form-control" [formControlName]="field.name">
-                            <option *ngFor="let option of field.options" [value]="option.value">{{option.label}}</option>
-                        </select>
-                    </div>
-                    
-                </div>
-              </div>
+                  </md-grid-tile>  
+                </md-grid-list >
+              
               
               <button md-raised-button color="primary"  type="submit" [disabled]="!form.valid">Save</button>
           
@@ -101,21 +99,48 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
   
   mapDataDefaults(){
-    this.fields = this.data.fields.map( (field : FieldInterface) => Object.assign({}, this._fieldDefaults, field) );
+    this.fields = this.data.fields.map( ( rows : any ) => {
+      return rows.map( ( field : FieldInterface ) => Object.assign({}, this._fieldDefaults, field) );//Object.assign({}, this._fieldDefaults, field) )
+    } );
   }
   
   buildForm(){
-    console.log('BUILDING FORM', this.data);
     if( typeof this.data.fields !== 'undefined' ) {
       this.mapDataDefaults();
-      this.formControls = this.fields.reduce((ret: any, field: FieldInterface, i: Number) => {
-        ret[field.name.toString()] = field.required ?
-          new FormControl(field.value, Validators.required) :
-          new FormControl(field.value);
+      console.log(this.fields);
+      
+      
+      this.formControls = this.fields.reduce((ret : any, row : any) => {
+        // return [...rowsRet, rows.reduce((ret: any, field: FieldInterface, i: Number) => {
+        //   console.log(field);
+        //     ret[field.name.toString()] = field.required ?
+        //     new FormControl(field.value, Validators.required) :
+        //     new FormControl(field.value);
+        //   return ret;
+        // }, {})];
+        
+        row.forEach((field : any) => {
+          ret[field.name.toString()] = field.required ?
+              new FormControl(field.value, Validators.required) :
+              new FormControl(field.value);
+        })
+        
         return ret;
+        
       }, {});
+      
+      console.log(this.formControls);
+      
       this.form = new FormGroup(this.formControls);
     }
+  }
+  
+  getColumnWidth(cols){
+    return Math.ceil(cols/12);
+  }
+  
+  getJsonFieldKeys(json){
+    return Object.keys(json);
   }
   
   onSubmit() {
@@ -123,7 +148,5 @@ export class AmpedFormComponent implements OnInit, OnChanges {
     console.log(this.form.value);
   
     // this.formService.submitForm(this.data.action, this.form.value);
-    
-    
   }
 }

@@ -71,7 +71,6 @@ class AmpedModel {
 
     // @TODO handle errors
     // @TODO handle filter params
-    console.log('getting data');
 
     if ( this.getQuery() !== false ){
       this.getQuery(req, res, params);
@@ -90,15 +89,17 @@ class AmpedModel {
 
   sendResponse(req, res, data){
 
-
     if (data === null)
       data = [];
     res.setHeader('Content-Type', 'application/json');
+    console.log(this.editSchema);
     res.feedback(
       this.isEditRoute(req.url) ?
-        this.editSchema.slice(0).map((item) => {
-          item.value = data[item.name] || '';
-          return item;
+        this.editSchema.slice(0).map((row) => {
+          return row.map((col) => {
+            col.value = data[col.name] || '';
+            return col;
+          });
         }) : data);
     return null;
   };
@@ -155,16 +156,22 @@ class AmpedModel {
   }
 
   buildEditSchema(){
-    // @TODO might run into issues with the default schema not being able to be in the editable schema that is returned. But probably not..
-    return Object.keys(this.schema).reduce((ret, field) => {
-        const row = this.schema[field];
+    const fields = this.crudForm.reduce((ret, row) => {
+      return [...ret, row.reduce((colRet, col) => {
+        const
+          colName = typeof col === 'string' ? col : col.field,
+          row = this.schema[colName];
 
-      if ( typeof row.user_editable === 'undefined' || row.user_editable )
-        ret = [...ret, {type: row.field_type || typeMap[row.key], label: this.colNameToLabel(field), name : field}];
+        let type = row.field_type;
 
-      return ret;
+        if ( typeof row.field_type === 'undefined' )
+          type = (typeof row.type === 'undefined' ? typeMap[row.key] : typeMap[row.type])
 
-    }, [{type : 'hidden', name : 'id'}]);
+        return [...colRet, {type , label: this.colNameToLabel(colName), name : colName}]
+      }, [])]
+    }, [[{type : 'hidden', name : 'id'}]]);
+
+    return fields;
   }
 
   colNameToLabel(field){
@@ -183,7 +190,18 @@ class AmpedModel {
     return this.DB;
   }
 
-  get queryIncludes(){return []}
+  get queryIncludes(){
+    return Object.keys(this.schema).reduce((ret, field) => {
+        const row = this.schema[field];
+
+      if ( typeof row.user_editable === 'undefined' || row.user_editable )
+        ret = [...ret, {type: row.field_type || typeMap[row.key], label: this.colNameToLabel(field), name : field}];
+
+      return ret;
+
+    }, [{type : 'hidden', name : 'id'}]);
+  }
+  get crudForm() { return [] }
 
   static buildQuery(query) {
     // return Object.assign({deleted_at : { $exists : false}}, query);

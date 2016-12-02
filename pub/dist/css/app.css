@@ -1033,6 +1033,9 @@ amped-crud-table md-input {
 amped-form md-input {
   width: 100%; }
 
+amped-form .amped-form-element {
+  width: 100%; }
+
 amped-login-form md-card {
   width: 350px;
   margin: 0 auto; }

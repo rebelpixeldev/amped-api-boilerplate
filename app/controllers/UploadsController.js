@@ -33,8 +33,9 @@ const fileUpload =  multer({ storage : storage }).array('files[]', 200);
 
 class UploadsController{
 
-  constructor(app){
+  constructor(app, socket){
     this.app = app;
+    this.socket = socket;
   }
 
   setupRoutes(){
@@ -44,41 +45,26 @@ class UploadsController{
 
 
   upload(req, res){
-    console.log('* * * * * * * * * * * * * * * * * * * * * * * * * * * * *UPLOAD\n 8 * * * * * * * * * * ');
     const params = util.getParams(req);
 
-    console.log(params);
-    console.log(req.user);
-
-    console.log(req.files);
-
     if ( typeof params.remote_url === 'undefined' ){
-      fileUpload(req,res,function(err) {
-        console.log('HERE');
-        console.log(err);
-        console.log(req.files);
-
+      fileUpload(req,res,(err) => {
         if(err) {
           return res.end("Error uploading file.");
         }
 
         const promises = req.files.reduce((ret, file) => ret.concat([uploads.saveImage(req, file.path)]), []);
-        //
-        // console.log(promises);
-
-        // uploads.saveImage(req, req.files[0].path)
-        //   .then((saved) => {
-        //       console.log('SAVED');
-        //   })
 
         Promise.all(promises)
+          .then(( resp ) => {
+            this.socket.sendSocket('create', req.user.account, {model:'uploads', user: req.user.id, data: resp});
+            return resp;
+          })
           .then((data) => {
             res.feedback(data);
           }).catch((err) => {
               res.feedback({success:false, response:err});
           })
-        //console.log(req.body);
-        //console.log(req.files);
       });
 
     } else {

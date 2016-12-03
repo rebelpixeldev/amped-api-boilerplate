@@ -1,29 +1,29 @@
 'use strict';
 
-class AmpedSocket{
+class AmpedSocket {
 
-    constructor(io){
-        this.io = io;
-        this.sockets =[];
-        this.setup();
-    }
+  constructor(io) {
+    this.io = io;
+    this.sockets = [];
+    this.setup();
+  }
 
-    setup(){
-        this.io.on('connection', (socket) => {
-            console.log('Connected');
-            this.sockets.push(socket);
-            socket.on('disconnect', () => this.sockets.slice(this.sockets.indexOf(socket), 1));
-        })
-    }
+  // @TODO group the sockets by account id
+  setup() {
+    this.io.on('connection', (socket) => {
+      this.sockets.push(socket);
+      socket.on('disconnect', () => this.sockets.slice(this.sockets.indexOf(socket), 1));
+    })
+  }
 
-    sendSocket(evt, data){
-        this.sockets.forEach((socket) => {
-            socket.emit(evt, data)
-        });
-    }
-
-
-
+  // @TODO send sockets based on account_id
+  sendSocket(evt, account, data) {
+    if (typeof data === 'undefined')
+      data = {};
+    this.sockets.forEach((socket) => {
+      socket.emit(evt, data)
+    });
+  }
 
 
 }

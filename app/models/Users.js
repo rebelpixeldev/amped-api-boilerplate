@@ -41,7 +41,7 @@ class Users extends AmpedModel {
   get crudForm() {
     return [
       ['display_name', 'email'],
-      [{field : 'users_name'}],
+      [{field: 'users_name'}],
       ['photo']
     ]
   }

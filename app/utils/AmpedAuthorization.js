@@ -32,24 +32,21 @@ class AmpedAuthorization {
         // @TODO re-evaluate if this can be done in a sequelize join or this is alright
         req.db.uploads.findOne({where: {id: user.photo}, raw: true})
           .then((photo) => {
-            console.log(user);
             user.photo = photo;
+            user.photo.source_path = `/uploads/source/${user.photo.id}.${user.photo.extension}`;
+            user.photo.source_url = `http://localhost:3000/uploads/source/${user.photo.id}.${user.photo.extension}`
             callback(user);
           })
       });
   }
 
   static convertQueryRelations(data) {
-    console.log(data);
     return Object.keys(data).reduce((ret, key) => {
-      console.log(key);
       if (key.indexOf('.') !== -1 ) {
         const parts = key.split('.');
-        console.log(parts);
         if ( typeof ret[parts[0]] === 'undefined')
           ret[parts[0]] = {};
         ret[parts[0]][parts[1]] = data[key];
-        console.log(data[key]);
       } else {
         ret[key] = data[key];
       }

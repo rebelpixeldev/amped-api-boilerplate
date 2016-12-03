@@ -18,6 +18,7 @@ h1, h2, h3, h4, h5, h6{margin-top:0;}
   .app-content-container{flex:1;}
 }
 
+
 .amped-container{
   padding:$grid-gutter-width;
 }
@@ -31,6 +32,10 @@ bs-modal-container{
 .amped-alerts-confirm-no-body{
   modal-body{display:none}
 }
+
+img{width:100%;}
+
+
 
 /**
 * angular material overrides

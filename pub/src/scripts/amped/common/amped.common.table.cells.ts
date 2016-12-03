@@ -22,15 +22,15 @@ class TableCell{
 </md-menu>`
 })
 export class JSONCell extends TableCell implements OnInit {
-  
+
   private keys : Array<string>;
   private label : string;
-  
+
   ngOnInit() {
     this.keys = Object.keys(this.row[this.header]);
     this.label = this.row[this.header][this.keys.shift()];
   }
-  
+
 }
 
 
@@ -42,7 +42,7 @@ export class JSONCell extends TableCell implements OnInit {
 export class TextCell extends TableCell implements OnInit {
 
     ngOnInit() { }
-    
+
 }
 
 
@@ -52,7 +52,7 @@ export class TextCell extends TableCell implements OnInit {
   template : `<img md-card-avatar src="{{row[header]}}" title="{{header}}" />`
 })
 export class ImageCell extends TableCell implements OnInit {
-  
-  ngOnInit() { console.log(this.row[this.header]);}
-  
+
+  ngOnInit() { }
+
 }

@@ -25,27 +25,26 @@ import { AmpedFormsService }  from './amped.crud.service';
 `
 })
 export class AmpedCrudTableComponent implements OnInit {
-  
+
   public tableData : Array<any> = [];
-  
+
   private model : string = '';
-  
+
   private sub : any;
-  
-  
+
+
   constructor(private FormService: AmpedFormsService, private route: ActivatedRoute) {
   }
-  
+
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
       const {model, id} = params;
       this.model = model;
       // Retrieve Pet with Id route param
       this.FormService.getCrudData(model).then(data => {
-        console.log(data);
         this.tableData = data;
       });
     });
   }
-  
+
 }

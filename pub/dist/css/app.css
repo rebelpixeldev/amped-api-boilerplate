@@ -958,6 +958,9 @@ bs-modal-container > div:not(.modal-dialog) {
 .amped-alerts-confirm-no-body modal-body {
   display: none; }
 
+img {
+  width: 100%; }
+
 /**
 * angular material overrides
 */
@@ -1036,6 +1039,26 @@ amped-form md-input {
 amped-form .amped-form-element {
   width: 100%; }
 
+amped-form amp-file-upload-display {
+  display: flex; }
+  amped-form amp-file-upload-display [md-card-sm-image] {
+    margin: 0 8px 0 0; }
+  amped-form amp-file-upload-display md-card-title-group {
+    margin: 0;
+    flex-direction: row-reverse;
+    align-items: center; }
+  amped-form amp-file-upload-display md-card-title {
+    font-size: 16px;
+    margin-bottom: 8px; }
+  amped-form amp-file-upload-display md-card-subtitle {
+    margin-bottom: 0; }
+
+amped-form md-card-title:not(:first-child), amped-form md-card-subtitle:not(:first-child) {
+  margin-top: 0; }
+
+amped-form .buttons figure {
+  justify-content: flex-start; }
+
 amped-login-form md-card, amped-register-form md-card, amped-resetpassword-form md-card {
   width: 350px;
   margin: 0 auto; }
@@ -1088,3 +1111,18 @@ files-dialog > div {
     position: absolute;
     top: 10px;
     right: 10px; }
+
+amp-media-library figure {
+  background: #eee; }
+
+amp-media-library md-card-title {
+  display: flex;
+  height: 75px;
+  align-items: center;
+  margin-bottom: 0; }
+
+amp-media-library pagination-controls ul {
+  padding: 0;
+  margin: 0; }
+  amp-media-library pagination-controls ul li.current {
+    background-color: #673ab7 !important; }

@@ -92,13 +92,9 @@ class AmpedModel {
   }
 
   sendResponse(req, res, data){
-console.log('SENDING RESPONSE');
     if (data === null)
       data = [];
     res.setHeader('Content-Type', 'application/json');
-    console.log('SENDING RESPONSE');
-    console.log(data);
-    console.log(this.editSchema);
     res.feedback(
       this.isEditRoute(req.url) ?
         this.editSchema.slice(0).map((row) => {

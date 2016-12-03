@@ -11,3 +11,13 @@ files-dialog{
 
 }
 
+amp-media-library{
+
+  figure{background:#eee;}
+  md-card-title{display:flex; height:75px; align-items:center; margin-bottom:0;}
+  pagination-controls ul{
+    padding:0; margin:0;
+    li.current{background-color: md-color($primary) !important;}
+  }
+}
+

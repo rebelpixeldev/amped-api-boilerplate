@@ -9,7 +9,7 @@ class AmpedAcl{
   }
 
   can(permission, resource, eq, res, next){
-    console.log(permission, resource);
+    // console.log(permission, resource);
 
     next();
   }

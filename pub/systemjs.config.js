@@ -24,19 +24,20 @@
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
       '@angular/upgrade': 'npm:@angular/upgrade/bundles/upgrade.umd.js',
 
+
       // other libraries
-      'rxjs':                      'npm:rxjs',
+      'ng2-pagination' : 'npm:ng2-pagination/dist',
+      'socket.io-client': 'npm:socket.io-client/dist/socket.io.js',
+      'rxjs': 'npm:rxjs',
       '@angular/material': 'npm:@angular/material/material.umd.js',
-      'angular2-modal' : 'npm:angular2-modal',
-      'angular2-modal/plugins/bootstrap' : 'npm:angular2-modal/bundles',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
-      app             : { main: './src/scripts/main.js', defaultExtension: 'js' },
-      rxjs            : { defaultExtension: 'js' },
-      'angular2-modal':              { defaultExtension: 'js', main: 'bundles/angular2-modal.umd' },
-      'angular2-modal/plugins/bootstrap' : { defaultExtension: 'js', main: 'angular2-modal.bootstrap.umd' }
+      app               : {main: './src/scripts/main.js', defaultExtension: 'js'},
+      rxjs              : {defaultExtension: 'js'},
+      'socket.io-client': {defaultExtension: 'js'},
+      'ng2-pagination':             { main: 'ng2-pagination.js', defaultExtension: 'js' }
     }
   });
 })(this);

@@ -13,10 +13,10 @@ class UserController {
   }
 
   setupRoutes() {
-    this.app.get('/login', this.home.bind(this));
-    this.app.get('/profile', AmpedPassport.isLoggedIn, this.profile.bind(this));
-
     this.app.get('/user', this.getUser.bind(this));
+    this.app.get('/login', this.home.bind(this));
+
+    this.app.get('/profile', AmpedPassport.isLoggedIn, this.profile.bind(this));
 
   }
 

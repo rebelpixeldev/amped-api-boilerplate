@@ -46,7 +46,6 @@ class AmpedPassport {
   deserialize() {
     this.passport.deserializeUser((req, id, done) => {
       // @TODO handle error
-      console.log(req.db);
       req.db.users.findById(id)
         .then(function (user) {
           done(null, user);
@@ -75,9 +74,6 @@ class AmpedPassport {
       },
       (req, token, refreshToken, profile, done) => {
 
-        console.log('Profile', profile);
-
-        console.log(req.db.users  );
         // make the code asynchronous
         // User.findOne won't fire until we have all our data back from Google
         process.nextTick(() => {
@@ -86,7 +82,6 @@ class AmpedPassport {
           // @TODO handle error
           req.db.users.findOne({'serviceId': profile.id, 'provider': 'google'})
           .then((user) => {
-            console.log(user);
 
             if (user) {
               // if a user is found, log them in
@@ -137,10 +132,12 @@ class AmpedPassport {
                     }).then(() => {
                       // @TODO url should come from config
                       // @TODO will error out, the GET route has been replaced with POST
-                      request(`http://localhost:3000/uploads/upload?remote_url=${profile.photos[0].value.split('?')[0]}&token=${user.token}`, (err, resp, body) => {
+                      request({
+                        url : `http://localhost:3000/uploads/upload?remote_url=${profile.photos[0].value.split('?')[0]}&token=${user.token}`,
+                        method : 'POST'
+                      }, (err, resp, body) => {
                         // @TODO catch if success is false
                         const fileInfo = JSON.parse(body).response;
-                        console.log(fileInfo);
 
                         user.updateAttributes({
                           photo : fileInfo.id

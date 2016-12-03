@@ -28,8 +28,10 @@ class AmpedConnector {
   static getConnection() {
     // @TODO set connection string from config
     if (typeof this.connection === 'undefined') {
-      this.connection = new Sequelize('postgres', 'ted', 'Dash111!', {
+      // this.connection = new Sequelize('postgres', 'ted', 'Dash111!', {
+      this.connection = new Sequelize('postgres', 'darijaradic', 'M0ther', {
         dialect: 'postgres',
+        logging:false,
         define: {
           underscored: true
         }

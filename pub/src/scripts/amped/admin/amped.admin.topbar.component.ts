@@ -8,15 +8,16 @@ import { AmpedService } from '../common/amped.common.service';
   templateUrl: 'templates/amped.admin.topbar.component.html'
 })
 export class AmpedTopbar implements OnInit {
-  
+
+
   private user : any = {};
-  
-  
+
+
   constructor(private ampedService: AmpedService) {}
-  
+
   ngOnInit() {
     this.ampedService.getUser()
       .then( (user:any) => this.user = user); // @TODO apply User interface to type
   }
-  
+
 }

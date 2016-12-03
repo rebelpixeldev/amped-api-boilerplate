@@ -23,7 +23,6 @@ class Users extends AmpedModel {
    */
   getQuery(req, res, params) {
     if (typeof req !== 'undefined') {
-      console.log(typeof params._id === 'undefined');
       (typeof params._id === 'undefined' ?
         this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
         this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), include: this.queryIncludes, raw: true})

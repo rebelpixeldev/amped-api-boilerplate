@@ -4,7 +4,7 @@
   <md-card-content>
     <md-grid-list cols="8" gutterSize="10px">
       <md-grid-tile *ngFor="let file of files; let i=index">
-        <img src="{{file.source_url}}" alt="">
+        <img (click)="onFileSelect(file)" src="{{file.source_url}}" alt="">
       </md-grid-tile>
     </md-grid-list>
   </md-card-content>

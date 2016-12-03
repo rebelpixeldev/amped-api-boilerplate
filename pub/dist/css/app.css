@@ -1036,35 +1036,35 @@ amped-form md-input {
 amped-form .amped-form-element {
   width: 100%; }
 
-amped-login-form md-card {
+amped-login-form md-card, amped-register-form md-card, amped-resetpassword-form md-card {
   width: 350px;
   margin: 0 auto; }
 
-amped-login-form md-input {
+amped-login-form md-input, amped-register-form md-input, amped-resetpassword-form md-input {
   width: 100%; }
 
-amped-login-form .or {
+amped-login-form .or, amped-register-form .or, amped-resetpassword-form .or {
   text-align: center;
   display: block;
   width: 100%;
   position: relative;
   margin-top: 15px;
   margin-bottom: 15px; }
-  amped-login-form .or:before {
+  amped-login-form .or:before, amped-register-form .or:before, amped-resetpassword-form .or:before {
     content: ' ';
     border-top: solid 1px #E0E0E0;
     position: absolute;
     width: 100%;
     left: 0;
     top: 12px; }
-  amped-login-form .or span {
+  amped-login-form .or span, amped-register-form .or span, amped-resetpassword-form .or span {
     display: inline-block;
     padding: 5px 10px;
     background: #fff;
     position: relative;
     z-index: 9; }
 
-amped-login-form .login-help {
+amped-login-form .login-help, amped-register-form .login-help, amped-resetpassword-form .login-help {
   margin-top: 15px; }
 
 amp-upload-btn input {

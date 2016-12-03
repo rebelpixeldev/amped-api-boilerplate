@@ -13,7 +13,6 @@ export class FilesDialogDirective {
   }
   
   @HostListener('click') onClick() {
-    console.log('CLICK');
     this.openDialog();
   }
   

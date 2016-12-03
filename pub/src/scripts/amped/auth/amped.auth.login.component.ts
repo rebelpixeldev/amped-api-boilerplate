@@ -11,28 +11,15 @@ import {Router, ActivatedRoute} from '@angular/router';
           <md-card-title><h1>Amped Login</h1></md-card-title>
        </md-card-header>
        <md-card-content>
-          <form>
-          <md-input placeholder="Username">
-            <span md-suffix>
-              <md-icon>account_circle</md-icon>
-            </span>
-          </md-input>
-          <md-input placeholder="Password">
-            <span md-suffix>
-              <md-icon>lock</md-icon>
-            </span>
-          </md-input>
-          <button md-raised-button color="primary" type="submit">Login</button>
-            <!--<button md-raised-button type="submit" name="login" class="login loginmodal-submit" value="Login" color="primary"></button>-->
-				  </form>
-				  
+       
+          <amped-form [data]="loginFormData"></amped-form>
 				  <span class="or"><span>OR</span></span>
 				  
 				  <a (click)="loginGoogle()" class="btn btn-primary" md-raised-button color="primary">Login with Google</a>
 				  <a (click)="loginFacebook()" class="btn btn-facebook" md-raised-button color="primary">Login with Facebook</a>
 					
 				  <div class="login-help">
-					<a routerLink="/register">Register</a> - <a routerLink="/passwordreset">Forgot Password</a>
+					  <a routerLink="/register">Register</a> - <a routerLink="/passwordreset">Forgot Password</a>
 				  </div>
        </md-card-content>
     </md-card>
@@ -41,10 +28,32 @@ import {Router, ActivatedRoute} from '@angular/router';
 })
 export class AmpedAuthLoginComponent implements OnInit {
   
-  private sub : any;
-  private redirect : string;
+  private sub: any;
+  private redirect: string;
   
-  constructor(private activeRoute: ActivatedRoute, private router : Router) {
+  private loginFormData: any = {
+    action: '/',
+    fields: [
+      [
+        {
+          type: 'text',
+          label: 'Username',
+          name: 'username',
+          icon: 'account_circle'
+        }
+      ],
+      [
+        {
+          type: 'password',
+          label: 'Password',
+          name: 'password',
+          icon: 'lock'
+        }
+      ]
+    ]
+  };
+  
+  constructor(private activeRoute: ActivatedRoute, private router: Router) {
   }
   
   ngOnInit() {
@@ -56,7 +65,6 @@ export class AmpedAuthLoginComponent implements OnInit {
   }
   
   loginGoogle() {
-    console.log(this.redirect);
     const loginWindow = window.open('/auth/google?redirect=' + this.redirect);
   }
   

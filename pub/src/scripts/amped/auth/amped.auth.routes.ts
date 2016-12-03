@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { AmpedAuthLoginComponent } from './amped.auth.login.component';
-import { AmpedAuthRegisterComponent } from './amped.auth.resgister.component';
+import { AmpedAuthRegisterComponent } from './amped.auth.register.component';
 import { AmpedAuthResetComponent } from './amped.auth.resetpassword.component';
 
 export const authRoutes: Routes = [

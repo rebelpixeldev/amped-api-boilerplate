@@ -76,6 +76,10 @@ class AmpedModel {
       this.getQuery(req, res, params);
     } else {
 
+      console.log('HERE');
+      console.log('* * * * * * *');
+      console.log(typeof params._id === 'undefined');
+
       (typeof params._id === 'undefined' ?
         this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
         this.DB.findOne({where: AmpedModel.buildQuery({id: params._id})}, this.queryIncludes))
@@ -88,10 +92,12 @@ class AmpedModel {
   }
 
   sendResponse(req, res, data){
-
+console.log('SENDING RESPONSE');
     if (data === null)
       data = [];
     res.setHeader('Content-Type', 'application/json');
+    console.log('SENDING RESPONSE');
+    console.log(data);
     console.log(this.editSchema);
     res.feedback(
       this.isEditRoute(req.url) ?
@@ -191,15 +197,8 @@ class AmpedModel {
   }
 
   get queryIncludes(){
-    return Object.keys(this.schema).reduce((ret, field) => {
-        const row = this.schema[field];
+    return [];
 
-      if ( typeof row.user_editable === 'undefined' || row.user_editable )
-        ret = [...ret, {type: row.field_type || typeMap[row.key], label: this.colNameToLabel(field), name : field}];
-
-      return ret;
-
-    }, [{type : 'hidden', name : 'id'}]);
   }
   get crudForm() { return [] }
 

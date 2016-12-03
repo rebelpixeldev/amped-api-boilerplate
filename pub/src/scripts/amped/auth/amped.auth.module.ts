@@ -5,8 +5,10 @@ import { BrowserModule }  from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 
 import { AmpedAuthLoginComponent } from './amped.auth.login.component';
-import { AmpedAuthRegisterComponent } from './amped.auth.resgister.component';
+import { AmpedAuthRegisterComponent } from './amped.auth.register.component';
 import { AmpedAuthResetComponent } from './amped.auth.resetpassword.component';
+
+import { AmpedCommonModule } from '../common/amped.common.module';
 
 import { AmpedAuthService } from './amped.auth.service';
 import { AmpedService } from '../common/amped.common.service';
@@ -16,7 +18,7 @@ const exportDeclarations = [
 ];
 
 @NgModule({
-  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, RouterModule, MaterialModule.forRoot()],
+  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, RouterModule, AmpedCommonModule, MaterialModule.forRoot()],
   declarations  : exportDeclarations,
   exports       : exportDeclarations,
   providers     : [ AmpedAuthService, AmpedService ]

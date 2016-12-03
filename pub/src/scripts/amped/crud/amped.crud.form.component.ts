@@ -5,7 +5,14 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   moduleId: module.id,
   selector: 'amped-crud-form',
-  template: `<amped-form *ngIf="formData" [data]="formData"></amped-form>`
+  template: `
+
+    <md-card>
+      <amped-form *ngIf="formData" [data]="formData"></amped-form>
+    </md-card>
+    
+    <!--<amp-media-library (onFileSelect)="handleFileSelect($event[0])"></amp-media-library>-->
+`
 })
 export class AmpedCrudFormComponent implements OnInit {
   
@@ -31,9 +38,6 @@ export class AmpedCrudFormComponent implements OnInit {
         };
       });
     });
-    
-    //
-    
   }
   
   // ngOnDestroy() {

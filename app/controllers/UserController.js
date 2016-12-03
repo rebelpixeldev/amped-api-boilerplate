@@ -25,7 +25,10 @@ class UserController {
   }
 
   getUser(req, res){
-    AmpedAuth.getUserByToken(req, req.user.token, res.feedback);
+    if ( typeof req.user !== 'undefined' && typeof req.user.token !== 'undefined' )
+      AmpedAuth.getUserByToken(req, req.user.token, res.feedback);
+    else
+      res.feedback(false);
   }
 
   profile(req, res) {

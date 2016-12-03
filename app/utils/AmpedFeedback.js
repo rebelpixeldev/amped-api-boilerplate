@@ -18,24 +18,26 @@ class AmpedFeedback{
       resp = { success : true, message : '', response : [] },
       params = Object.assign({}, req.body, req.params, url.parse(req.url, true).query);
 
+    if ( data === false ){
+      resp.success = false;
+    } else {
+      if (typeof data !== 'undefined' && typeof data.success !== 'undefined') {
+        resp.success = data.success;
+        delete data.success;
+      }
 
-    if ( typeof data !== 'undefined' && typeof data.success !== 'undefined' ){
-      resp.success = data.success;
-      delete data.success;
+      if (typeof data !== 'undefined' && typeof data.message !== 'undefined') {
+        resp.message = data.message;
+        delete data.message;
+      }
+
+      if (typeof data !== 'undefined' && typeof data.meta !== 'undefined') {
+        resp.meta = data.meta;
+        delete data.meta;
+      }
+
+      resp.response = typeof data !== 'undefined' && typeof data.response !== 'undefined' ? data.response : (data || []);
     }
-
-    if ( typeof data !== 'undefined' && typeof data.message !== 'undefined' ){
-      resp.message = data.message;
-      delete data.message;
-    }
-
-    if ( typeof data !== 'undefined' && typeof data.meta !== 'undefined' ){
-      resp.meta = data.meta;
-      delete data.meta;
-    }
-
-    resp.response = typeof data !== 'undefined' && typeof data.response !== 'undefined' ? data.response : (data || []);
-
 
     res.json(resp);
     return null;

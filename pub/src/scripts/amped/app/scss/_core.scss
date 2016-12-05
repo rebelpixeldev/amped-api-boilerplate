@@ -9,7 +9,18 @@ $grid-gutter-width : 30px;
 // Define a theme.
 $primary: md-palette($md-deep-purple);
 $accent:  md-palette($md-amber, A200, A100, A400);
+
+
+$color-weight-level : 400;
+
+$success : map-get($md-green, $color-weight-level);
+$success-color : map-get(map-get($md-green, contrast), $color-weight-level);
+
+$error : map-get($md-red, $color-weight-level);
+$error-color : map-get(map-get($md-red, contrast), $color-weight-level);
+
 @include angular-material-theme(md-light-theme($primary, $accent));
+
 
 h1, h2, h3, h4, h5, h6{margin-top:0;}
 
@@ -17,6 +28,11 @@ h1, h2, h3, h4, h5, h6{margin-top:0;}
   display:flex; flex-direction: row; height:calc(100vh - #{$navbar-height});
   .app-content-container{flex:1;}
 }
+
+
+
+
+
 
 
 .amped-container{
@@ -34,6 +50,7 @@ bs-modal-container{
 }
 
 img{width:100%;}
+
 
 
 

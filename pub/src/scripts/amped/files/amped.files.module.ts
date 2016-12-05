@@ -13,6 +13,8 @@ import { AmpedFilesService }      from './amped.files.service';
 import { FilesDialogDirective, FileLibraryDialog }      from './amped.files.dialog';
 
 import { AmpedService } from '../common/amped.common.service';
+import { AmpedCommonModule } from '../common/amped.common.module';
+import {AmpedAlertModule} from "../alerts/amped.alerts.module";
 
 const exportDeclarations : Array<any> = [
   AmpedFileUploadDisplay,
@@ -23,7 +25,7 @@ const exportDeclarations : Array<any> = [
 ];
 
 @NgModule({
-  imports         : [ CommonModule, HttpModule, FormsModule, MaterialModule.forRoot(), Ng2PaginationModule ],
+  imports         : [ CommonModule, HttpModule, FormsModule, MaterialModule.forRoot(), Ng2PaginationModule, AmpedCommonModule, AmpedAlertModule ],
   declarations    : exportDeclarations,
   exports         : exportDeclarations,
   providers       : [ AmpedService, AmpedFilesService ],

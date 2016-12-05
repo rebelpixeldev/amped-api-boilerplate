@@ -28,10 +28,10 @@ import {AmpedSocketService} from '../socket/amped.socket.service';
 })
 export class MediaLibraryComponent implements OnInit {
 
-  @Input() cols : number = 4;
+  @Input() cols : number = 6;
   @Input() gutter : number = 10;
 
-  @Input() perpage  : number = 4;
+  @Input() perpage  : number = 18;
   @Input() page     : number = 1;
 
   @Output() onFileSelect: EventEmitter<any> = new EventEmitter();
@@ -57,7 +57,8 @@ export class MediaLibraryComponent implements OnInit {
 
   onFileUpload( file: any ) {
     console.log('UPLOAD', file);
-    this.files = this.files.concat(file);
+    this.page = 1;
+    this.files = [...file, ...this.files];
   }
 
   onPageChange(page : any){

@@ -1,0 +1,8 @@
+.amp-alert-snack{
+  &.success{
+    background:$success; color:$success-color;
+  }
+  &.error{
+    background:$error; color:$error-color;
+  }
+}

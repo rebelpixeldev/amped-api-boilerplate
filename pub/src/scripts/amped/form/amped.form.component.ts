@@ -23,12 +23,12 @@ interface FormDataInterface {
        <md-card-title *ngIf="model && model !== ''">Editing {{model}}</md-card-title>  
        <md-card-content>
             <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
-              
               <md-grid-list *ngFor="let row of fields" cols="{{row.length}}" rowHeight="{{rowHeight}}" gutterSize="{{gutterSize}}">
                 <md-grid-tile *ngFor="let field of row" >
                   <div [ngSwitch]="field.type" class="amped-form-element">
-                    <!-- Hidden input -->
-                         <input *ngSwitchCase="'hidden'" type="hidden" [formControlName]="field.name" />
+                    <!-- Hidden input @TODO hidden here still adds a figure and is styled which takes up space on the form. 
+                     Either add hidden fields to the response afterwards or pull the out beforehand and append before the loops-->
+                         <!--<input *ngSwitchCase="'hidden'" type="hidden" [formControlName]="field.name" />-->
                     <!-- Text input -->
                         <md-input *ngSwitchCase="'text'" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
                         <md-input *ngSwitchCase="'password'" type="password" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
@@ -81,6 +81,7 @@ export class AmpedFormComponent implements OnInit, OnChanges {
 
   @Input() data: FormDataInterface = {action: '', fields: []};
   @Input() saveLabel : string = 'Save'; // @TODO don't like passing this as a value. Maybe pass it as part of the data?
+  @Input() model : string;
 
   @Input() rowHeight : number = 65;
   @Input() gutterSize : number = 10;

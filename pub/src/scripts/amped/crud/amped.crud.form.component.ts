@@ -8,10 +8,10 @@ import { ActivatedRoute } from '@angular/router';
   template: `
 
     <md-card>
-      <amped-form *ngIf="formData" [data]="formData"></amped-form>
+      <amped-form *ngIf="formData" [data]="formData" [model]="model"></amped-form>
     </md-card>
     
-    <amp-media-library (onFileSelect)="handleFileSelect($event)"></amp-media-library>
+    <!--<amp-media-library (onFileSelect)="handleFileSelect($event)"></amp-media-library>-->
 `
 })
 export class AmpedCrudFormComponent implements OnInit {
@@ -21,6 +21,7 @@ export class AmpedCrudFormComponent implements OnInit {
   public formData : Object = {};
 
   private sub : any;
+  private model : string;
 
   constructor(private FormService : AmpedFormsService, private route: ActivatedRoute) {
   }
@@ -29,6 +30,7 @@ export class AmpedCrudFormComponent implements OnInit {
 
     this.sub = this.route.params.subscribe(routeParams => {
       const {model, id} = this.params || routeParams;
+      this.model = model;
       // let id = params['id'];
       // Retrieve Pet with Id route param
       this.FormService.getCrudData(model, id).then(data => {

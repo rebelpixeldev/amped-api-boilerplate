@@ -1059,6 +1059,45 @@ amped-form md-card-title:not(:first-child), amped-form md-card-subtitle:not(:fir
 amped-form .buttons figure {
   justify-content: flex-start; }
 
+amp-spinner .spinner, [amp-spinner] .spinner {
+  animation: rotator 1.4s linear infinite;
+  width: 20px;
+  height: 20px; }
+
+@keyframes rotator {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(270deg); } }
+
+amp-spinner .path, [amp-spinner] .path {
+  stroke-dasharray: 187;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite; }
+
+@keyframes colors {
+  0% {
+    stroke: #d1c4e9; }
+  25% {
+    stroke: #9575cd; }
+  50% {
+    stroke: #673ab7; }
+  75% {
+    stroke: #512da8; }
+  100% {
+    stroke: #311b92; } }
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 187; }
+  50% {
+    stroke-dashoffset: 46.75;
+    transform: rotate(135deg); }
+  100% {
+    stroke-dashoffset: 187;
+    transform: rotate(450deg); } }
+
 amped-login-form md-card, amped-register-form md-card, amped-resetpassword-form md-card {
   width: 350px;
   margin: 0 auto; }
@@ -1103,6 +1142,11 @@ amp-upload-btn input {
 amp-upload-btn button {
   position: relative; }
 
+amp-upload-btn amp-spinner {
+  position: relative;
+  top: 4px;
+  padding-left: 10px; }
+
 files-dialog > div {
   width: 80vw;
   height: 90vh;
@@ -1126,3 +1170,11 @@ amp-media-library pagination-controls ul {
   margin: 0; }
   amp-media-library pagination-controls ul li.current {
     background-color: #673ab7 !important; }
+
+.amp-alert-snack.success {
+  background: #66bb6a;
+  color: rgba(0, 0, 0, 0.87); }
+
+.amp-alert-snack.error {
+  background: #ef5350;
+  color: rgba(0, 0, 0, 0.87); }

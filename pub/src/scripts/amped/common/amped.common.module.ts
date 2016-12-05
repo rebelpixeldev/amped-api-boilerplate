@@ -10,13 +10,12 @@ import { AmpedFormatPipe } from './pipes/amped.common.format';
 
 import { AmpedTable, AmpedTableCell } from './amped.common.table.component';
 import {JSONCell, ImageCell, TextCell} from "./amped.common.table.cells";
-import { AmpedFormComponent } from './amped.common.form.component';
-
-import { AmpedFilesModule } from '../files/amped.files.module';
+import { AmpedSpinner } from './amped.common.spinner.component';
 
 // import { AmpedAuthService } from '../auth/amped.auth.service';
 
 import { AmpedService } from './amped.common.service';
+import {AmpedAlertModule} from "../alerts/amped.alerts.module";
 
 const exportDeclarations : Array<any> = [
   TruncatePipe,
@@ -24,15 +23,17 @@ const exportDeclarations : Array<any> = [
   AmpedFormatPipe,
   AmpedTable,
   AmpedTableCell,
-  AmpedFormComponent
+  AmpedSpinner
 ];
 
 const entryComponents : Array<any> = [
-  JSONCell, TextCell, ImageCell
-]
+  JSONCell, TextCell, ImageCell, AmpedSpinner
+];
+
+console.log(exportDeclarations.concat(entryComponents));
 
 @NgModule({
-  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedFilesModule, MaterialModule.forRoot()],
+  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, MaterialModule.forRoot(), AmpedAlertModule],
   declarations  : exportDeclarations.concat(entryComponents),
   exports       : exportDeclarations.concat(entryComponents),
   providers     : [ AmpedService ],

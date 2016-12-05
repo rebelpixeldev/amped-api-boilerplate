@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Http, Response} from '@angular/http';
 
 import { AmpedAuthService } from '../auth/amped.auth.service';
+import {AmpedAlertService} from "../alerts/amped.alert.service";
 
 interface AmpedRESTInterface{
   success : boolean;
@@ -15,7 +16,7 @@ export class AmpedService {
 
   private user : any = null;
 
-  constructor(private http : Http){
+  constructor(private http : Http, private alertService : AmpedAlertService){
   }
 
   getUser(){
@@ -54,7 +55,8 @@ export class AmpedService {
               } else {
                 reject(resp.message);
               }
-            });
+            }).catch((err : any) => {
+            })
         })
     })
 

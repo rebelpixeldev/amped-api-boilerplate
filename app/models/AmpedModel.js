@@ -3,18 +3,18 @@
 //@TODO create two way binding for database entries
 
 const
-  AmpedConnector    = require('../utils/AmpedConnector'),
-  acl               = require('../utils/AmpedAcl')({}),
-  sequelize         = require('sequelize'),
-  url               = require('url'),
-  util              = require('../utils/AmpedUtil');
+  AmpedConnector = require('../utils/AmpedConnector'),
+  acl = require('../utils/AmpedAcl')({}),
+  sequelize = require('sequelize'),
+  url = require('url'),
+  util = require('../utils/AmpedUtil');
 
 
 const typeMap = {
-  STRING : 'text',
-  JSON : 'json_text',
-  INTEGER : 'number',
-  DATE : 'date'
+  STRING: 'text',
+  JSON: 'json_text',
+  INTEGER: 'number',
+  DATE: 'date'
 };
 
 class AmpedModel {
@@ -60,7 +60,8 @@ class AmpedModel {
     // }
   }
 
-  addRelations(models){}
+  addRelations(models) {
+  }
 
   /**
    * Routes
@@ -72,7 +73,7 @@ class AmpedModel {
     // @TODO handle errors
     // @TODO handle filter params
 
-    if ( this.getQuery() !== false ){
+    if (this.getQuery() !== false) {
       this.getQuery(req, res, params);
     } else {
 
@@ -91,7 +92,7 @@ class AmpedModel {
 
   }
 
-  sendResponse(req, res, data){
+  sendResponse(req, res, data) {
     if (data === null)
       data = [];
     res.setHeader('Content-Type', 'application/json');
@@ -106,7 +107,7 @@ class AmpedModel {
     return null;
   };
 
-  getQuery(params){
+  getQuery(params) {
     return false;
   }
 
@@ -128,13 +129,40 @@ class AmpedModel {
     // @TODO handle errors
     const params = util.getParams(req);
 
-    this.DB.findById(params.id)
+    const data = this.dotNotationToObject(params);
+
+    this.DB.findById(data.id)
       .then((result) => {
-          delete params.id;
-          result.updateAttributes(params)
-            .then(() => {
-              res.feedback();
-            });
+        // Remove things that are read only in crud
+        delete data.id; delete data.token; delete data._id;
+        const attrs = Object.keys(data).reduce((ret, key) => {
+          if (typeof data[key] === 'object') {
+
+            const type = this.schema[key].key || this.schema[key].type.key;
+
+            switch(type){
+              case 'INTEGER':
+                ret[key] = data[key].id;
+                    break;
+              case 'JSON':
+                ret[key] = data[key];
+                    break;
+            }
+
+
+          } else ret[key] = data[key];
+          return ret;
+
+        }, {});
+
+        result.updateAttributes(attrs)
+          .then(() => {
+
+            this.getQuery(req, res, {_id:params._id})
+              .then((data) => {
+                this.sendSocket('UPDATE', {user_id: params.id, data });
+              })
+          });
       });
 
   }
@@ -153,11 +181,31 @@ class AmpedModel {
 
   }
 
-  isEditRoute(url){
+  isEditRoute(url) {
     return url.split('/')[3] === 'edit';
   }
 
-  buildEditSchema(){
+
+  dotNotationToObject(obj) {
+    return Object.keys(obj).reduce((ret, key) => {
+      if (key.indexOf('.') !== -1) {
+
+        const parts = key.split('.');
+
+        if (typeof ret[parts[0]] === 'undefined')
+          ret[parts[0]] = {};
+
+        ret[parts[0]][parts[1]] = obj[key];
+        return ret;
+
+      } else {
+        ret[key] = obj[key];
+        return ret;
+      }
+    }, {});
+  }
+
+  buildEditSchema() {
     const fields = this.crudForm.reduce((ret, row) => {
       return [...ret, row.reduce((colRet, col) => {
         const
@@ -166,17 +214,17 @@ class AmpedModel {
 
         let type = row.field_type;
 
-        if ( typeof row.field_type === 'undefined' )
+        if (typeof row.field_type === 'undefined')
           type = (typeof row.type === 'undefined' ? typeMap[row.key] : typeMap[row.type])
 
-        return [...colRet, {type , label: this.colNameToLabel(colName), name : colName}]
+        return [...colRet, {type, label: this.colNameToLabel(colName), name: colName}]
       }, [])]
-    }, [[{type : 'hidden', name : 'id'}]]);
+    }, [[{type: 'hidden', name: 'id'}]]);
 
     return fields;
   }
 
-  colNameToLabel(field){
+  colNameToLabel(field) {
     return field.replace('_', ' ');
   }
 
@@ -192,18 +240,21 @@ class AmpedModel {
     return this.DB;
   }
 
-  get queryIncludes(){
+  get queryIncludes() {
     return [];
 
   }
-  get crudForm() { return [] }
+
+  get crudForm() {
+    return []
+  }
 
   static buildQuery(query) {
     // return Object.assign({deleted_at : { $exists : false}}, query);
     return query;
   }
 
-  get tablePrefix(){
+  get tablePrefix() {
     return 'amp_';
   }
 
@@ -215,9 +266,17 @@ class AmpedModel {
     return '/api/' + this.modelName;
   }
 
-  get modelName(){ return this.baseName; }
-  get tableName() { return this.tablePrefix + this.baseName; }
-  get baseName(){ return util.pascalToUnderscore(this.constructor.name) }
+  get modelName() {
+    return this.baseName;
+  }
+
+  get tableName() {
+    return this.tablePrefix + this.baseName;
+  }
+
+  get baseName() {
+    return util.pascalToUnderscore(this.constructor.name)
+  }
 
   get schema() {
     return {};
@@ -231,25 +290,25 @@ class AmpedModel {
     return true;
   }
 
-  get defineOptions(){
+  get defineOptions() {
     return {};
   }
 
-  get defaultDefineOptions(){
+  get defaultDefineOptions() {
     return {
-      underscored : true,
-      paranoid : true,
-      freezeTable : true,
-      tableName : this.tableName
+      underscored: true,
+      paranoid: true,
+      freezeTable: true,
+      tableName: this.tableName
     }
   }
 
   get defaultSchema() {
     return {
-      created_at: {type: sequelize.DATE, user_editable : false},
-      updated_at: {type: sequelize.DATE, user_editable : false},
-      deleted_at: {type: sequelize.DATE, user_editable : false},
-      deleted_by: {type: sequelize.INTEGER, user_editable : false}
+      created_at: {type: sequelize.DATE, user_editable: false},
+      updated_at: {type: sequelize.DATE, user_editable: false},
+      deleted_at: {type: sequelize.DATE, user_editable: false},
+      deleted_by: {type: sequelize.INTEGER, user_editable: false}
     }
   }
 }

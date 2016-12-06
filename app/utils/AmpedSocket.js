@@ -17,7 +17,8 @@ class AmpedSocket {
   }
 
   // @TODO send sockets based on account_id
-  sendSocket(evt, account, data) {
+  sendSocket(evt, data, req) {
+    console.log('SENDING socket ect', evt, data);
     if (typeof data === 'undefined')
       data = {};
     this.sockets.forEach((socket) => {

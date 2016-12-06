@@ -19,23 +19,27 @@ class Users extends AmpedModel {
 
   /**
    * @TODO handle errors
-   * @TODO this is wayyy to cumbersome to expect a dev to do when they want to write their own get queries, fogire out a better way
+   * @TODO this is wayyy to cumbersome to expect a dev to do when they want to write their own get queries, figure out a better way
    */
   getQuery(req, res, params) {
-    if (typeof req !== 'undefined') {
-      (typeof params._id === 'undefined' ?
-        this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
-        this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), include: this.queryIncludes, raw: true})
-          .then(user => AmpedAuthorization.convertQueryRelations(user)))
-        .then((user) => {
-          req.db.uploads.findOne({where: {id: user.photo}})
-            .then((photo) => {
-              user.photo = photo;
-              this.sendResponse(req, res, user);
-            })
-        })
-    }
-    return true;
+    return new Promise((resolve, reject) => {
+      if (typeof req !== 'undefined') {
+        (typeof params._id === 'undefined' ?
+          this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
+          this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), include: this.queryIncludes, raw: true})
+            .then(user => AmpedAuthorization.convertQueryRelations(user)))
+          .then((user) => {
+            req.db.uploads.findOne({where: {id: user.photo}})
+              .then((photo) => {
+                user.photo = photo;
+                this.sendResponse(req, res, user);
+                resolve(user);
+              })
+          })
+      } else reject('Request was not defined');
+      return true;
+    })
+
   }
 
   get crudForm() {

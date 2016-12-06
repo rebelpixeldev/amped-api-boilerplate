@@ -1,5 +1,6 @@
 import {Component, OnInit, Input, Output, OnChanges} from '@angular/core';
 import {FormGroup, FormControl, FormBuilder, Validators, ReactiveFormsModule} from '@angular/forms';
+import {AmpedService} from "../common/amped.common.service";
 
 interface FieldInterface {
   label: String;
@@ -99,7 +100,7 @@ export class AmpedFormComponent implements OnInit, OnChanges {
     options: []
   };
 
-  constructor(private _fb: FormBuilder) {
+  constructor(private _fb: FormBuilder, private ampedService : AmpedService) {
   }
 
   ngOnInit() {
@@ -166,6 +167,6 @@ export class AmpedFormComponent implements OnInit, OnChanges {
     console.log(this.data.action);
     console.log(this.form.value);
 
-    // this.formService.submitForm(this.data.action, this.form.value);
+    this.ampedService.put(this.data.action, this.form.value);
   }
 }

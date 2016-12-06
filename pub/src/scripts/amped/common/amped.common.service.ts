@@ -33,16 +33,35 @@ export class AmpedService {
       })
     }
   }
-
+  
+  get(url : any, data : any = {}, options : any = {}, reqMethod : string = 'get' ){
+    this.request.apply(this, arguments);
+  }
+  
+  post(url : any, data : any = {}, options : any = {}, reqMethod : string = 'post' ){
+    this.request.apply(this, arguments);
+  }
+  put(url : any, data : any = {}, options : any = {}){
+    console.log('PUUT');
+    this.request.apply(this, [url, data, options, 'put']);
+  }
+  delete(url : any, data : any = {}, options : any = {}, reqMethod : string = 'delete' ){
+    this.request.apply(this, arguments);
+  }
+  
   request(url : any, data : any = {}, options : any = {}, reqMethod : string = 'get' ){
+    
+    console.log(arguments);
 
     return new Promise((resolve, reject) => {
 
       this.appendToken(url)
         .then( (url:string) => {
 
-          const method = (data.method || reqMethod).toLowerCase();
+          const method = (reqMethod || data.method ).toLowerCase();
           delete data.method;
+          
+          console.log(method);
 
 
           this.http[method](url, data, options)

@@ -16,6 +16,9 @@ class UserController {
     this.app.get('/user', this.getUser.bind(this));
     this.app.get('/login', this.home.bind(this));
 
+    this.app.post('/register', passport.authenticate('local-signup', {
+    }), ( req, res ) => res.feedback(true));
+
     this.app.get('/profile', AmpedPassport.isLoggedIn, this.profile.bind(this));
 
   }

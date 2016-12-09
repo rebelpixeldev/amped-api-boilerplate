@@ -19,13 +19,21 @@ class AmpedAuthorization {
         req.auth = user;
         next();
       })
-    } else
+    } else {
+      req.auth = null;
       next()
+    }
 
   }
 
   static getUserByToken(req, token, callback) {
     // @TODO do something on catch
+    // @TODO make this not hardcoded
+    console.log(req.url);
+    if ( req.url === '/' || req.url === '/login' || req.url === '/register' || req.url === '/reset' || req.url === '/user' )
+      return callback(null);
+
+    console.log(token);
     req.dbRef.users.getModel().findOne({where: {token: token}, include: req.dbRef.users.queryIncludes, raw: true})
       .then(user => AmpedAuthorization.convertQueryRelations(user))
       .then((user) => {

@@ -78,6 +78,10 @@ class Users extends AmpedModel {
         value_modifier: function (val) {
           return `/uploads/source/${val}.jpg`
         }
+      },
+
+      password : {
+        type : sequelize.STRING
       }
     }
   }

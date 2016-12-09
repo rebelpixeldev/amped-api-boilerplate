@@ -1,10 +1,17 @@
 'use strict';
 const
-  GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+
   AmpedConnector = require('./AmpedConnector'),
+  bcrypt = require('bcrypt'),
+  GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+  LocalStrategy = require('passport-local').Strategy,
   passport = require('passport'),
   request = require('request'),
-  User = require('../models/Users');
+  User = require('../models/Users'),
+  util = require('./AmpedUtil');
+
+// @TODO move to config
+const salt = 'saltymcsalt';
 
 class AmpedPassport {
 
@@ -55,7 +62,83 @@ class AmpedPassport {
 
   setupStrategies() {
     this.googleStategy();
+    this.localStrategy();
   }
+
+  localStrategy() {
+    passport.use('local-signup', new LocalStrategy({
+        // by default, local strategy uses username and password, we will override with email
+        usernameField: 'email',
+        passwordField: 'password',
+        passReqToCallback: true // allows us to pass back the entire request to the callback
+      },
+      (req, email, password, done) => {
+
+        console.log('YAY');
+
+        const params = util.getParams(req);
+
+        console.log(email);
+
+        req.db.users.findOne({where: {email : email}})
+          .then((user) => {
+
+            // if (user) {
+            //   // @TODO user exists, send message back
+            //   // @TODO take into account email with a different strategy
+            //   console.log('USER EXISTS');
+            //   done('user exists', null);
+            // } else {
+              const userObj = {
+                display_name: params.first_name,
+                users_name: {
+                  givenName: params.first_name,
+                  familyName: params.last_name
+                },
+                email,
+                photo: 0,
+                account: 0,
+                provider: 'local',
+              };
+
+              bcrypt.hash(password, 10)
+                .then((hash) => {
+                  console.log(hash);
+                  userObj.password = hash;
+
+                  req.db.users.create(userObj)
+                    .then((user) => {
+                      console.log('USER CREATED');
+                        return user;
+                    })
+                    .then((user) => {
+                      this.createUserAccount(req, user)
+                        .then((user) => {
+                          req.login(user, () => done(null, user));
+                        })
+                        .catch((err) => {
+                          console.log('User create errpr');
+                          done(err); // @TODO handle error
+                        });
+                    })
+                    // .then((user) => {
+                    //   done(null, user);
+                    // })
+                    // .catch((err) => {
+                    //   console.log('User create errpr');
+                    //   done(err); // @TODO handle error
+                    // });
+
+
+
+
+                })
+
+            // }
+          })
+      }));
+  }
+
 
   googleStategy() {
 
@@ -81,79 +164,88 @@ class AmpedPassport {
           // try to find the user based on their google id
           // @TODO handle error
           req.db.users.findOne({'serviceId': profile.id, 'provider': 'google'})
-          .then((user) => {
+            .then((user) => {
 
-            if (user) {
-              // if a user is found, log them in
-              return done(null, user);
-            } else {
+              if (user) {
+                // if a user is found, log them in
+                return done(null, user);
+              } else {
 
-              /**
-               * Create user flow
-               * @TODO This can proabaly be cleaned up quite a bit
-               * @TODO account for invited accounts. Decide whether the user still gets an account or they are just added to the invited account
-               *
-               * create user with the account and photo ids of 0
-               * create an account with the users name as the name of the account
-               * update account id on the user
-               * Call the uploads service and download their profile picture
-               * update the photo id on the user
-               */
-              const userObj = {
-                service_id: profile.id,
-                token: this.generateToken(64),
-                display_name: profile.displayName,
-                users_name: {
-                  givenName: profile.name.givenName,
-                  familyName: profile.name.familyName
-                },
-                emails: profile.emails.reduce((ret, val) => {
-                  ret.push(val.value);
-                  return ret;
-                }, []),
-                photo : 0,
-                account : 0,
-                provider: 'google',
+                /**
+                 * Create user flow
+                 * @TODO This can proabaly be cleaned up quite a bit
+                 * @TODO account for invited accounts. Decide whether the user still gets an account or they are just added to the invited account
+                 *
+                 * create user with the account and photo ids of 0
+                 * create an account with the users name as the name of the account
+                 * update account id on the user
+                 * Call the uploads service and download their profile picture
+                 * update the photo id on the user
+                 */
+                const userObj = {
+                  service_id: profile.id,
+                  token: this.generateToken(64),
+                  display_name: profile.displayName,
+                  users_name: {
+                    givenName: profile.name.givenName,
+                    familyName: profile.name.familyName
+                  },
+                  emails: profile.emails.reduce((ret, val) => {
+                    ret.push(val.value);
+                    return ret;
+                  }, []),
+                  photo: 0,
+                  account: 0,
+                  provider: 'google',
 
-              };
+                };
 
-              // userObj.photo = userObj.photos[0];
-              userObj.email = userObj.emails[0];
+                // userObj.photo = userObj.photos[0];
+                userObj.email = userObj.emails[0];
 
-              req.db.users.create(userObj)
-                .then((user) => {
+                req.db.users.create(userObj)
+                  .then(this.createUserAccount.bind(this, req))
+                  .then((user) => {
+                    request({
+                      url: `http://localhost:3000/uploads/upload?remote_url=${profile.photos[0].value.split('?')[0]}&token=${user.token}`,
+                      method: 'POST'
+                    }, (err, resp, body) => {
+                      // @TODO catch if success is false
+                      const fileInfo = JSON.parse(body).response;
 
-                  req.db.accounts.create({
-                    name : profile.displayName
-                  }).then((account) => {
-
-                    user.updateAttributes({
-                      account_id : account.id
-                    }).then(() => {
-                      // @TODO url should come from config
-                      // @TODO will error out, the GET route has been replaced with POST
-                      request({
-                        url : `http://localhost:3000/uploads/upload?remote_url=${profile.photos[0].value.split('?')[0]}&token=${user.token}`,
-                        method : 'POST'
-                      }, (err, resp, body) => {
-                        // @TODO catch if success is false
-                        const fileInfo = JSON.parse(body).response;
-
-                        user.updateAttributes({
-                          photo : fileInfo.id
-                        }).then(() => done(err, user));
-                      })
+                      user.updateAttributes({
+                        photo: fileInfo.id
+                      }).then(() => done(err, user));
                     })
                   })
-                })
-                .catch((err) => {
-                  done(err); // @TODO handle error
-                });
-            }
-          });
+                  .catch((err) => {
+                    done(err); // @TODO handle error
+                  });
+              }
+            });
         });
 
       }));
+  }
+
+  // @TODO error handling
+  createUserAccount(req, user){
+    console.log('creating account');
+    return new Promise((resolve, reject) => {
+      console.log(user.displayName);
+      req.db.accounts.create({
+        name: user.displayName
+      }).then((account) => {
+
+        user.updateAttributes({
+          account_id: account.id
+        }).then(() => {
+          // @TODO url should come from config
+          // @TODO will error out, the GET route has been replaced with POST
+          resolve(user);
+        })
+      })
+    })
   }
 
   addMiddleware() {
@@ -163,14 +255,14 @@ class AmpedPassport {
     // this.app.use(this.isLoggedIn);
   }
 
-  generateToken(length){
-      var text = "";
-      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  generateToken(length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-      for( var i=0; i < 128; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    for (var i = 0; i < 128; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
 
-      return text;
+    return text;
   }
 
   injectUser(req, res, next) {

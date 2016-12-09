@@ -13,6 +13,7 @@ interface FieldInterface {
 
 interface FormDataInterface {
   action: string;
+  method: string;
   fields: Array<Object>;
 }
 
@@ -23,7 +24,7 @@ interface FormDataInterface {
 
        <md-card-title *ngIf="model && model !== ''">Editing {{model}}</md-card-title>  
        <md-card-content>
-            <form *ngIf="form" (ngSubmit)="onSubmit()" [formGroup]="form">
+            <form *ngIf="form" (ngSubmit)="onFormSubmit()" [formGroup]="form">
               <md-grid-list *ngFor="let row of fields" cols="{{row.length}}" rowHeight="{{rowHeight}}" gutterSize="{{gutterSize}}">
                 <md-grid-tile *ngFor="let field of row" >
                   <div [ngSwitch]="field.type" class="amped-form-element">
@@ -80,9 +81,10 @@ interface FormDataInterface {
 })
 export class AmpedFormComponent implements OnInit, OnChanges {
 
-  @Input() data: FormDataInterface = {action: '', fields: []};
+  @Input() data: FormDataInterface = {action: '', method : 'get', fields: []};
   @Input() saveLabel : string = 'Save'; // @TODO don't like passing this as a value. Maybe pass it as part of the data?
   @Input() model : string;
+  @Input() onSubmit : Function = function () {}
 
   @Input() rowHeight : number = 65;
   @Input() gutterSize : number = 10;
@@ -162,11 +164,8 @@ export class AmpedFormComponent implements OnInit, OnChanges {
     // this.formControls[controlName].setValue(data);
   }
 
-  onSubmit() {
-    console.log('Submit');
-    console.log(this.data.action);
-    console.log(this.form.value);
-
-    this.ampedService.put(this.data.action, this.form.value);
+  onFormSubmit() {
+    this.ampedService[(this.data.method.toLowerCase() || 'get')](this.data.action, this.form.value)
+      .then(this.onSubmit);
   }
 }

@@ -35,24 +35,21 @@ export class AmpedService {
   }
   
   get(url : any, data : any = {}, options : any = {}, reqMethod : string = 'get' ){
-    this.request.apply(this, arguments);
+    return this.request.apply(this, arguments);
   }
   
   post(url : any, data : any = {}, options : any = {}, reqMethod : string = 'post' ){
-    this.request.apply(this, arguments);
+    return this.request.apply(this, [url, data, options, 'post']);
   }
   put(url : any, data : any = {}, options : any = {}){
-    console.log('PUUT');
-    this.request.apply(this, [url, data, options, 'put']);
+    return this.request.apply(this, [url, data, options, 'put']);
   }
   delete(url : any, data : any = {}, options : any = {}, reqMethod : string = 'delete' ){
-    this.request.apply(this, arguments);
+    return this.request.apply(this, [url, data, options, 'delete']);
   }
   
   request(url : any, data : any = {}, options : any = {}, reqMethod : string = 'get' ){
     
-    console.log(arguments);
-
     return new Promise((resolve, reject) => {
 
       this.appendToken(url)
@@ -70,7 +67,7 @@ export class AmpedService {
             .then(( resp : any ) =>{
               if ( resp.success ){
                 // @TODO plan for meta to be sent as well
-                resolve(resp.response)
+                resolve(resp);
               } else {
                 reject(resp.message);
               }
@@ -87,10 +84,10 @@ export class AmpedService {
     return new Promise((resolve, reject) => {
       this.getUser()
         .then((user : any) => {
-          //@TODO fix this. looks like shit and too tired
-          url = url + (url.indexOf('?') === -1 ? '?token=' + user.token : `&${user.token}`);
-          resolve(url);
-
+          resolve(
+            typeof user.token === 'undefined' ?
+              url : url + (url.indexOf('?') === -1 ? '?token=' + user.token : `&${user.token}`)
+          );
         });
       // @TODO handle error
     })

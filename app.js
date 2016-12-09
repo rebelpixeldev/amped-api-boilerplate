@@ -2,6 +2,7 @@
  * Module dependencies.
  */
 const
+  AmpedActivityLog    = require('./app/utils/AmpedActivityLog'),
   AmpedSocket         = require('./app/utils/AmpedSocket'),
   AmpedConnector      = require('./app/utils/AmpedConnector'),
   AmpedPassport       = require('./app/utils/AmpedPassport'),
@@ -61,7 +62,17 @@ app.use(ampedFeedback({token : true}));
 
 AmpedConnector.buildModels(app, socket);
 AmpedConnector.addMiddleware(app, socket);
+
+app.use(AmpedActivityLog({}));
+
+app.use((req, res, next) => {
+    req.logActivity('Test', 'This is a description', {some:'data'});
+  next();
+})
+
 new AmpedPassport(app, socket);
+
+
 
 app.use(flash());
 /**

@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, Output, OnChanges} from '@angular/core';
+import {Component, OnInit, Input, Output, OnChanges, EventEmitter} from '@angular/core';
 import {FormGroup, FormControl, FormBuilder, Validators, ReactiveFormsModule} from '@angular/forms';
 import {AmpedService} from "../common/amped.common.service";
 
@@ -84,10 +84,10 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   @Input() data: FormDataInterface = {action: '', method : 'get', fields: []};
   @Input() saveLabel : string = 'Save'; // @TODO don't like passing this as a value. Maybe pass it as part of the data?
   @Input() model : string;
-  @Input() onSubmit : Function = function () {}
-
   @Input() rowHeight : number = 65;
   @Input() gutterSize : number = 10;
+  
+  @Output() onSubmit: EventEmitter<any> = new EventEmitter();
 
   public formControls: any = {};
   public fields: Array<FieldInterface> = [];
@@ -166,6 +166,6 @@ export class AmpedFormComponent implements OnInit, OnChanges {
 
   onFormSubmit() {
     this.ampedService[(this.data.method.toLowerCase() || 'get')](this.data.action, this.form.value)
-      .then(this.onSubmit);
+      .then(( resp : any ) => this.onSubmit.emit(resp));
   }
 }

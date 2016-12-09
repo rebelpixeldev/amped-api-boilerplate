@@ -10,7 +10,7 @@ import {Router} from "@angular/router";
             <md-card-title><h1>Register</h1></md-card-title>
          </md-card-header>
          <md-card-content>
-            <amped-form [data]="formData" [saveLabel]="btnLabel" [onSubmit]="onSubmit"></amped-form>
+            <amped-form [data]="formData" [saveLabel]="btnLabel" (onSubmit)="onSubmit($event)"></amped-form>
             <p>
               Already have an account? <a [routerLink]="['/login']">Login</a>
             </p>

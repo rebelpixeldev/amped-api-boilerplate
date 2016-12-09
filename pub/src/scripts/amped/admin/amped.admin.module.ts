@@ -9,8 +9,11 @@ import { AmpedSidebar } from './amped.admin.sidebar.component';
 import { AmpedUserThumb } from './amped.user.thumb.component';
 import { AmpedAuthService } from '../auth/amped.auth.service';
 
+import { AmpedAdminPageDashboard } from './pages/amped.admin.page.dashboard';
+
 const exportDeclarations = [
-  [ AmpedTopbar, AmpedSidebar, AmpedUserThumb ]
+  [ AmpedTopbar, AmpedSidebar, AmpedUserThumb,
+    AmpedAdminPageDashboard]
 ];
 
 

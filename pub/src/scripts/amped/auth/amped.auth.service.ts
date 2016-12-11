@@ -24,7 +24,6 @@ export class AmpedAuthService {
   // }
   //
   getCrudData(model : string, id : string = '' ) : Promise<any>{
-    console.log('GETTING Crud data');
     return this.ampedService.request(id === '' ? `/api/${model}` : `/api/${model}/edit/${id}`);
   }
   

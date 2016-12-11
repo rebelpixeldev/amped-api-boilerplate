@@ -43,7 +43,7 @@ export class MediaLibraryComponent implements OnInit {
 
   ngOnInit() {
     this.filesService.getFiles()
-      .then((resp) => this.files = resp);
+      .then((resp) => this.files = resp.response);
   }
 
   uploadFile() {

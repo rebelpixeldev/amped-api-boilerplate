@@ -3,6 +3,8 @@
 $navbar-height : 50px;
 $grid-gutter-width : 30px;
 
+$color-weight-level : 400;
+
 // Include non-theme styles for core.
 @include md-core();
 
@@ -11,10 +13,11 @@ $primary: md-palette($md-deep-purple);
 $accent:  md-palette($md-amber, A200, A100, A400);
 
 
-$color-weight-level : 400;
+
 
 $success : map-get($md-green, $color-weight-level);
 $success-color : map-get(map-get($md-green, contrast), $color-weight-level);
+
 
 $error : map-get($md-red, $color-weight-level);
 $error-color : map-get(map-get($md-red, contrast), $color-weight-level);

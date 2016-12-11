@@ -23,21 +23,18 @@ class Users extends AmpedModel {
    */
   getQuery(req, res, params) {
     return new Promise((resolve, reject) => {
-      if (typeof req !== 'undefined') {
-        (typeof params._id === 'undefined' ?
-          this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
-          this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), include: this.queryIncludes, raw: true})
-            .then(user => AmpedAuthorization.convertQueryRelations(user)))
+      (typeof params._id === 'undefined' ?
+        this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
+        this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), include: this.queryIncludes, raw: true})
+          .then(user => AmpedAuthorization.convertQueryRelations(user)))
           .then((user) => {
-            req.db.uploads.findOne({where: {id: user.photo}})
+            return req.db.uploads.findOne({where: {id: user.photo}})
               .then((photo) => {
                 user.photo = photo;
-                this.sendResponse(req, res, user);
+                // this.sendResponse(req, res, user);
                 resolve(user);
               })
-          })
-      } else reject('Request was not defined');
-      return true;
+          }).catch(reject)
     })
 
   }
@@ -80,8 +77,8 @@ class Users extends AmpedModel {
         }
       },
 
-      password : {
-        type : sequelize.STRING
+      password: {
+        type: sequelize.STRING
       }
     }
   }

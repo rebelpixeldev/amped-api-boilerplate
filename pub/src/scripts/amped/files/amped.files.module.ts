@@ -12,6 +12,8 @@ import { UploadBtnComponent }     from './amped.files.upload.button';
 import { AmpedFilesService }      from './amped.files.service';
 import { FilesDialogDirective, FileLibraryDialog }      from './amped.files.dialog';
 
+import { FilesLibraryPage } from './pages/amped.files.page.library';
+
 import { AmpedService } from '../common/amped.common.service';
 import { AmpedCommonModule } from '../common/amped.common.module';
 import {AmpedAlertModule} from "../alerts/amped.alerts.module";
@@ -21,7 +23,9 @@ const exportDeclarations : Array<any> = [
   MediaLibraryComponent,
   UploadBtnComponent,
   FilesDialogDirective,
-  FileLibraryDialog
+  FileLibraryDialog,
+  
+  FilesLibraryPage
 ];
 
 @NgModule({

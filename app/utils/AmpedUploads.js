@@ -38,12 +38,15 @@ class AmpedUploads {
     return new Promise((resolve, reject) => {
       AmpedUploads.getFileInfo(tmpFilePath)
         .then((info) => {
+
+          console.log(info);
+          console.log(req.user);
           const
             filename = tmpFilePath.split('/').pop().split('|').pop().split('?')[0],
             extension = tmpFilePath.split('.').pop().split('?')[0];
           req.db.uploads.create({
-              amp_account_id : req.auth.account.id,
-              amp_user_id : req.auth.id,
+              amp_account_id : req.user.account.id,
+              amp_user_id : req.user.id,
               title : filename.replace('.'+extension, ''),
               mime : fileUtil.extensionToMime(extension),
               filename : filename,

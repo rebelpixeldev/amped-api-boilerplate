@@ -20,9 +20,9 @@ export class AmpedAuthGuard implements CanActivate {
   private isUserLoggedIn(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     
     return this.ampedService.getUser()
-      .then((user: any) => typeof user.display_name !== 'undefined')
+      .then((user: any) => typeof user.id === 'undefined')
       .then((user: any) => {
-        if (!user)
+        if (user)
           this.router.navigate(['/login', encodeURIComponent(state.url)]);
         else
           return true;

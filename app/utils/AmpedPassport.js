@@ -3,15 +3,16 @@ const
 
   AmpedConnector = require('./AmpedConnector'),
   bcrypt = require('bcrypt'),
+  config = require('../config/config'),
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   LocalStrategy = require('passport-local').Strategy,
+  JWT = require('jsonwebtoken'),
   passport = require('passport'),
+  passportJWT = require('passport-jwt'),
   request = require('request'),
+  SHA1 = require('sha1'),
   User = require('../models/Users'),
   util = require('./AmpedUtil');
-
-// @TODO move to config
-const salt = 'saltymcsalt';
 
 class AmpedPassport {
 
@@ -22,8 +23,8 @@ class AmpedPassport {
   }
 
   setup() {
-    this.serialize();
-    this.deserialize();
+    // this.serialize();
+    // this.deserialize();
     this.setupStrategies();
     this.addRoutes();
   }
@@ -44,28 +45,55 @@ class AmpedPassport {
     );
   }
 
-  serialize() {
-    this.passport.serializeUser((user, done) => {
-      done(null, user.id);
-    });
-  }
-
-  deserialize() {
-    this.passport.deserializeUser((req, id, done) => {
-      // @TODO handle error
-      req.db.users.findById(id)
-        .then(function (user) {
-          done(null, user);
-        });
-    });
-  }
+  // serialize() {
+  //   this.passport.serializeUser((user, done) => {
+  //     done(null, user.id);
+  //   });
+  // }
+  //
+  // deserialize() {
+  //   this.passport.deserializeUser((req, id, done) => {
+  //     // @TODO handle error
+  //     req.db.users.findById(id)
+  //       .then(function (user) {
+  //         done(null, user);
+  //       });
+  //   });
+  // }
 
   setupStrategies() {
     this.googleStategy();
     this.localStrategy();
+    this.jwt();
+  }
+
+  jwt() {
+    const opts = {
+      jwtFromRequest: passportJWT.ExtractJwt.fromHeader('authorization'),
+      secretOrKey: config.jwt.secret,
+      issuer: config.jwt.issuer,
+      ignoreExpiration: true
+    };
+
+    passport.use(new passportJWT.Strategy(opts, (payload, done) => {
+      done(null, payload)
+    }));
   }
 
   localStrategy() {
+
+    passport.use(new LocalStrategy({
+      usernameField: 'email',
+      passwordField: 'password',
+      passReqToCallback: true
+    }, (req, email, password, done) => {
+      req.db.users.findOne({where: {email}})
+        .then((user) => {
+          // @TODO user vaildation
+          done(null, user);
+        })
+    }));
+
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField: 'email',
@@ -74,13 +102,10 @@ class AmpedPassport {
       },
       (req, email, password, done) => {
 
-        console.log('YAY');
 
         const params = util.getParams(req);
 
-        console.log(email);
-
-        req.db.users.findOne({where: {email : email}})
+        req.db.users.findOne({where: {email: email}})
           .then((user) => {
 
             // if (user) {
@@ -89,50 +114,46 @@ class AmpedPassport {
             //   console.log('USER EXISTS');
             //   done('user exists', null);
             // } else {
-              const userObj = {
-                display_name: params.first_name,
-                users_name: {
-                  givenName: params.first_name,
-                  familyName: params.last_name
-                },
-                email,
-                photo: 0,
-                account: 0,
-                provider: 'local',
-              };
+            const userObj = {
+              display_name: params.first_name,
+              users_name: {
+                givenName: params.first_name,
+                familyName: params.last_name
+              },
+              email,
+              photo: 0,
+              account: 0,
+              provider: 'local',
+            };
 
-              bcrypt.hash(password, 10)
-                .then((hash) => {
-                  console.log(hash);
-                  userObj.password = hash;
+            // bcrypt.hash(password, 10)
+            //   .then((hash) => {
+            userObj.password = SHA1(password);
 
-                  req.db.users.create(userObj)
-                    .then((user) => {
-                      console.log('USER CREATED');
-                        return user;
-                    })
-                    .then((user) => {
-                      this.createUserAccount(req, user)
-                        .then((user) => {
-                          req.login(user, () => done(null, user));
-                        })
-                        .catch((err) => {
-                          console.log('User create errpr');
-                          done(err); // @TODO handle error
-                        });
-                    })
-                    // .then((user) => {
-                    //   done(null, user);
-                    // })
-                    // .catch((err) => {
-                    //   console.log('User create errpr');
-                    //   done(err); // @TODO handle error
-                    // });
+            req.db.users.create(userObj)
+              .then((user) => {
+                return user;
+              })
+              .then((user) => {
+                this.createUserAccount(req, user)
+                  .then((user) => {
+                    done(null, user);
+                  })
+                  .catch((err) => {
+                    console.log('User create errpr');
+                    done(err); // @TODO handle error
+                  });
+              })
+            // .then((user) => {
+            //   done(null, user);
+            // })
+            // .catch((err) => {
+            //   console.log('User create errpr');
+            //   done(err); // @TODO handle error
+            // });
 
 
-
-
-                })
+            // })
 
             // }
           })
@@ -229,10 +250,8 @@ class AmpedPassport {
   }
 
   // @TODO error handling
-  createUserAccount(req, user){
-    console.log('creating account');
+  createUserAccount(req, user) {
     return new Promise((resolve, reject) => {
-      console.log(user.displayName);
       req.db.accounts.create({
         name: user.displayName
       }).then((account) => {
@@ -250,7 +269,16 @@ class AmpedPassport {
 
   addMiddleware() {
     this.app.use(passport.initialize());
-    this.app.use(passport.session());
+    this.app.use((req, res, next) => {
+      if ( config.routing.isPublic(req.url) ) return next();
+      passport.authenticate('jwt', {session: false}, (err, user, info) => {
+        if (err) return next(err);
+        else if (!user) return res.feedback(user);
+        req.payload = user;
+        next();
+      })(req, res, next);
+    })
+    // this.app.use(passport.session());
     this.app.use(this.injectUser);
     // this.app.use(this.isLoggedIn);
   }
@@ -300,6 +328,14 @@ class AmpedPassport {
 
   get passport() {
     return passport;
+  }
+
+  // @TODO needs to come from options
+  get jwtOpts() {
+    return {
+      secretOrKey: 'secret',
+      issuer: 'amped-framework.com'
+    };
   }
 
   static getPassport() {

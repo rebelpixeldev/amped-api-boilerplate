@@ -24,7 +24,7 @@ export class AmpedFormsService{
   }
   
   getCrudData(model : string, id : string = '' ) : Promise<any>{
-    return this.ampedService.request(id === '' ? `/api/${model}` : `/api/${model}/edit/${id}`);
+    return this.ampedService.get(id === '' ? `/api/${model}` : `/api/${model}/edit/${id}?cache=${new Date().getTime()}`);
   }
 
 }

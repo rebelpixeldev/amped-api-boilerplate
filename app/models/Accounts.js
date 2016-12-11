@@ -14,6 +14,14 @@ class Accounts extends AmpedModel {
     models.accounts.getModel().hasMany(models.users.getModel());
   }
 
+  get crudForm() {
+    return [
+      ['name'],
+      ['address'],
+      ['city', 'state', 'country']
+    ]
+  }
+
   get schema() {
     return {
       name: sequelize.STRING,

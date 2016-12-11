@@ -57,12 +57,15 @@ class UploadsController{
 
         Promise.all(promises)
           .then(( resp ) => {
+            console.log(req.user);
             this.socket.sendSocket('create', req.user.account, {model:'uploads', user: req.user.id, data: resp});
             return resp;
           })
           .then((data) => {
+            req.logActivity('upload', `${data.length > 1 ? data.length + ' files were uploaded' : data[0].title + ' was uploaded'}`, data);
             res.feedback(data);
           }).catch((err) => {
+          console.log(err);
               res.feedback({success:false, response:err});
           })
       });

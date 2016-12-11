@@ -63,16 +63,19 @@ class AmpedConnector {
 
   }
 
-  static addMiddleware(app, socket){
-    app.use((req, res, next) => {
+  static databaseMiddleware(app, socket){
+    return (req, res, next) => {
       req.db = modelMap;
       req.dbRef = models;
       next();
-    });
+    }
+  }
 
-    app.use(AmpedAuthorization.middleware());
-
-    Object.keys(models).forEach(key => models[key].addRoutes());
+  static crudRouteMiddleware(app, socket){
+    return (req, res, next) => {
+      Object.keys(models).forEach(key => models[key].addRoutes());
+      next();
+    };
   }
 
 }

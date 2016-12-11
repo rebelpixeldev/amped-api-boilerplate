@@ -1,7 +1,15 @@
 md-sidenav-layout{
-  display:flex; width:300px; background:#666; height:100%;
+  display:flex; width:200px; background:#666; height:100%;
   &.amped-container{
     padding:$grid-gutter-width/2;
   }
   ul{margin:0; padding:0; list-style:none;}
+  md-icon{text-align:center; line-height:40px;}
+  md-nav-list, md-list{padding-top:0;}
+
+  md-list [md-list-item] .md-list-item{
+    padding-left:8px !important; padding-right:8px !important;
+    md-icon{text-align:center !important; line-height:40px;}
+  }
+  .nav-section [md-subheader]{background:#333 !important; color:#eee !important;}
 }

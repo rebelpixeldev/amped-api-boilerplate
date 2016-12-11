@@ -42,7 +42,7 @@ export class AmpedCrudTableComponent implements OnInit {
       this.model = model;
       // Retrieve Pet with Id route param
       this.FormService.getCrudData(model).then(data => {
-        this.tableData = data;
+        this.tableData = data.response;
       });
     });
   }

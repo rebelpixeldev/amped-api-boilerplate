@@ -27,8 +27,10 @@ export class JSONCell extends TableCell implements OnInit {
   private label : string;
 
   ngOnInit() {
-    this.keys = Object.keys(this.row[this.header]);
-    this.label = this.row[this.header][this.keys.shift()];
+    if ( typeof this.row[this.header] !== 'undefined' && this.row[this.header] !== null ) {
+      this.keys = Object.keys(this.row[this.header]);
+      this.label = this.row[this.header][this.keys.shift()];
+    }
   }
 
 }

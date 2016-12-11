@@ -41,7 +41,7 @@ interface FormDataInterface {
                       <div *ngSwitchCase="'json_text'">
                           <md-grid-list cols="{{getJsonFieldKeys(field.value).length}}" rowHeight="{{rowHeight}}" gutterSize="10">
                             <md-grid-tile *ngFor="let key of getJsonFieldKeys(field.value)">
-                              <md-input placeholder="{{key}}" [formControlName]="getFormControlName(field, key)"></md-input>
+                              <md-input placeholder="{{key}}" [formControlName]="getFormControlName(field, key)"></md-input>  
                             </md-grid-tile>
                           </md-grid-list>
                       </div>
@@ -125,6 +125,7 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   buildForm() {
     if (typeof this.data.fields !== 'undefined') {
       this.mapDataDefaults();
+      console.log(this.fields);
       this.formControls = this.fields.reduce((ret: any, row: any) => {
         row.forEach((field: any) => {
 
@@ -152,6 +153,8 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
 
   getJsonFieldKeys(json: any) {
+    console.log(json );
+    console.log(Object.keys(json));
     return Object.keys(json);
   }
 
@@ -160,12 +163,28 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
 
   handleFileSelect(data : any, controlName : string){
-    Object.keys(data).forEach(( key ) => this.formControls[`${controlName}.${key}`].setValue(data[key]) );
+    console.log(this.formControls);
+    
+    Object.keys(data).forEach(( key ) => {
+      console.log(`${controlName}.${key}`);
+      if ( typeof this.formControls[`${controlName}.${key}`] === 'undefined' ) {
+        const ctrlName = `${controlName}.${key}`
+        this.formControls[ctrlName] = new FormControl(data[key]);
+        this.form.addControl(ctrlName, this.formControls[ctrlName]);
+        this.form.removeControl(controlName);
+        console.log(this.formControls);
+      } else
+        this.formControls[`${controlName}.${key}`].setValue(data[key])
+    } );
     // this.formControls[controlName].setValue(data);
   }
-
+  
+  
+  // @TODO add error handler if this.data.action is undefined
   onFormSubmit() {
-    this.ampedService[(this.data.method.toLowerCase() || 'get')](this.data.action, this.form.value)
+    console.log(this.data);
+    console.log(typeof this.data.method === 'undefined');
+    this.ampedService[(typeof this.data.method === 'undefined' ? 'get' : this.data.method.toLowerCase())](this.data.action, this.form.value)
       .then(( resp : any ) => this.onSubmit.emit(resp));
   }
 }

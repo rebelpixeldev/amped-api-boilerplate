@@ -10,13 +10,34 @@ class UserController {
 
   constructor(app, socket) {
     this.app = app;
+    // @TODO don't liek the naming here
+    this.auth = new AmpedAuth.AmpedAuthorization();
   }
 
   setupRoutes() {
+
     this.app.get('/user', this.getUser.bind(this));
-    this.app.get('/login', this.home.bind(this));
+
+    // this.app.route('/login')
+    //   // .get(this.home.bind(this))
+    //   .post(passport.authenticate('local-login', {
+    //     session : false,
+    //     failureFlash : true // allow flash messages
+    //   }), ( req, res ) => res.feedback());
+
+    this.app.post('/login', (req, res) => {
+      this.auth.login(req)
+        .then(data => {
+          req.logActivity('login', 'User logged in', {
+            ip  :req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
+          }, user.get({raw:true}));
+          res.feedback(data);
+        })
+    });
+
 
     this.app.post('/register', passport.authenticate('local-signup', {
+      session : false
     }), ( req, res ) => res.feedback(true));
 
     this.app.get('/profile', AmpedPassport.isLoggedIn, this.profile.bind(this));
@@ -28,10 +49,7 @@ class UserController {
   }
 
   getUser(req, res){
-    if ( typeof req.user !== 'undefined' && typeof req.user.token !== 'undefined' )
-      AmpedAuth.getUserByToken(req, req.user.token, res.feedback);
-    else
-      res.feedback(false);
+      res.feedback(req.user);
   }
 
   profile(req, res) {

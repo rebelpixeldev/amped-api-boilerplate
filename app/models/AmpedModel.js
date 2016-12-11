@@ -34,20 +34,22 @@ class AmpedModel {
 
     if (this.buildCrudRoutes) {
 
-      this.app.get(this.route, acl.can('view', this.modelName), this.getModelData.bind(this));
+      this.app.get(this.route, this.getModelDataRoute.bind(this));
 
       // this.app.route(this.route, acl.can('view', this.model))
       //   .get(this.getModelData.bind(this))
       //   .post(this.createModelData.bind(this));
 
+      this.app.post(this.route + '/:_id', this.updateModelData.bind(this));
+
       this.app.route(this.route + '/:_id')
-        .get(this.getModelData.bind(this))
+        .get(this.getModelDataRoute.bind(this))
         .post(this.updateModelData.bind(this))
         .put(this.updateModelData.bind(this))
         .delete(this.deleteModelData.bind(this));
 
       this.app.route(this.route + '/edit/:_id')
-        .get(this.getModelData.bind(this));
+        .get(this.getModelDataRoute.bind(this));
     }
   }
 
@@ -66,36 +68,47 @@ class AmpedModel {
   /**
    * Routes
    */
-  getModelData(req, res) {
+  // @TODO handle errors
+  // @TODO handle filter params
+  // @TODO fix this naming mess
+  getModelDataRoute(req, res, params) {
 
-    const params = util.getParams(req);
+    this.getModelData(req, res);
+    // console.log(params);
+    // if ( typeof params === 'undefined')
+    //   params = util.getParams(req);
+    // console.log(params);
+    //
+    // const promise = this.getQuery(req, res, params);
+    //
+    // if ( typeof promise !== 'undefined' ){
+    //   promise
+    //     .then(this.sendResponse.bind(this, req, res))
+    //     .catch((err) => {
+    //       console.log('ERROR', err);
+    //     });
+    // }
+  }
 
-    // @TODO handle errors
-    // @TODO handle filter params
+  getModelData(req, res, params) {
 
-    if (this.getQuery() !== false) {
-      this.getQuery(req, res, params);
-    } else {
+    if ( typeof params === 'undefined')
+      params = util.getParams(req);
 
-      console.log('HERE');
-      console.log('* * * * * * *');
-      console.log(typeof params._id === 'undefined');
-
-      (typeof params._id === 'undefined' ?
-        this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
-        this.DB.findOne({where: AmpedModel.buildQuery({id: params._id})}, this.queryIncludes))
+    return this.getQuery(req, res, params)
         .then(this.sendResponse.bind(this, req, res))
         .catch((err) => {
           console.log('ERROR', err);
         });
-    }
-
   }
 
+
   sendResponse(req, res, data) {
+
     if (data === null)
       data = [];
     res.setHeader('Content-Type', 'application/json');
+
     res.feedback(
       this.isEditRoute(req.url) ?
         this.editSchema.slice(0).map((row) => {
@@ -104,11 +117,14 @@ class AmpedModel {
             return col;
           });
         }) : data);
-    return null;
+    return data;
   };
 
-  getQuery(params) {
-    return false;
+  getQuery(req, res, params) {
+
+    return (typeof params._id === 'undefined' ?
+      this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
+      this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), include : this.queryIncludes }));
   }
 
   createModelData(req, res) {
@@ -128,6 +144,10 @@ class AmpedModel {
     // @TODO Check values being sent against the schema
     // @TODO handle errors
     const params = util.getParams(req);
+
+    // @TODO Check values being sent against the schema VERRY TEMP ---\/
+    if ( typeof params.photo !== 'undefined' && params.photo === '' )
+      params.photo = 0;
 
     const data = this.dotNotationToObject(params);
 
@@ -158,10 +178,21 @@ class AmpedModel {
         result.updateAttributes(attrs)
           .then(() => {
 
-            this.getQuery(req, res, {_id:params._id})
-              .then((data) => {
-                this.sendSocket('UPDATE', {user_id: params.id, data });
+            this.getModelData(req, res, {_id:params._id})
+              .then((user) => {
+                this.sendSocket('UPDATE', {user_id: params.id, user });
+                this.logActivity(req, 'update', `${this.modelName} was updated`, user);
               })
+
+
+            // this.getQuery(req, res, {_id:params._id})
+            //   .then((data) => {
+            //     // console.log(req);
+            //     console.log(_req.user);
+            //     this.sendSocket('UPDATE', {user_id: params.id, data });
+            //     this.logActivity(req, 'update', `${this.modelName} was updated`, data);
+            //     this.sendResponse(req, res, data)
+            //   })
           });
       });
 
@@ -236,6 +267,10 @@ class AmpedModel {
     this.socket.sendSocket(this.getEvent(evt), data);
   }
 
+  logActivity(req, action, description, data){
+    req.logActivity(action, description, data);
+  }
+
   getModel() {
     return this.DB;
   }
@@ -305,9 +340,9 @@ class AmpedModel {
 
   get defaultSchema() {
     return {
-      created_at: {type: sequelize.DATE, user_editable: false},
-      updated_at: {type: sequelize.DATE, user_editable: false},
-      deleted_at: {type: sequelize.DATE, user_editable: false},
+      created_at: {type: 'TIMESTAMP', user_editable: false},
+      updated_at: {type: 'TIMESTAMP', user_editable: false},
+      deleted_at: {type: 'TIMESTAMP', user_editable: false},
       deleted_by: {type: sequelize.INTEGER, user_editable: false}
     }
   }

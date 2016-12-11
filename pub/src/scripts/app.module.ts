@@ -9,6 +9,7 @@ import { HomepageComponent }  from './app.homepage';
 
 import { AmpedCrudModule }       from './amped/crud/amped.crud.module';
 import { AmpedAuthModule }       from './amped/auth/amped.auth.module';
+import { AmpedCommonModule }       from './amped/common/amped.common.module';
 
 import { AmpedAuthService } from './amped/auth/amped.auth.service';
 import { AmpedService } from './amped/common/amped.common.service';
@@ -32,6 +33,7 @@ import
     AmpedCrudModule,
     AmpedAuthModule,
     AmpedAdminModule,
+    AmpedCommonModule,
     HttpModule,
     routes
   ],

@@ -12,7 +12,7 @@ import {Router, ActivatedRoute} from '@angular/router';
        </md-card-header>
        <md-card-content>
        
-          <amped-form [data]="loginFormData"></amped-form>
+          <amped-form [data]="formData" [saveLabel]="btnLabel" (onSubmit)="onLogin($event)"></amped-form>
 				  <span class="or"><span>OR</span></span>
 				  
 				  <a (click)="loginGoogle()" class="btn btn-primary" md-raised-button color="primary">Login with Google</a>
@@ -31,14 +31,17 @@ export class AmpedAuthLoginComponent implements OnInit {
   private sub: any;
   private redirect: string;
   
-  private loginFormData: any = {
-    action: '/',
+  private btnLabel : string = 'Login';
+  
+  private formData : any = {
+    action: '/login',
+    method : 'POST',
     fields: [
       [
         {
           type: 'text',
-          label: 'Username',
-          name: 'username',
+          label: 'Email',
+          name: 'email',
           icon: 'account_circle'
         }
       ],
@@ -70,6 +73,14 @@ export class AmpedAuthLoginComponent implements OnInit {
   
   loginFacebook() {
     console.log('Login with Facebook');
+  }
+  
+  //@TODO give data response type
+  onLogin(data : any){
+    console.log('MADE IT!', data.response.token);
+    localStorage.setItem('token', data.response.token);
+    // this.router.navigateByUrl('');
+    window.location.href = '/';
   }
   
 }

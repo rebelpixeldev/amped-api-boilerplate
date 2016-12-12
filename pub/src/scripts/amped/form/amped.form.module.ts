@@ -15,8 +15,8 @@ const exportDeclarations : Array<any> = [
 
 @NgModule({
   imports         : [ CommonModule, FormsModule, ReactiveFormsModule, MaterialModule.forRoot(), AmpedCommonModule, AmpedFilesModule ],
-  declarations    : exportDeclarations,
-  exports         : exportDeclarations,
+  declarations    : [ AmpedFormComponent ],
+  exports         : [ AmpedFormComponent ],
   providers       : [ AmpedService ],
   entryComponents : [  ]
 })

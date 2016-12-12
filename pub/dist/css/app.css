@@ -402,6 +402,11 @@ template {
 [hidden] {
   display: none; }
 
+/**
+ * Applies styles for users in high contrast mode. Note that this only applies
+ * to Microsoft browsers. Chrome can be included by checking for the `html[hc]`
+ * attribute, however Chrome handles high contrast differently.
+ */
 .sk-cube-grid {
   width: 40px;
   height: 40px;
@@ -592,13 +597,20 @@ template {
   text-transform: none;
   width: 1px; }
 
-.md-overlay-container {
-  position: fixed;
+.md-overlay-container, .md-global-overlay-wrapper {
   pointer-events: none;
   top: 0;
   left: 0;
   height: 100%;
-  width: 100%;
+  width: 100%; }
+
+.md-overlay-container {
+  position: fixed;
+  z-index: 1000; }
+
+.md-global-overlay-wrapper {
+  display: flex;
+  position: absolute;
   z-index: 1000; }
 
 .md-overlay-pane {
@@ -630,13 +642,13 @@ template {
 .md-ripple-focused .md-ripple-background {
   background-color: rgba(255, 215, 64, 0.1); }
 
-[md-button].md-button-focus.md-primary::after, [md-icon-button].md-button-focus.md-primary::after, [md-raised-button].md-button-focus.md-primary::after, [md-fab].md-button-focus.md-primary::after, [md-mini-fab].md-button-focus.md-primary::after {
+[md-button].md-button-focus.md-primary .md-button-focus-overlay, [md-icon-button].md-button-focus.md-primary .md-button-focus-overlay, [md-raised-button].md-button-focus.md-primary .md-button-focus-overlay, [md-fab].md-button-focus.md-primary .md-button-focus-overlay, [md-mini-fab].md-button-focus.md-primary .md-button-focus-overlay {
   background-color: rgba(103, 58, 183, 0.12); }
 
-[md-button].md-button-focus.md-accent::after, [md-icon-button].md-button-focus.md-accent::after, [md-raised-button].md-button-focus.md-accent::after, [md-fab].md-button-focus.md-accent::after, [md-mini-fab].md-button-focus.md-accent::after {
+[md-button].md-button-focus.md-accent .md-button-focus-overlay, [md-icon-button].md-button-focus.md-accent .md-button-focus-overlay, [md-raised-button].md-button-focus.md-accent .md-button-focus-overlay, [md-fab].md-button-focus.md-accent .md-button-focus-overlay, [md-mini-fab].md-button-focus.md-accent .md-button-focus-overlay {
   background-color: rgba(255, 215, 64, 0.12); }
 
-[md-button].md-button-focus.md-warn::after, [md-icon-button].md-button-focus.md-warn::after, [md-raised-button].md-button-focus.md-warn::after, [md-fab].md-button-focus.md-warn::after, [md-mini-fab].md-button-focus.md-warn::after {
+[md-button].md-button-focus.md-warn .md-button-focus-overlay, [md-icon-button].md-button-focus.md-warn .md-button-focus-overlay, [md-raised-button].md-button-focus.md-warn .md-button-focus-overlay, [md-fab].md-button-focus.md-warn .md-button-focus-overlay, [md-mini-fab].md-button-focus.md-warn .md-button-focus-overlay {
   background-color: rgba(244, 67, 54, 0.12); }
 
 [md-button], [md-icon-button] {
@@ -649,11 +661,11 @@ template {
     color: #f44336; }
   [md-button].md-primary[disabled], [md-button].md-accent[disabled], [md-button].md-warn[disabled], [md-button][disabled][disabled], [md-icon-button].md-primary[disabled], [md-icon-button].md-accent[disabled], [md-icon-button].md-warn[disabled], [md-icon-button][disabled][disabled] {
     color: rgba(0, 0, 0, 0.38); }
-  [md-button]:hover.md-primary::after, [md-icon-button]:hover.md-primary::after {
+  [md-button]:hover.md-primary .md-button-focus-overlay, [md-icon-button]:hover.md-primary .md-button-focus-overlay {
     background-color: rgba(103, 58, 183, 0.12); }
-  [md-button]:hover.md-accent::after, [md-icon-button]:hover.md-accent::after {
+  [md-button]:hover.md-accent .md-button-focus-overlay, [md-icon-button]:hover.md-accent .md-button-focus-overlay {
     background-color: rgba(255, 215, 64, 0.12); }
-  [md-button]:hover.md-warn::after, [md-icon-button]:hover.md-warn::after {
+  [md-button]:hover.md-warn .md-button-focus-overlay, [md-icon-button]:hover.md-warn .md-button-focus-overlay {
     background-color: rgba(244, 67, 54, 0.12); }
 
 [md-raised-button], [md-fab], [md-mini-fab] {
@@ -730,6 +742,15 @@ md-card-subtitle {
 
 md-dialog-container {
   background: white; }
+
+md-icon.md-primary {
+  color: #673ab7; }
+
+md-icon.md-accent {
+  color: #ffd740; }
+
+md-icon.md-warn {
+  color: #f44336; }
 
 .md-input-placeholder {
   color: rgba(0, 0, 0, 0.38); }
@@ -829,6 +850,41 @@ md-progress-circle[color='warn'] path, md-spinner[color='warn'] path {
   background-color: rgba(255, 215, 64, 0.26); }
   .md-radio-disabled .md-radio-ripple .md-ripple-foreground {
     background-color: rgba(0, 0, 0, 0.38); }
+
+.md-select-trigger {
+  color: rgba(0, 0, 0, 0.38);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12); }
+  md-select:focus:not(.md-select-disabled) .md-select-trigger {
+    color: #673ab7;
+    border-bottom: 1px solid #673ab7; }
+  .ng-invalid.ng-touched:not(.md-select-disabled) .md-select-trigger {
+    color: #f44336;
+    border-bottom: 1px solid #f44336; }
+
+.md-select-arrow {
+  color: rgba(0, 0, 0, 0.38); }
+  md-select:focus:not(.md-select-disabled) .md-select-arrow {
+    color: #673ab7; }
+  .ng-invalid.ng-touched:not(.md-select-disabled) .md-select-arrow {
+    color: #f44336; }
+
+.md-select-content {
+  background: white; }
+
+.md-select-value {
+  color: rgba(0, 0, 0, 0.87); }
+  .md-select-disabled .md-select-value {
+    color: rgba(0, 0, 0, 0.38); }
+
+md-option:hover:not(.md-option-disabled), md-option:focus:not(.md-option-disabled) {
+  background: rgba(0, 0, 0, 0.04); }
+
+md-option.md-selected {
+  background: rgba(0, 0, 0, 0.04);
+  color: #673ab7; }
+
+md-option.md-option-disabled {
+  color: rgba(0, 0, 0, 0.38); }
 
 md-sidenav-layout {
   background-color: #fafafa;

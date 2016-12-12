@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="3b69fe0413f459491c70e12ed4201eae905267f0" datatype="html">
+        <source>Amped Framework</source>
+        <target>Amped Framework</target>
+      </trans-unit>
+      <trans-unit id="6765b4c916060f6bc42d9bb69e80377dbcb5e4e9" datatype="html">
+        <source>Login</source>
+        <target>Login</target>
+      </trans-unit>
+      <trans-unit id="f65253954b66e929a8b4d5ecaf61f9129f8cec64" datatype="html">
+        <source>Dashboard</source>
+        <target>Dashboard</target>
+      </trans-unit>
+      <trans-unit id="58e51ffa7860f348ecef71860f44430732840870" datatype="html">
+        <source>Recent Activity</source>
+        <target>Recent Activity</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

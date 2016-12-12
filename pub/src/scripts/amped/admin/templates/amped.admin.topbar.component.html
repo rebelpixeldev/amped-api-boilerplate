@@ -29,16 +29,16 @@
 <!--</nav>-->
 
 <md-toolbar [color]="primary">
-  <span>Amped Framework</span>
+  <span i18n>Amped Framework</span>
   <span class="fill-remaining-space"></span>
   <div *ngIf="user.display_name" class="">
-    <amp-user-thumb [user]="user" [md-menu-trigger-for]="menu"></amp-user-thumb>
+    <amp-user-thumb [user]="user" [md-menu-trigger-for]="menu" namePrefix="{{'Welcome Back'}}"></amp-user-thumb>
     <button md-icon-button [md-menu-trigger-for]="menu">
       <md-icon>more_vert</md-icon>
     </button>
   </div>
   <div *ngIf="!user.display_name">
-    <a md-raised-button routerLink="/login" href="javascript:void(0)">Login</a>
+    <a md-raised-button routerLink="/login" href="javascript:void(0)" i18n>Login</a>
   </div>
 
 </md-toolbar>

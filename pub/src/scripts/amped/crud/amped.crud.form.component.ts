@@ -35,8 +35,6 @@ export class AmpedCrudFormComponent implements OnInit {
       // let id = params['id'];
       // Retrieve Pet with Id route param
       this.FormService.getCrudData(model, id).then(data => {
-        console.log('DATA');
-        console.log(data);
         this.formData = {
           action : `/api/${model}/${id || ''}`,
           method : 'POST',

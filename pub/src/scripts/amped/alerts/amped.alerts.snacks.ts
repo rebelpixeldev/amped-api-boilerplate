@@ -1,6 +1,6 @@
 import {Component, OnInit, Input, ElementRef, ViewChild} from "@angular/core";
 
-class AmpAlertSnack{
+export class AmpAlertSnack{
   @Input() message : string = '';
   @Input() actionLabel : string = '';
   @Input() containerRef : any = null;

@@ -42,6 +42,7 @@ app.set("view engine", "html");
 app.set('views', path.join(__dirname, '/app/views/'));
 app.use(express.static(path.join(__dirname, 'pub')));
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
+app.use('/i18n', express.static(path.join(__dirname, 'i18n')));
 app.use(compression());
 
 // app.use(logger('dev'));

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, TRANSLATIONS} from '@angular/core';
 
 import { AmpedService } from './amped/common/amped.common.service';
 @Component({
@@ -7,8 +7,8 @@ import { AmpedService } from './amped/common/amped.common.service';
   template: `
       
       <md-card>
-        <md-card-title>Dashboard</md-card-title>
-        <md-card-subtitle>Recent Activity</md-card-subtitle>
+        <md-card-title i18n>Dashboard</md-card-title>
+        <md-card-subtitle i18n>Recent Activity</md-card-subtitle>
         <amped-table [data]="activityData" enableCrud="false"></amped-table>
       </md-card>
     
@@ -21,6 +21,7 @@ export class HomepageComponent implements OnInit {
   private user : any = {};
   
   constructor(private ampedService : AmpedService) {
+    console.log(TRANSLATIONS);
   }
   
   ngOnInit() {

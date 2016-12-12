@@ -6,12 +6,13 @@ import {AmpedSocketService} from '../socket/amped.socket.service';
   moduleId: module.id,
   selector: 'amp-user-thumb',
   template: `
-      <img md-card-avatar [src]="user.photo.source_url" /> {{user.display_name}}
+      <img md-card-avatar [src]="user.photo.source_url" /> {{namePrefix}} {{user.display_name}}
 
     `
 })
 export class AmpedUserThumb implements OnInit {
-
+  
+  @Input() namePrefix : string = '';
   @Input() user : any; // @TODO make the typed to an interface
 
   constructor(private socketService : AmpedSocketService) {

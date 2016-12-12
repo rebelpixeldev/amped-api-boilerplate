@@ -29,7 +29,7 @@ const exportDeclarations : Array<any> = [
 ];
 
 @NgModule({
-  imports         : [ CommonModule, HttpModule, FormsModule, MaterialModule.forRoot(), Ng2PaginationModule, AmpedCommonModule, AmpedAlertModule ],
+  imports         : [ CommonModule, HttpModule, FormsModule, Ng2PaginationModule, AmpedCommonModule, AmpedAlertModule, MaterialModule.forRoot() ],
   declarations    : exportDeclarations,
   exports         : exportDeclarations,
   providers       : [ AmpedService, AmpedFilesService ],

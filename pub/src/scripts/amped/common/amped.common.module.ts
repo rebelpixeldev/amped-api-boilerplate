@@ -16,27 +16,45 @@ import { AmpedSpinner } from './amped.common.spinner.component';
 
 import { AmpedService } from './amped.common.service';
 import {AmpedAlertModule} from "../alerts/amped.alerts.module";
-
-const exportDeclarations : Array<any> = [
-  TruncatePipe,
-  AmpedFilterPipe,
-  AmpedFormatPipe,
-  AmpedTable,
-  AmpedTableCell,
-  AmpedSpinner
-];
-
-const entryComponents : Array<any> = [
-  JSONCell, TextCell, ImageCell, AmpedSpinner
-];
-
-console.log(exportDeclarations.concat(entryComponents));
+// @TODO had issues when using the angular compiler using variables for this. Figure out why
+// const exportDeclarations : Array<any> = [
+//   TruncatePipe,
+//   AmpedFilterPipe,
+//   AmpedFormatPipe,
+//   AmpedTable,
+//   AmpedTableCell,
+//   AmpedSpinner
+// ];
+//
+// const entryComponents : Array<any> = [
+//   JSONCell, TextCell, ImageCell, AmpedSpinner
+// ];
+//
+// const
+//   declarations = exportDeclarations.concat(entryComponents),
+//   exports = exportDeclarations.concat(entryComponents);
 
 @NgModule({
-  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, MaterialModule.forRoot(), AmpedAlertModule],
-  declarations  : exportDeclarations.concat(entryComponents),
-  exports       : exportDeclarations.concat(entryComponents),
-  providers     : [ AmpedService ],
-  entryComponents : entryComponents
+  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedAlertModule, MaterialModule.forRoot()],
+  declarations  : [
+    TruncatePipe,
+    AmpedFilterPipe,
+    AmpedFormatPipe,
+    AmpedTable,
+    AmpedTableCell,
+    AmpedSpinner, JSONCell, TextCell, ImageCell, AmpedSpinner
+  ],
+  exports       : [
+    TruncatePipe,
+    AmpedFilterPipe,
+    AmpedFormatPipe,
+    AmpedTable,
+    AmpedTableCell,
+    AmpedSpinner, JSONCell, TextCell, ImageCell, AmpedSpinner
+  ],
+  providers       : [ AmpedService ],
+  entryComponents : [
+    JSONCell, TextCell, ImageCell, AmpedSpinner
+  ]
 })
 export class AmpedCommonModule { }

@@ -3,7 +3,7 @@ import {Component, OnInit, Input} from "@angular/core";
 import { AmpedFormatPipe } from './pipes/amped.common.format';
 
 
-class TableCell{
+export class TableCell{
   @Input() header : string;
   @Input() row : any;
 }

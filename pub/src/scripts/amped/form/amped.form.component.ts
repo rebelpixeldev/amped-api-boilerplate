@@ -25,13 +25,14 @@ interface FormDataInterface {
        <md-card-title *ngIf="model && model !== ''">Editing {{model}}</md-card-title>  
        <md-card-content>
             <form *ngIf="form" (ngSubmit)="onFormSubmit()" [formGroup]="form">
+            
+            <input type="hidden" name="{{field.name}}" value="{{field.value}}" *ngFor="let field of hiddenFields">
+            
               <md-grid-list *ngFor="let row of fields" cols="{{row.length}}" rowHeight="{{rowHeight}}" gutterSize="{{gutterSize}}">
                 <md-grid-tile *ngFor="let field of row" >
                   <div [ngSwitch]="field.type" class="amped-form-element">
                     <!-- Hidden input @TODO hidden here still adds a figure and is styled which takes up space on the form. 
                      Either add hidden fields to the response afterwards or pull the out beforehand and append before the loops-->
-                         <!--<input *ngSwitchCase="'hidden'" type="hidden" [formControlName]="field.name" />-->
-                    <!-- Text input -->
                         <md-input *ngSwitchCase="'text'" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
                         <md-input *ngSwitchCase="'password'" type="password" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
                         
@@ -91,6 +92,7 @@ export class AmpedFormComponent implements OnInit, OnChanges {
 
   public formControls: any = {};
   public fields: Array<FieldInterface> = [];
+  public hiddenFields: any = [];
   public form: FormGroup;
 
   private _fieldDefaults: Object = {
@@ -117,16 +119,28 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
 
   mapDataDefaults() {
+    this.separateHiddenFields();
     this.fields = this.data.fields.map((rows: any) => {
       return rows.map((field: FieldInterface) => Object.assign({}, this._fieldDefaults, field));//Object.assign({}, this._fieldDefaults, field) )
     });
+  }
+  
+  separateHiddenFields(){
+    this.data.fields = this.data.fields.filter((row : any) => {
+        return row.filter((field : FieldInterface) => {
+            if ( typeof field.type !== 'undefined' && field.type === 'hidden' ) {
+              this.hiddenFields = [...this.hiddenFields, field];
+              return false;
+            }
+            return true;
+        }).length > 0;
+    })
   }
 
   buildForm() {
     if (typeof this.data.fields !== 'undefined') {
       this.mapDataDefaults();
-      console.log(this.fields);
-      this.formControls = this.fields.reduce((ret: any, row: any) => {
+      this.formControls = this.fields.concat([this.hiddenFields]).reduce((ret: any, row: any) => {
         row.forEach((field: any) => {
 
           if (typeof field.value === 'object') {
@@ -142,8 +156,8 @@ export class AmpedFormComponent implements OnInit, OnChanges {
 
         return ret;
 
-      }, {});
-
+      }, {} );
+      
       this.form = new FormGroup(this.formControls);
     }
   }
@@ -153,8 +167,6 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
 
   getJsonFieldKeys(json: any) {
-    console.log(json );
-    console.log(Object.keys(json));
     return Object.keys(json);
   }
 
@@ -163,16 +175,12 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
 
   handleFileSelect(data : any, controlName : string){
-    console.log(this.formControls);
-    
     Object.keys(data).forEach(( key ) => {
-      console.log(`${controlName}.${key}`);
       if ( typeof this.formControls[`${controlName}.${key}`] === 'undefined' ) {
         const ctrlName = `${controlName}.${key}`
         this.formControls[ctrlName] = new FormControl(data[key]);
         this.form.addControl(ctrlName, this.formControls[ctrlName]);
         this.form.removeControl(controlName);
-        console.log(this.formControls);
       } else
         this.formControls[`${controlName}.${key}`].setValue(data[key])
     } );
@@ -182,8 +190,6 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   
   // @TODO add error handler if this.data.action is undefined
   onFormSubmit() {
-    console.log(this.data);
-    console.log(typeof this.data.method === 'undefined');
     this.ampedService[(typeof this.data.method === 'undefined' ? 'get' : this.data.method.toLowerCase())](this.data.action, this.form.value)
       .then(( resp : any ) => this.onSubmit.emit(resp));
   }

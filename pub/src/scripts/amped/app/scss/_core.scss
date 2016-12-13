@@ -1,4 +1,4 @@
-@import "loader";
+
 
 $navbar-height : 50px;
 $grid-gutter-width : 30px;
@@ -14,7 +14,7 @@ $accent:  md-palette($md-amber, A200, A100, A400);
 
 
 
-
+$brand-primary : map-get($md-deep-purple, $color-weight-level);
 $success : map-get($md-green, $color-weight-level);
 $success-color : map-get(map-get($md-green, contrast), $color-weight-level);
 
@@ -31,6 +31,8 @@ h1, h2, h3, h4, h5, h6{margin-top:0;}
   display:flex; flex-direction: row; height:calc(100vh - #{$navbar-height});
   .app-content-container{flex:1;}
 }
+
+@import "loader";
 
 
 

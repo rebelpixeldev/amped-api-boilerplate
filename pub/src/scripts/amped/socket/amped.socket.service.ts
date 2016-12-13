@@ -36,6 +36,8 @@ export class AmpedSocketService{
   }
   
   private _handleSocket(evt : string, data : any){
+    
+    console.log('HANDLED', evt);
     this.listeners[evt].forEach( ( func : Function ) => func(data));
     console.log('AHNDLE SOCKET', arguments);
   }

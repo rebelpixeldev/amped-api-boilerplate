@@ -1,4 +1,5 @@
 import {Component, OnInit, Input, ElementRef, ViewChild} from "@angular/core";
+import {MdSnackBarConfig} from "@angular/material";
 
 export class AmpAlertSnack{
   @Input() message : string = '';
@@ -23,7 +24,9 @@ export class AmpAlertSnack{
     `;
   }
   
-  constructor( ) { }
+  constructor( ) {
+    
+  }
   
   ngAfterViewInit() {
     this.elem.nativeElement.parentElement.parentElement.classList.add(this.containerClass);

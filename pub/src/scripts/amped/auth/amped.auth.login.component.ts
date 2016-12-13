@@ -72,15 +72,15 @@ export class AmpedAuthLoginComponent implements OnInit {
   }
   
   loginFacebook() {
-    console.log('Login with Facebook');
+    console.log('@TODO Login with Facebook');
   }
   
   //@TODO give data response type
   onLogin(data : any){
-    console.log('MADE IT!', data.response.token);
-    localStorage.setItem('token', data.response.token);
-    // this.router.navigateByUrl('');
-    window.location.href = '/';
+    // localStorage.setItem('token', data.response.token);
+    // window.location.href = '/';
+    //noinspection TypeScriptUnresolvedFunction
+    window.onLogin(data);
   }
   
 }

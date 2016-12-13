@@ -10,7 +10,7 @@ export class AmpedAlertService {
   
   constructor(private snack : MdSnackBar) {
     this.config = new MdSnackBarConfig();
-    // this.config.duration = 1000; //@TODO Duration isn't in there for some reason
+    this.config.duration = 3000;
     
   }
   
@@ -18,7 +18,6 @@ export class AmpedAlertService {
     const ref : any = this.snack.openFromComponent(AmpAlertSnackSuccess, this.config);
     ref.instance.message = message;
     ref.instance.actionLabel = actionLabel;
-    console.log(ref);
   }
   
   snackError( message: string = '', actionLabel : string = '', icon : string = 'check' ){

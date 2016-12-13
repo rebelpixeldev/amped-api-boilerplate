@@ -1,18 +1,18 @@
 'use strict';
 const
-
-  AmpedConnector = require('./AmpedConnector'),
-  bcrypt = require('bcrypt'),
-  config = require('../config/config'),
-  GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
-  LocalStrategy = require('passport-local').Strategy,
-  JWT = require('jsonwebtoken'),
-  passport = require('passport'),
-  passportJWT = require('passport-jwt'),
-  request = require('request'),
-  SHA1 = require('sha1'),
-  User = require('../models/Users'),
-  util = require('./AmpedUtil');
+  AmpedAuthorization  = require('./AmpedAuthorization'),
+  AmpedConnector      = require('./AmpedConnector'),
+  bcrypt              = require('bcrypt'),
+  config              = require('../config/config'),
+  GoogleStrategy      = require('passport-google-oauth').OAuth2Strategy,
+  LocalStrategy       = require('passport-local').Strategy,
+  JWT                 = require('jsonwebtoken'),
+  passport            = require('passport'),
+  passportJWT         = require('passport-jwt'),
+  request             = require('request'),
+  SHA1                = require('sha1'),
+  User                = require('../models/Users'),
+  util                = require('./AmpedUtil');
 
 class AmpedPassport {
 
@@ -39,6 +39,7 @@ class AmpedPassport {
   strategyCallbackHandler(req, res) {
     res.send(
       `<script>
+            window.opener.onLogin({response : { token : '${req.jwt}' }});
                 window.opener.location.href="/";
                 self.close();
             </script>`
@@ -166,13 +167,14 @@ class AmpedPassport {
     // @TODO this is bad here. move this
     this.app.get('/auth/google', this.passport.authenticate('google', {scope: ['profile', 'email']}));
     this.app.get('/auth/google/callback',
-      this.passport.authenticate('google'), this.strategyCallbackHandler);
+      this.passport.authenticate('google', {session:false}), this.strategyCallbackHandler);
 
     this.passport.use(new GoogleStrategy({
         // @TODO add config
         clientID: '900264263-3nqlusqgu014h4mb83vo39gdgt2orie4.apps.googleusercontent.com',
         clientSecret: '5BGqz2HWelkU0heJn2QQXMtn',
         callbackURL: '/auth/google/callback',
+        session : false,
         passReqToCallback: true
 
       },
@@ -184,10 +186,12 @@ class AmpedPassport {
 
           // try to find the user based on their google id
           // @TODO handle error
-          req.db.users.findOne({'serviceId': profile.id, 'provider': 'google'})
+          req.db.users.findOne({where: {service_id : profile.id, provider : 'google'}})
             .then((user) => {
+              console.log(user);
 
               if (user) {
+                req.jwt = AmpedAuthorization.encodeToken(user);
                 // if a user is found, log them in
                 return done(null, user);
               } else {
@@ -228,6 +232,7 @@ class AmpedPassport {
                   .then(this.createUserAccount.bind(this, req))
                   .then((user) => {
                     request({
+                      // @TODO hardcoded url
                       url: `http://localhost:3000/uploads/upload?remote_url=${profile.photos[0].value.split('?')[0]}&token=${user.token}`,
                       method: 'POST'
                     }, (err, resp, body) => {
@@ -236,7 +241,10 @@ class AmpedPassport {
 
                       user.updateAttributes({
                         photo: fileInfo.id
-                      }).then(() => done(err, user));
+                      }).then(() => {
+                        req.jwt = AmpedAuthorization.encodeToken(user);
+                        done(err, user)
+                      });
                     })
                   })
                   .catch((err) => {

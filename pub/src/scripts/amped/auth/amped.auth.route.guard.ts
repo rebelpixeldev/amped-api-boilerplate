@@ -23,7 +23,7 @@ export class AmpedAuthGuard implements CanActivate {
       .then((user: any) => typeof user.id === 'undefined')
       .then((user: any) => {
         if (user)
-          this.router.navigate(['/login', encodeURIComponent(state.url)]);
+          this.router.navigate(['/login']); //encodeURIComponent(state.url)
         else
           return true;
       })

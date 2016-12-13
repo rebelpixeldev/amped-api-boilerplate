@@ -15,7 +15,10 @@ const config = {
 
 // @TODO make this mor comprehensive with regexp
 config.routing.isPublic = (url) => {
-    return config.routing.noAuth.indexOf(url) !== -1 || url.indexOf('/uploads/source') === 0 || url.indexOf('/uploads/thumb') === 0;
+    return config.routing.noAuth.indexOf(url) !== -1 ||
+            url.indexOf('/uploads/source') === 0 ||
+            url.indexOf('/uploads/thumb') === 0 ||
+            url.indexOf('/auth/google') === 0;
 }
 config.errors.getError = (key) => {
   //@TODO can add i18n translations here for message

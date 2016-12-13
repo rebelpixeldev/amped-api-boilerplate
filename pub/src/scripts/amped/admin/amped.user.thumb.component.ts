@@ -20,10 +20,7 @@ export class AmpedUserThumb implements OnInit {
 
   ngOnInit() {
     this.socketService.addSocketListener('USERS_UPDATE', (payload : any) => {
-      
-      this.user = payload.data;
-        // console.log('I HEARD YA', data);
-      // this.user =
+      this.user = payload.user;
     })
     
   }

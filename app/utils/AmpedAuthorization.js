@@ -123,6 +123,7 @@ class AmpedAuthorization {
 }
 
 module.exports.AmpedAuthorization = AmpedAuthorization;
+module.exports.encodeToken = AmpedAuthorization.encodeToken;
 
 module.exports.getUserByToken = AmpedAuthorization.getUserByToken;
 module.exports.convertQueryRelations = AmpedAuthorization.convertQueryRelations;

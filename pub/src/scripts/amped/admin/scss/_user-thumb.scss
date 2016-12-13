@@ -1,5 +1,5 @@
 amp-user-thumb{
-  height:64px; display:flex; align-items: center; cursor:pointer;
+  height:64px; display:flex; align-items: center; cursor:pointer; font-size:16px;
 
   img{height:70%; border-radius:100%; margin-right:$grid-gutter-width/2; }
 }

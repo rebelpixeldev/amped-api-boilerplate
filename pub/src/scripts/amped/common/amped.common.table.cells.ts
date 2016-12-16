@@ -1,8 +1,5 @@
 import {Component, OnInit, Input} from "@angular/core";
 
-import { AmpedFormatPipe } from './pipes/amped.common.format';
-
-
 export class TableCell{
   @Input() header : string;
   @Input() row : any;
@@ -41,11 +38,7 @@ export class JSONCell extends TableCell implements OnInit {
     selector: 'table-cell-text',
     template : `{{row[header]}}`
 })
-export class TextCell extends TableCell implements OnInit {
-
-    ngOnInit() { }
-
-}
+export class TextCell extends TableCell{}
 
 
 @Component({
@@ -53,8 +46,13 @@ export class TextCell extends TableCell implements OnInit {
   selector: 'table-cell-image',
   template : `<img md-card-avatar src="{{row[header]}}" title="{{header}}" />`
 })
-export class ImageCell extends TableCell implements OnInit {
+export class ImageCell extends TableCell{}
 
-  ngOnInit() { }
 
-}
+@Component({
+  moduleId: module.id,
+  selector: 'table-cell-date',
+  template : `{{row[header] | amTimeAgo}}`
+})
+export class DateCell extends TableCell{}
+

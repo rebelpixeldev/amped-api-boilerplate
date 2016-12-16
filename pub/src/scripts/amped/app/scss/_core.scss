@@ -44,6 +44,8 @@ h1, h2, h3, h4, h5, h6{margin-top:0;}
   padding:$grid-gutter-width;
 }
 
+.flex-space-between{display:flex; flex-direction:row; justify-content: space-between}
+
 .fill-remaining-space{flex: 1 1 auto;}
 
 bs-modal-container{

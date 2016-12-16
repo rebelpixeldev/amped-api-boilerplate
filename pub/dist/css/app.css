@@ -1019,6 +1019,11 @@ h1, h2, h3, h4, h5, h6 {
 .amped-container {
   padding: 30px; }
 
+.flex-space-between {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; }
+
 .fill-remaining-space {
   flex: 1 1 auto; }
 

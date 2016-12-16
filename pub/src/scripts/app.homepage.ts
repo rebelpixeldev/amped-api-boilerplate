@@ -9,7 +9,7 @@ import { AmpedService } from './amped/common/amped.common.service';
       <md-card>
         <md-card-title i18n>Dashboard</md-card-title>
         <md-card-subtitle i18n>Recent Activity</md-card-subtitle>
-        <amped-table [data]="activityData" enableCrud="false"></amped-table>
+        <amped-table [data]="activityData" actionsEnabled="false"></amped-table>
       </md-card>
     
 

@@ -77,10 +77,10 @@ export class AmpedAuthLoginComponent implements OnInit {
   
   //@TODO give data response type
   onLogin(data : any){
-    // localStorage.setItem('token', data.response.token);
-    // window.location.href = '/';
+    localStorage.setItem('token', data.response.token);
+    window.location.href = '/';
     //noinspection TypeScriptUnresolvedFunction
-    window.onLogin(data);
+    // window.onLogin(data);
   }
   
 }

@@ -90,6 +90,7 @@ class AmpedModel {
     // }
   }
 
+  // @TODO ERROR HANDLING
   getModelData(req, res, params) {
 
     if ( typeof params === 'undefined')
@@ -123,8 +124,8 @@ class AmpedModel {
   getQuery(req, res, params) {
 
     return (typeof params._id === 'undefined' ?
-      this.DB.findAll({where: AmpedModel.buildQuery({}), include: this.queryIncludes}) :
-      this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), include : this.queryIncludes }));
+      this.DB.findAll({where: AmpedModel.buildQuery({}), order:this.queryOrder, include: this.queryIncludes}) :
+      this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), order:this.queryOrder, include : this.queryIncludes }));
   }
 
   createModelData(req, res) {
@@ -277,7 +278,10 @@ class AmpedModel {
 
   get queryIncludes() {
     return [];
+  }
 
+  get queryOrder(){
+    return 'updated_at DESC';
   }
 
   get crudForm() {

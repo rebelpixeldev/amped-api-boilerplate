@@ -15,18 +15,23 @@ export class TableCell{
       </button>
 
 <md-menu #menu="mdMenu">
-  <span md-menu-item *ngFor="let key of keys"> {{key | format : 'slugtotitle'}} - {{row[header][key] || 'N/A'}} </span>
+  <span md-menu-item *ngFor="let key of keys"> {{key | format : 'slugtotitle'}} - {{ refObject[key] || 'N/A'}} </span>
 </md-menu>`
 })
 export class JSONCell extends TableCell implements OnInit {
 
   private keys : Array<string>;
   private label : string;
+  private refObject : any;
 
   ngOnInit() {
     if ( typeof this.row[this.header] !== 'undefined' && this.row[this.header] !== null ) {
-      this.keys = Object.keys(this.row[this.header]);
-      this.label = this.row[this.header][this.keys.shift()];
+      
+      this.refObject = this.row[this.header].constructor === Array ? this.row[this.header][0] : this.row[this.header];
+      
+      this.keys = Object.keys(this.refObject);
+      console.log();
+      this.label = this.refObject[this.keys.shift()];
     }
   }
 
@@ -36,15 +41,25 @@ export class JSONCell extends TableCell implements OnInit {
 @Component({
     moduleId: module.id,
     selector: 'table-cell-text',
-    template : `{{row[header]}}`
+    template : `{{label}}`
 })
-export class TextCell extends TableCell{}
+export class TextCell extends TableCell implements OnInit{
+  
+  private label : string = '';
+  
+  ngOnInit(){
+    const parts = this.header.split('.');
+    this.label = parts.length === 1 ?
+          this.row[this.header] : this.row[parts[0]][parts[1]];
+  }
+  
+}
 
 
 @Component({
   moduleId: module.id,
   selector: 'table-cell-image',
-  template : `<img md-card-avatar src="{{row[header]}}" title="{{header}}" />`
+  template : `<img md-card-avatar src="{{row[header] ? row[header].source_url : ''}}" title="{{header}}" />`
 })
 export class ImageCell extends TableCell{}
 

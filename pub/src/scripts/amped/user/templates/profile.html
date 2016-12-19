@@ -1,0 +1,21 @@
+<div class="user-profile flex-row">
+    <amp-user-card></amp-user-card>
+
+    <div class="user-profile-content">
+      <md-card>
+        <md-card-header>
+          <md-card-title>Info</md-card-title>
+        </md-card-header>
+        <md-card-content>
+          {{user.email}}
+        </md-card-content>
+      </md-card>
+
+      <md-card>
+        <md-card-title>Latest Activity</md-card-title>
+        <amped-table [data]="userActivityData" enableCrud="false" showFilter="false" showPagination="false"></amped-table>
+      </md-card>
+
+    </div>
+
+</div>

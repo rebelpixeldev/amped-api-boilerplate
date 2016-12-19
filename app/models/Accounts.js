@@ -12,6 +12,7 @@ class Accounts extends AmpedModel {
 
   addRelations(models){
     models.accounts.getModel().hasMany(models.users.getModel());
+    models.accounts.getModel().hasMany(models.activity.getModel());
   }
 
   get crudForm() {

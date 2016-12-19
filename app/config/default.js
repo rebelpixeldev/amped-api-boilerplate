@@ -1,3 +1,6 @@
+const
+  path = require('path');
+
 const config = {
   errors : {
     'incorrect-password' :{
@@ -10,6 +13,17 @@ const config = {
   },
   routing : {
     noAuth : ['/', '/login', '/register', '/reset' ]
+  },
+  uploads: {
+    thumb :{
+      width : 300,
+      height: 300
+    },
+    sourcefilePath : '/uploads/source',
+    baseDir: path.join(__dirname, '../uploads'),
+    thumbDir: path.join(__dirname, '../uploads/thumb'),
+    sourceDir: path.join(__dirname, '../uploads/source'),
+    tempDir: path.join(__dirname, '../uploads/tmp')
   }
 };
 

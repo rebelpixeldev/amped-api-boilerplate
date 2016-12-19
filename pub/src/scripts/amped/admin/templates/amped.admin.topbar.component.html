@@ -31,7 +31,7 @@
 <md-toolbar [color]="primary">
   <span i18n>Amped Framework</span>
   <span class="fill-remaining-space"></span>
-  <div *ngIf="user.display_name" class="">
+  <div *ngIf="user !== null && user.display_name" class="">
     <amp-user-thumb [user]="user" [md-menu-trigger-for]="menu" namePrefix="{{'Welcome Back'}}"></amp-user-thumb>
     <button md-icon-button [md-menu-trigger-for]="menu">
       <md-icon>more_vert</md-icon>
@@ -45,6 +45,7 @@
 
 
 <md-menu #menu="mdMenu">
+  <a href="/#/user/profile/{{user.id}}" md-menu-item>Profile</a>
   <a href="/logout" md-menu-item>Logout</a>
 
   <!--<button md-menu-item> Refresh </button>-->

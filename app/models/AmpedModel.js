@@ -69,7 +69,6 @@ class AmpedModel {
    * Routes
    */
   // @TODO handle errors
-  // @TODO handle filter params
   // @TODO fix this naming mess
   getModelDataRoute(req, res, params) {
 
@@ -114,7 +113,8 @@ class AmpedModel {
       this.isEditRoute(req.url) ?
         this.editSchema.slice(0).map((row) => {
           return row.map((col) => {
-            col.value = data[col.name] || '';
+            console.log(col);
+            col.value = col.name === 'id' ? data[col.name] : data[this.schemaData[col.name].value_field] || data[col.name] || '';
             return col;
           });
         }) : data);
@@ -124,8 +124,8 @@ class AmpedModel {
   getQuery(req, res, params) {
 
     return (typeof params._id === 'undefined' ?
-      this.DB.findAll({where: AmpedModel.buildQuery({}), order:this.queryOrder, include: this.queryIncludes}) :
-      this.DB.findOne({where: AmpedModel.buildQuery({id: params._id}), order:this.queryOrder, include : this.queryIncludes }));
+      this.DB.findAll(this.buildQuery({}, params)) :
+      this.DB.findOne(this.buildQuery({where:{id: params._id}}, params)));
   }
 
   createModelData(req, res) {
@@ -146,9 +146,9 @@ class AmpedModel {
     // @TODO handle errors
     const params = util.getParams(req);
 
-    // @TODO Check values being sent against the schema VERRY TEMP ---\/
-    if ( typeof params.photo !== 'undefined' && params.photo === '' )
-      params.photo = 0;
+    // @TODO Check values being sent against the schema VERRY TEMP ---\/. use this.paramsToQuery
+    if ( typeof params.upload_id !== 'undefined' && params.upload_id === '' )
+      params.upload_id = 0;
 
     const data = this.dotNotationToObject(params);
 
@@ -159,9 +159,8 @@ class AmpedModel {
         const attrs = Object.keys(data).reduce((ret, key) => {
           if (typeof data[key] === 'object') {
 
-            const type = this.schema[key].key || this.schema[key].type.key;
 
-            switch(type){
+            switch(this.schema[key].key || this.schema[key].type.key){
               case 'INTEGER':
                 ret[key] = data[key].id;
                     break;
@@ -272,25 +271,63 @@ class AmpedModel {
     req.logActivity(action, description, data);
   }
 
-  getModel() {
-    return this.DB;
-  }
+  getModel() {return this.DB;}
 
-  get queryIncludes() {
-    return [];
-  }
+  get queryIncludes() {return [];}
+  get queryOrderBy() {return 'updated_at';}
+  get queryOrder() {return 'DESC';}
+  get queryPerPage(){return 10000;}
+  get crudForm() {return [];}
 
-  get queryOrder(){
-    return 'updated_at DESC';
-  }
 
-  get crudForm() {
-    return []
-  }
+  buildQuery(baseQuery, params) {
 
-  static buildQuery(query) {
-    // return Object.assign({deleted_at : { $exists : false}}, query);
+    const query = Object.assign({}, baseQuery);
+
+    if (typeof query.include === 'undefined')
+      query.include = this.queryIncludes;
+
+
+    const {order_by = this.queryOrderBy, order = this.queryOrder} = params;
+    query.order = typeof params.order === 'undefined' ? `${order_by} ${order}` : params.order;
+    query.limit = typeof params.limit === 'undefined' ? this.queryPerPage : params.limit;
+
+
+
+    //@TODO add json querying
+    query.attributes = {exclude: ['deleted_at', 'deleted_by']};
+    query.where = Object.assign({}, this.paramsToQuery(params), (query.where || {}));
+
+    // console.log(query);
+
     return query;
+
+  }
+
+  schemaValueValid(value, additionalCheck = true ){
+    return (typeof value !== 'undefined' &&
+            value !== null &&
+            value !== '' &&
+            additionalCheck);
+  }
+
+  paramsToQuery(params){
+    return Object.keys(params).reduce((ret, paramKey) => {
+              if ( paramKey === 'id' || paramKey === '_id')
+                ret.id = params[paramKey];
+              else if ( typeof this.schemaData[paramKey] !== 'undefined' ){
+                switch(this.schema[paramKey].key || this.schema[paramKey].type.key){
+                  case 'INTEGER':
+                    ret[paramKey] =  this.schemaValueValid(params[paramKey], !isNaN(parseInt(params[paramKey]))) ?
+                                      parseInt(params[paramKey]) : 0;
+                    break;
+                  default:
+                    ret[paramKey] = params[paramKey].toString();
+                    break;
+                }
+              }
+            return ret;
+          }, {});
   }
 
   get tablePrefix() {
@@ -344,6 +381,7 @@ class AmpedModel {
 
   get defaultSchema() {
     return {
+      // id : {type : sequelize.INTEGER, primaryKey: true},
       created_at: {type: 'TIMESTAMP', user_editable: false},
       updated_at: {type: 'TIMESTAMP', user_editable: false},
       deleted_at: {type: 'TIMESTAMP', user_editable: false},

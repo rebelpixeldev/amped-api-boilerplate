@@ -12,6 +12,9 @@ class Activity extends AmpedModel {
 
   // @TODO add account and user relations
   addRelations(models){
+    this.models = models;
+    this.models.activity.getModel().belongsTo(models.accounts.getModel(), {foreignKey: 'account_id'});
+    this.models.activity.getModel().belongsTo(models.users.getModel(), {foreignKey: 'user_id'});
   }
 
   get schema() {
@@ -22,6 +25,23 @@ class Activity extends AmpedModel {
       description : sequelize.TEXT,
       data : sequelize.JSON
     }
+  }
+
+  get queryIncludes() {
+    return [
+      {
+        model: this.models.accounts.getModel(),
+        attributes: ['id', 'name', 'created_at']
+      },
+      {
+        model: this.models.users.getModel(),
+        attributes: ['id', 'display_name', 'created_at'],
+        include : {
+          model : this.models.uploads.getModel(),
+          attributes: ['id', 'filename', 'created_at']
+        },
+      }
+    ]
   }
 }
 

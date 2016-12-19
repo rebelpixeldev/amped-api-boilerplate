@@ -26,6 +26,8 @@
       '@angular/upgrade'          : 'npm:@angular/upgrade/bundles/upgrade.umd.js',
 
       // other libraries
+      'chart.js'                  : 'npm:chart.js/dist/chart.js',
+      'ng2-charts'                : 'npm:ng2-charts',
       'ng2-pagination'            : 'npm:ng2-pagination/dist',
       'moment'                    : 'npm:moment',
       'angular2-moment'           : 'npm:angular2-moment',
@@ -39,6 +41,8 @@
       app               : { defaultExtension: 'js', main: './src/scripts/main.js'},
       rxjs              : { defaultExtension: 'js' },
       'socket.io-client': { defaultExtension: 'js' },
+      'chart.js'        : { defaultExtension: 'js' },
+      'ng2-sharts'      : { defaultExtension: 'js', main: 'ng2-charts.js' },
       'ng2-pagination'  : { defaultExtension: 'js', main: 'ng2-pagination.js' },
       'moment'          : { defaultExtension: 'js', main: 'moment.js' },
       'angular2-moment' : { defaultExtension: 'js', main: 'index.js' }

@@ -51,7 +51,10 @@ export class UploadBtnComponent implements OnInit {
         this.ampAlert.snackSuccess('', resp.response.length > 1 ? `${resp.response.length} files have been uploaded` : `${resp.response[0].title} has been uploaded`);
         this.onUpload.emit(resp.response);
       })
-      .catch((err: any) => console.log(err));
+      .catch((err: any) => {
+        this.uploading = false;
+        console.log(err)
+      });
     
   }
   

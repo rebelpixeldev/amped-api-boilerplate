@@ -10,7 +10,6 @@ const
   ampedFeedback       = require('./app/utils/AmpedFeedback'),
   bodyParser          = require('body-parser'),
   compression         = require('compression'),
-  dotenv              = require('dotenv').config(),
   errorHandler        = require('errorhandler'),
   express             = require('express'),
   expressValidator    = require('express-validator'),
@@ -71,7 +70,7 @@ new AmpedPassport(app, socket);
 app.use(AmpedAuthorization.middleware());
 
 
-app.use(AmpedActivityLog.middleware({}));
+app.use(AmpedActivityLog.middleware(socket, {}));
 app.use(AmpedConnector.crudRouteMiddleware(app, socket));
 // @TODO down to here....
 

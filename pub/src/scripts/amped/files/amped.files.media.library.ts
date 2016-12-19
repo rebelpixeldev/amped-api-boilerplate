@@ -19,7 +19,7 @@ import {AmpedSocketService} from '../socket/amped.socket.service';
           <md-grid-tile *ngFor="let file of files | paginate: { itemsPerPage: perpage,
                                                                   currentPage: page}">
           
-            <img (click)="selectFile(file)" src="{{file.source_url}}" alt="">
+            <img (click)="selectFile(file)" src="{{file.thumb_url}}" alt="">
           </md-grid-tile>
         </md-grid-list>
         

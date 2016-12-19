@@ -122,7 +122,7 @@ class AmpedPassport {
                 familyName: params.last_name
               },
               email,
-              photo: 0,
+              upload_id: 0,
               account: 0,
               provider: 'local',
             };
@@ -219,7 +219,7 @@ class AmpedPassport {
                     ret.push(val.value);
                     return ret;
                   }, []),
-                  photo: 0,
+                  upload_id: 0,
                   account: 0,
                   provider: 'google',
 
@@ -233,14 +233,14 @@ class AmpedPassport {
                   .then((user) => {
                     request({
                       // @TODO hardcoded url
-                      url: `http://localhost:3000/uploads/upload?remote_url=${profile.photos[0].value.split('?')[0]}&token=${user.token}`,
+                      url: `http://localhost:3000/uploads/upload?remote_url=${profile.upload_id[0].value.split('?')[0]}&token=${user.token}`,
                       method: 'POST'
                     }, (err, resp, body) => {
                       // @TODO catch if success is false
                       const fileInfo = JSON.parse(body).response;
 
                       user.updateAttributes({
-                        photo: fileInfo.id
+                        upload_id: fileInfo.id
                       }).then(() => {
                         req.jwt = AmpedAuthorization.encodeToken(user);
                         done(err, user)

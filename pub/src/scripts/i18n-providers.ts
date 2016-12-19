@@ -11,7 +11,6 @@ export function getTranslationProviders(): Promise<Object[]> {
   // Ex: 'locale/messages.es.xlf`
   const translationFile = `/i18n/messages.${locale}.xlf`;
   
-  console.log(translationFile);
   return getTranslationsWithSystemJs(translationFile)
     .then( (translations: string ) => [
       { provide: TRANSLATIONS, useValue: translations },
@@ -22,6 +21,5 @@ export function getTranslationProviders(): Promise<Object[]> {
 }
 declare var System: any;
 function getTranslationsWithSystemJs(file: string) {
-  console.log(System.import(file + '!text'));
   return System.import(file + '!text'); // relies on text plugin
 }

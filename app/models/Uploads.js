@@ -14,6 +14,7 @@ class Uploads extends AmpedModel {
 
   addRelations(models){
     this.models = models; // @TODO: Not sure I like this so much
+    models.uploads.getModel().hasOne(models.users.getModel(), {foreign_key : 'photo_id'});
     // models.uploads.getModel().hasOne(models.accounts.getModel());
   }
 
@@ -34,12 +35,18 @@ class Uploads extends AmpedModel {
   get defineOptions(){
     return {
       getterMethods : {
+        // @TODO these paths and url should come from the config
         source_path : function(){
           return `/uploads/source/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
         },
+        thumb_path : function(){
+          return `/uploads/thumb/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
+        },
         source_url : function(){
-          // @TODO hard coded url
           return `http://localhost:3000/uploads/source/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
+        },
+        thumb_url : function(){
+          return `http://localhost:3000/uploads/thumb/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
         }
       }
     }

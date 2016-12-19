@@ -25,9 +25,6 @@ class AmpedAuthorization {
         .then((user) => {
 
           // @TODO verifications for users email
-
-          console.log(params.password, user.password, config.bcrypt.saltRounds);
-
           if ( SHA1(params.password) === user.password ){
             // @TODO make it so that we gather more info on login with a helper lib AmpedUserInfo or something
             resolve({
@@ -54,9 +51,7 @@ class AmpedAuthorization {
 
   static decodeToken(jwt){
     return new Promise((resolve, reject) => {
-      console.log('DECODING');
       JWT.decode(config.jwt.secret, jwt, (err, decode) => {
-        console.log(err);
         resolve(decode);
       })
     })
@@ -81,28 +76,13 @@ class AmpedAuthorization {
 
   }
 
+  // @TODO do something on catch
   static getUserByToken(req, token, callback) {
-    // @TODO do something on catch
-
-    // AmpedAuthorization.decodeToken(token)
-    //   .then((info) => {
         if ( config.routing.noAuth.indexOf(req.url) !== -1 || typeof req.payload === 'undefined' || req.payload.id === ''|| parseInt(req.payload.id) === '' )
           return callback(null);
 
-        req.dbRef.users.getModel().findOne({where: {id: parseInt(req.payload.id)}, include: req.dbRef.users.queryIncludes, raw: true})
-          .then(user => AmpedAuthorization.convertQueryRelations(user))
-          .then((user) => {
-            // @TODO re-evaluate if this can be done in a sequelize join or this is alright
-              req.db.uploads.findOne({where: {id: parseInt(user.photo) /* === '' ? 0 : user.photo)*/ }, raw: true})
-                .then((photo) => {
-                  if ( photo !== null ) {
-                    user.photo = photo;
-                    user.photo.source_path = `/uploads/source/${user.photo.id}.${user.photo.extension}`;
-                    user.photo.source_url = `http://localhost:3000/uploads/source/${user.photo.id}.${user.photo.extension}`;
-                  }
-                  callback(user);
-                })
-        })
+        req.dbRef.users.getModel().findOne({where: {id: parseInt(req.payload.id)}, include: req.dbRef.users.queryIncludes})
+          .then(callback);
   }
 
   static convertQueryRelations(data) {

@@ -14,6 +14,7 @@ import { AmpedCommonModule }       from './amped/common/amped.common.module';
 import { AmpedAuthService } from './amped/auth/amped.auth.service';
 import { AmpedService } from './amped/common/amped.common.service';
 import { AmpedAdminModule } from './amped/admin/amped.admin.module';
+import { AmpedChartModule } from './amped/chart/amped.chart.module';
 
 import { AmpedAuthGuard } from './amped/auth/amped.auth.route.guard';
 
@@ -34,6 +35,7 @@ import
     AmpedAuthModule,
     AmpedAdminModule,
     AmpedCommonModule,
+    AmpedChartModule,
     HttpModule,
     routes
   ],

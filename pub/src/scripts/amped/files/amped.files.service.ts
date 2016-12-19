@@ -17,7 +17,7 @@ export class AmpedFilesService{
   }
   
   uploadFile(formData : FormData) : Promise<any>{
-    return this.ampedService.post('/uploads/upload', formData)
+    return this.ampedService.post('/uploads/upload', formData);
   }
   
 }

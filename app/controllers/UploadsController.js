@@ -57,7 +57,6 @@ class UploadsController{
 
         Promise.all(promises)
           .then(( resp ) => {
-            console.log(req.user);
             this.socket.sendSocket('create', req.user.account, {model:'uploads', user: req.user.id, data: resp});
             return resp;
           })

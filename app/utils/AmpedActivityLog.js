@@ -13,7 +13,7 @@ class AmpedActivityLog {
     this._params = Object.assign({}, defaultParams, params);
   }
 
-  log(req, action, description, data, user) {
+  log(req, socket, action, description, data, user) {
 
     return new Promise((resolve, reject) => {
       if (typeof user === 'undefined')
@@ -24,7 +24,7 @@ class AmpedActivityLog {
         const entry = {
           user_id: typeof req.user === 'undefined' ? 0 : user.id,
           account_id: typeof req.user === 'undefined' ? 0 : user.account_id,
-          action
+          action : action.toLowerCase()
         };
 
         if (typeof description !== 'undefined')
@@ -33,6 +33,10 @@ class AmpedActivityLog {
           entry.data = data;
 
         req.db.activity.create(entry)
+          .then(( val ) => {
+            socket.sendSocket('ACTIVITY_CREATE', val.dataValues, req);
+            return val;
+          })
           .then((  ) => resolve())
           .catch((err) => {
             console.error(err);
@@ -46,12 +50,12 @@ class AmpedActivityLog {
 }
 
 
-module.exports.middleware = function (params) {
+module.exports.middleware = function (socket, params) {
 
   const activityLog = new AmpedActivityLog(params);
 
   return (req, res, next) => {
-    req.logActivity = activityLog.log.bind(activityLog, req);
+    req.logActivity = activityLog.log.bind(activityLog, req, socket);
     next();
   }
 

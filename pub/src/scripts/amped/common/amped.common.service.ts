@@ -75,15 +75,16 @@ export class AmpedService {
         .toPromise()
         .then((resp: any) => resp.json())
         .then((resp: any) => {
-          console.log(resp);
           if (resp.success) {
             // @TODO plan for meta to be sent as well
             resolve(resp);
           } else {
             reject(resp.message);
+            throw resp.message
           }
         }).catch((err: any) => {
         console.error(err);
+        this.alertService.snackError(err);
       })
     })
     

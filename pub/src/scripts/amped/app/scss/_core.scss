@@ -35,18 +35,27 @@ h1, h2, h3, h4, h5, h6{margin-top:0;}
 @import "loader";
 
 
-
-
-
-
-
 .amped-container{
   padding:$grid-gutter-width;
 }
 
+
 .flex-space-between{display:flex; flex-direction:row; justify-content: space-between}
 
 .fill-remaining-space{flex: 1 1 auto;}
+.flex-row{
+  display:flex; flex-direction:row;
+  &.two-column{
+    margin-left:-$grid-gutter-width; margin-right:-$grid-gutter-width;
+    &> *{flex:1; margin-left:$grid-gutter-width; margin-right:$grid-gutter-width;}
+  }
+}
+
+.dashboard-full-width-graph{
+  dislpay:flex; width:100%;
+  canvas{height:400px !important;}
+}
+
 
 bs-modal-container{
   &> div:not(.modal-dialog){width:768px; position:relative; left:50%; transform:translateX(-50%); top:10vh;}
@@ -66,6 +75,7 @@ img{width:100%;}
 */
 // @TODO figure out where and what all the color variables are
 [md-raised-button]{cursor:pointer !important;}
+md-card{margin-bottom:$grid-gutter-width;}
 md-input{cursor:text;}
 md-sidenav-layout{background:#E0E0E0 !important;} // @TODO bad important
 

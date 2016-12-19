@@ -6,7 +6,7 @@ import {Component, OnInit, Input, OnChanges, EventEmitter, Output} from '@angula
   template: `
   <!--<md-card>-->
     <md-card-title-group>
-        <img md-card-sm-image *ngIf="data" [src]="data.source_url" />
+        <img md-card-sm-image *ngIf="data" [src]="data.thumb_url" />
         <md-card-title>{{data.title}}</md-card-title>
         <md-card-subtitle>
           <button md-raised-button amp-files-dialog (onFileSelect)="handleFileSelect($event)" color="primary" (click)="changeUpload()">
@@ -38,7 +38,7 @@ export class AmpedFileUploadDisplay implements OnInit, OnChanges {
   }
 
   changeUpload(){
-
+    return false;
   }
 
   handleFileSelect(file : any){

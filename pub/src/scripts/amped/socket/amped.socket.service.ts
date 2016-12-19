@@ -32,7 +32,6 @@ export class AmpedSocketService{
     this.socket.on('create', (data : any) => {
         console.log(data);
     })
-    console.log(this.socket);
   }
   
   private _handleSocket(evt : string, data : any){

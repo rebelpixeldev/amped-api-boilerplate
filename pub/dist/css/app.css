@@ -1027,6 +1027,23 @@ h1, h2, h3, h4, h5, h6 {
 .fill-remaining-space {
   flex: 1 1 auto; }
 
+.flex-row {
+  display: flex;
+  flex-direction: row; }
+  .flex-row.two-column {
+    margin-left: -30px;
+    margin-right: -30px; }
+    .flex-row.two-column > * {
+      flex: 1;
+      margin-left: 30px;
+      margin-right: 30px; }
+
+.dashboard-full-width-graph {
+  dislpay: flex;
+  width: 100%; }
+  .dashboard-full-width-graph canvas {
+    height: 400px !important; }
+
 bs-modal-container > div:not(.modal-dialog) {
   width: 768px;
   position: relative;
@@ -1045,6 +1062,9 @@ img {
 */
 [md-raised-button] {
   cursor: pointer !important; }
+
+md-card {
+  margin-bottom: 30px; }
 
 md-input {
   cursor: text; }
@@ -1125,6 +1145,13 @@ amp-user-thumb {
     height: 70%;
     border-radius: 100%;
     margin-right: 15px; }
+
+.user-profile amped-user-card {
+  flex: 1; }
+
+.user-profile .user-profile-content {
+  flex: 3;
+  margin-left: 30px; }
 
 amped-crud-table md-input {
   margin-right: 15px; }

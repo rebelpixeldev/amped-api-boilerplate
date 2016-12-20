@@ -16,11 +16,10 @@ import {
   DateCell} from "./amped.common.table.cells";
 import { AmpedSpinner } from './amped.common.spinner.component';
 
-// import { AmpedAuthService } from '../auth/amped.auth.service';
-
 import { AmpedService }   from './amped.common.service';
 import {AmpedAlertModule} from "../alerts/amped.alerts.module";
 import {MomentModule}     from "angular2-moment";
+import {Ng2PaginationModule} from "ng2-pagination";
 
 // @TODO had issues when using the angular compiler using variables for this. Figure out why
 // const exportDeclarations : Array<any> = [
@@ -41,7 +40,7 @@ import {MomentModule}     from "angular2-moment";
 //   exports = exportDeclarations.concat(entryComponents);
 
 @NgModule({
-  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedAlertModule, MaterialModule.forRoot(), MomentModule],
+  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedAlertModule, MaterialModule.forRoot(), MomentModule, Ng2PaginationModule],
   declarations  : [
     TruncatePipe,
     AmpedFilterPipe,

@@ -30,8 +30,7 @@ export class JSONCell extends TableCell implements OnInit {
       this.refObject = this.row[this.header].constructor === Array ? this.row[this.header][0] : this.row[this.header];
       
       this.keys = Object.keys(this.refObject);
-      console.log();
-      this.label = this.refObject[this.keys.shift()];
+      this.label = this.refObject.name || this.refObject.title || this.refObject[this.keys.shift()];
     }
   }
 

@@ -11,8 +11,10 @@ import {JSONCell, ImageCell, TextCell, DateCell} from "./amped.common.table.cell
 @Component({
   selector: 'amped-table',
   template: `
-    <div class="flex-space-between">
-        <span *ngIf="showPagination !== 'false'" class="@TODO pagination"></span>
+    <div class="flex-space-between flex-middle">
+        <span *ngIf="showPagination !== 'false'">
+        <pagination-controls (pageChange)="page = $event" #controls></pagination-controls>
+        </span>
         <md-input *ngIf="showFilter !== 'false'" placeholder="Filter table" [(ngModel)]="filterValue">
           <span md-suffix><md-icon>search</md-icon></span>
         </md-input>
@@ -26,7 +28,8 @@ import {JSONCell, ImageCell, TextCell, DateCell} from "./amped.common.table.cell
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let row of rows | tableFilter : filterValue">
+      <tr *ngFor="let row of rows | tableFilter : filterValue | paginate: { itemsPerPage: perpage,
+                                                                  currentPage: page}">
         <td *ngFor="let header of keys(headers)">
           <amped-table-cell [header]="headers[header]" [row]="row"></amped-table-cell>
         </td>
@@ -54,10 +57,13 @@ export class AmpedTable implements OnInit, OnChanges {
   @Input() showFilter : boolean = true;
   @Input() showPagination : boolean = true;
   
+  @Input() perpage : number = 10;
+  @Input() page : number = 1;
+  
   private rows: Array<Object> = [];
   private sub: any;
   private model: string;
-  private filterValue : string = ''
+  private filterValue : string = '';
   
   constructor(private router: Router, private route: ActivatedRoute) {
   }

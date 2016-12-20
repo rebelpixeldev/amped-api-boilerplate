@@ -44,16 +44,23 @@ h1, h2, h3, h4, h5, h6{margin-top:0;}
 
 .fill-remaining-space{flex: 1 1 auto;}
 .flex-row{
-  display:flex; flex-direction:row;
+  display:flex; flex-direction:row; width:100%;
   &.two-column{
     margin-left:-$grid-gutter-width; margin-right:-$grid-gutter-width;
     &> *{flex:1; margin-left:$grid-gutter-width; margin-right:$grid-gutter-width;}
   }
 }
+.flex-middle{display:flex; align-items:center;}
 
 .dashboard-full-width-graph{
   dislpay:flex; width:100%;
   canvas{height:400px !important;}
+}
+
+pagination-controls ul{
+  padding:0; margin:0;
+  li.current{background-color: md-color($primary) !important;}
+  a{cursor:pointer}
 }
 
 

@@ -7,7 +7,29 @@ import {AmpUserCard} from '../amped.user.card';
 @Component({
   moduleId: module.id,
   selector: 'amp-user-profile',
-  templateUrl: '../templates/profile.html'
+  template: `
+    <div class="user-profile flex-row">
+      <amp-user-card></amp-user-card>
+  
+      <div class="user-profile-content">
+        <md-card>
+          <md-card-header>
+            <md-card-title>Info</md-card-title>
+          </md-card-header>
+          <md-card-content>
+            {{user.email}}
+          </md-card-content>
+        </md-card>
+  
+        <md-card>
+          <md-card-title>Latest Activity</md-card-title>
+          <amped-table [data]="userActivityData" enableCrud="false" showFilter="false"></amped-table>
+        </md-card>
+  
+      </div>
+  
+  </div>
+  `
 })
 export class UserProfileComponent implements OnInit {
   

@@ -6,12 +6,16 @@ import { AmpedService } from './amped/common/amped.common.service';
   selector: 'homepage',
   template: `
     <h1>Dashboard</h1>
-      <div class="dashboard-full-width-graph">
+      <div class="dashboard-full-width-graph flex-row">
         <md-card>
           <md-card-title>Recent Activity Graphed</md-card-title>
           <amp-chart-line [data]="activityData" socketEvent="ACTIVITY_CREATE"></amp-chart-line>
-          </md-card>
-        </div>
+        </md-card>
+        <md-card>
+          <md-card-title>Recent Activity Graphed</md-card-title>
+          <amp-chart-line [data]="activityData" socketEvent="ACTIVITY_CREATE"></amp-chart-line>
+        </md-card>
+      </div>
       <md-card>
         <md-card-title i18n>Recent Activity</md-card-title>
         <amped-table [data]="activityData" [headers]="activityHeaders" actionsEnabled="false"></amped-table>

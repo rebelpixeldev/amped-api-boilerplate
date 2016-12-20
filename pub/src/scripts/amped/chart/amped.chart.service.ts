@@ -35,7 +35,11 @@ export class AmpedChartService {
   }
   
   formatDate(date : Date){
-    return `${date.getMonth()+1}-${date.getDate()}-${date.getFullYear()}`;
+    
+    // const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinute))
+    
+    
+    return `${date.getUTCMonth()+1}-${date.getUTCDate()}-${date.getUTCFullYear()}`;
   }
   
 }

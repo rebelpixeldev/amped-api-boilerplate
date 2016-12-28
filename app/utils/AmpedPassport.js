@@ -36,6 +36,11 @@ class AmpedPassport {
     });
   }
 
+  /**
+   * The route callback used for all strategies other than LocalStrategy
+   * @param req
+   * @param res
+   */
   strategyCallbackHandler(req, res) {
     res.send(
       `<script>

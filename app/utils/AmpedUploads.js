@@ -16,6 +16,13 @@ const
 
 class AmpedUploads {
 
+  /**
+   * Gets the image info
+   *
+   * @param {string} filepath  - The filepath that you want to fetch the image info from
+   *
+   * @returns {Promise} - Will resolve with the info that is pulled from the filepath
+   */
   static getFileInfo(filepath) {
     return new Promise((resolve, reject) => {
       gm(filepath).identify((err, info) => {
@@ -25,6 +32,12 @@ class AmpedUploads {
     })
   }
 
+  /**
+   * Saves an image to the location that is specified in the config.
+   *
+   * @param {object} req          - Express request object
+   * @param {string} tmpFilePath  - The filepath of where the image currently is.
+   */
   static saveImage(req, tmpFilePath) {
     return new Promise((resolve, reject) => {
       AmpedUploads.getFileInfo(tmpFilePath)
@@ -68,6 +81,14 @@ class AmpedUploads {
     })
   }
 
+  /**
+   * Moves an image from one location to another
+   *
+   * @param {string} originalPath   - The source path of an image
+   * @param {string} destPath       - The destination path of an image
+   *
+   * @returns {Promise}             - Resolves with the originalPath as the parameter
+   */
   static moveImage(originalPath, destPath) {
     return new Promise((resolve, reject) => {
       fs.readFile(originalPath, (err, data) => {
@@ -81,19 +102,31 @@ class AmpedUploads {
     })
   }
 
+  /**
+   * Removes an image from a filepath
+   *
+   * @param {string} filepath  - Filepath that should be removed
+   *
+   * @returns {Promise} - Resolves with filepath as the parameter
+   */
   static removeImage(filepath) {
     return new Promise((resolve, reject) => {
       fs.unlink(filepath, function (err) {
         if (err) reject(err);
-        else resolve();
+        else resolve(filepath);
       })
     })
   }
 
+  /**
+   * Creates a thumbnail of a specific image
+   *
+   * @param {string} thumbPath  - The path where the new thumbnail should be saved
+   * @param {string} srcPath  - Path to the source image which the thumbnail should be created from
+   *
+   * @returns {Promise} - Resolves with the thumbpath in the parameter
+   */
   static createThumb(thumbPath, srcPath) {
-
-    console.log('SRRC', srcPath);
-    console.log('THUMB PATH', thumbPath);
     return new Promise((resolve, reject) => {
 
       gm(srcPath)
@@ -102,14 +135,20 @@ class AmpedUploads {
         .gravity('Center')
         .crop(config.uploads.thumb.width, config.uploads.thumb.height)
         .write(thumbPath, function (err) {
-          console.log('THuMMMB', err);
           if ( err )reject(err);
-          else resolve();
+          else resolve(thumbPath);
         });
 
     })
   }
 
+  /**
+   * Downloads a remote image and saves it locally
+   *
+   * @param {string} remoteUrl  - The remote url that you want to download
+   *
+   * @returns {Promise} - Resolves with the filepath where the image has been saved
+   */
   static downloadRemote(remoteUrl) {
     return new Promise((resolve, reject) => {
       const
@@ -128,4 +167,5 @@ class AmpedUploads {
 
 }
 
+// Export the AmpedUploads class
 module.exports = AmpedUploads;

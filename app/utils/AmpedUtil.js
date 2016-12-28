@@ -6,21 +6,58 @@ const
 
 const Util = {
 
+  /**
+   * Gets all params and builds a single object of them.
+   * Takes from `req.body`, `req.params` and parses the url query params
+   *
+   * @param {object} req - An Expressed request object
+   *
+   * @returns {object}
+   */
   getParams : function (req) {
     return Object.assign({}, req.body, req.params, url.parse(req.url, true).query);
   },
 
+  /**
+   * Converts a pascaled case string to underscore
+   *
+   * @param {string} str - A pascaled string
+   *
+   * @returns {string}
+   */
   pascalToUnderscore : function (str) {
     return Util.camelToUnderscore(str).replace(/^_/, "");
   },
+
+  /**
+   * Converts a camelcased string to underscore
+   *
+   * @param {string} str - A camelcased string
+   *
+   * @returns {string}
+   */
   camelToUnderscore : function (str) {
     return str.replace(/([A-Z])/g, function($1){return "_"+$1.toLowerCase();}).replace(/^_/, "");
   },
 
+  /**
+   * Generates a temp name based on a random hash and the current time and what else was passed as the `append` parameter
+   *
+   * @param {string} [append='']   - Anything that should be appended onto the end of the filename
+   *
+   * @returns {string}
+   */
   getTempName : function (append) {
     return Util.generatehash(24) +'-' + new Date().getTime() + '|' + (append.split('?')[0] || '');
   },
 
+  /**
+   * Generates a random hash
+   *
+   * @param {number} length=5  - The length of the hash
+   *
+   * @returns {string} - A hash that is as long as the length that was passed
+   */
   generatehash : function (length) {
     if ( typeof length === 'undefined')
       length = 5;

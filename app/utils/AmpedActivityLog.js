@@ -13,6 +13,16 @@ class AmpedActivityLog {
     this._params = Object.assign({}, defaultParams, params);
   }
 
+  /**
+   * Logs an action
+   *
+   * @param {object} req            - Express request object
+   * @param {AmpedSocket} socket    - AmpedSocket instance
+   * @param {string} action         - The action of the activity. This is a good way to group many actions of a certain type together. For example: 'update', 'create', 'upload', etc...
+   * @param {string} description     - A blurb that describes what the action is
+   * @param {any} data              - Any data that you want to associate with the activity
+   * @param {object} user           - User data object
+   */
   log(req, socket, action, description, data, user) {
 
     return new Promise((resolve, reject) => {
@@ -49,7 +59,14 @@ class AmpedActivityLog {
 
 }
 
-
+/**
+ * Middleware that should be called from the app.js to attach the activity log to the request object.
+ * When the activity log is called a socket event is emitted to inform the client that an activity has taken place
+ *
+ * @param {AmpedSocket} socket    - The global socket object
+ * @param {object} params         - Parameters that should be passed to AmpedActivityLog.
+ * @returns {function}            - Express middleware function
+ */
 module.exports.middleware = function (socket, params) {
 
   const activityLog = new AmpedActivityLog(params);

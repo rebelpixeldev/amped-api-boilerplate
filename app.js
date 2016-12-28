@@ -47,41 +47,30 @@ app.use(compression());
 // app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-// app.use(expressValidator());
-
-// app.use(session({
-//   resave: true,
-//   saveUninitialized: true,
-//   secret: 'abc123',
-//   store: new MongoStore({
-//     url: 'mongodb://localhost:27017/rebelpixel',
-//     autoReconnect: true
-//   })
-// }));
 
 
 // @TODO think about how to clean this shit up....
+// Add feedback to the req object so all api responses are the same format
 app.use(ampedFeedback({token : true}));
 
+// Build all the models and connect to the database
 AmpedConnector.buildModels(app, socket);
 
+// Add the database models to the req object
 app.use(AmpedConnector.databaseMiddleware(app, socket));
+
+// Connect passport and build the strategies
 new AmpedPassport(app, socket);
+
+// add all the middleware that has to do with getting the user info
 app.use(AmpedAuthorization.middleware());
 
-
+// Add the activity log to the req object
 app.use(AmpedActivityLog.middleware(socket, {}));
+
+// Add all the crud routes that are built from the model
 app.use(AmpedConnector.crudRouteMiddleware(app, socket));
-// @TODO down to here....
 
-
-// app.use((req, res, next) => {
-//     req.logActivity('Test', 'This is a description', {some:'data'});
-//   next();
-// })
-
-
-// app.use(flash());
 /**
  * Error Handler.
  */

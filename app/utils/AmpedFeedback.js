@@ -7,12 +7,31 @@ const defaultParams = {
   token : false
 }
 
+/**
+ * AmpedFeedback class provides structure to all responses
+ */
 class AmpedFeedback{
 
   constructor(params){
     this._params = Object.assign({}, defaultParams, params);
   }
 
+  /**
+   * Called when a response is needed
+   *
+   * As a default a response is sent as true:
+   *    `{ "success" : true, "message" : "", "response" : [] }
+   *
+   * @param {object} req  - Express request object
+   * @param {object} res  - Express response object
+   * @param {any} data    -
+   *      The data that is parsed and returned.
+   *      If data is an object - The method will look for the `success`, `message` and `meta` keys to set them as the return keys
+   *        Everything else that is in the data object is returned under the `response` key
+   *      If data is a string - The value is passed as a string and the response is sent
+   *
+   * @returns {null}
+   */
   onFeedback(req, res, data){
     const
       resp = { success : true, message : '', response : [] },
@@ -49,7 +68,7 @@ class AmpedFeedback{
 
 }
 
-
+// Export a middleware function to attach the feedback functionality to the request object
 module.exports = function (params) {
 
 

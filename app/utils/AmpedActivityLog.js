@@ -44,7 +44,7 @@ class AmpedActivityLog {
 
         req.db.activity.create(entry)
           .then(( val ) => {
-            socket.sendSocket('ACTIVITY_CREATE', val.dataValues, req);
+            socket.sendSocket('ACTIVITY_CREATE', val.dataValues, req.user);
             return val;
           })
           .then((  ) => resolve())

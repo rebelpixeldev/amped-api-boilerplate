@@ -3,7 +3,13 @@ amped-form{
   .amped-form-element{width:100%}
 
   amp-file-upload-display{
-    display:flex;
+    .md-input-placeholder.md-float{
+      transform:translateY(-6px) scale(0.75) !important;
+    }
+    .amp-upload-display-container{
+      display:flex;
+
+    }
 
     [md-card-sm-image]{margin:0 8px 0 0}
     md-card-title-group{margin:0; flex-direction:row-reverse; align-items:center;}

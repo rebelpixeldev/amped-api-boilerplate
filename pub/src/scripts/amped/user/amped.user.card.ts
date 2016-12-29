@@ -8,7 +8,6 @@ import {AmpedService} from "../common/amped.common.service";
       <md-card>
          <md-card-header>
             <amp-user-thumb [user]="user"></amp-user-thumb>
-            <md-card-title>{{user.display_name}}</md-card-title>
          </md-card-header>
          <md-card-content>
             <p>Here is some more content</p>

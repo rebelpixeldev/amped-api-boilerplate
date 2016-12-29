@@ -2,10 +2,11 @@
 
 
 const
-  SHA1    = require('sha1'),
-  config  = require('../config/config'),
-  JWT     = require('jsonwebtoken'),
-  util    = require('./AmpedUtil');
+  AmpedConnector  = require('./AmpedConnector'),
+  SHA1            = require('sha1'),
+  config          = require('../config/config'),
+  JWT             = require('jsonwebtoken'),
+  util            = require('./AmpedUtil');
 
 // @TODO make external npm module
 const url = require('url');
@@ -70,11 +71,15 @@ class AmpedAuthorization {
    * @returns {Promise}   - A Promise which when resolves has the payload as its parameter.
    */
   static decodeToken(jwt){
+    console.log('DECODING');
     return new Promise((resolve, reject) => {
-      JWT.decode(config.jwt.secret, jwt, (err, decode) => {
-        if ( err ) reject(err);
-        else resolve(decode);
-      })
+      console.log('HELLO');
+      console.log(JWT.decode(jwt));
+      // JWT.decode(config.jwt.secret, jwt, (err, decode) => {
+      //   console.log(err);
+      //   if ( err ) reject(err);
+      //   else resolve(decode);
+      // })
     })
 
   }
@@ -109,14 +114,25 @@ class AmpedAuthorization {
    * A static call to build the user object by `req.payload` and fetching the data through the database
    *
    * @param {object} req          - Express request object
+   * @param {string} token        - @deprecate
    * @param {function} callback   - A callback called when the user data has been fetched or null if the payload is empty or set to an empty string
    */
-  static getUserByToken(req, callback) {
-        if ( config.routing.noAuth.indexOf(req.url) !== -1 || typeof req.payload === 'undefined' || req.payload.id === ''|| parseInt(req.payload.id) === '' )
-          callback(null);
+  static getUserByToken(req, token,  callback) {
+      if ( config.routing.noAuth.indexOf(req.url) !== -1 || typeof req.payload === 'undefined' || req.payload.id === ''|| parseInt(req.payload.id) === '' )
+        callback(null);
 
-        req.dbRef.users.getModel().findOne({where: {id: parseInt(req.payload.id)}, include: req.dbRef.users.queryIncludes})
-          .then(callback);
+      req.dbRef.users.getModel().findOne({where: {id: parseInt(req.payload.id)}, include: req.dbRef.users.queryIncludes})
+        .then(callback);
+  }
+
+
+  static getUserByJWT(jwt){
+    const
+      payload = JWT.decode(jwt),
+      users = AmpedConnector.getModelRef('users');
+
+      return users.getModel().findOne({where: {id: parseInt(payload.id)}, include: users.queryIncludes, raw:true})
+
   }
 
   /**
@@ -148,6 +164,8 @@ class AmpedAuthorization {
 module.exports.AmpedAuthorization = AmpedAuthorization;
 
 // Export all of the static functions for convenience
+module.exports.getUserByJWT = AmpedAuthorization.getUserByJWT;
+module.exports.decodeToken = AmpedAuthorization.decodeToken;
 module.exports.encodeToken = AmpedAuthorization.encodeToken;
 module.exports.getUserByToken = AmpedAuthorization.getUserByToken;
 module.exports.convertQueryRelations = AmpedAuthorization.convertQueryRelations;

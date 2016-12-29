@@ -27,11 +27,13 @@ export class AmpedSocketService{
   }
 
   private _connect(){
-    this.socket = io();
+    this.socket = io(window.location.origin, {query:`authorization=${localStorage.getItem('token')}`});
+    
+    this.socket.connect();
 
-    this.socket.on('create', (data : any) => {
-        console.log(data);
-    })
+    // this.socket.on('create', (data : any) => {
+    //     console.log(data);
+    // })
   }
   
   private _handleSocket(evt : string, data : any){

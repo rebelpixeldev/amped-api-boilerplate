@@ -1,10 +1,13 @@
 'use strict';
 
+const
+  AmpedAuthorization = require('./AmpedAuthorization');
+
 class AmpedSocket {
 
   constructor(io) {
     this.io = io;
-    this.sockets = [];
+    this.sockets = {};
     this.setup();
   }
 
@@ -17,24 +20,36 @@ class AmpedSocket {
    */
   setup() {
     this.io.on('connection', (socket) => {
-      this.sockets.push(socket);
-      socket.on('disconnect', () => this.sockets.slice(this.sockets.indexOf(socket), 1));
+
+      AmpedAuthorization.getUserByJWT(socket.handshake.query.authorization)
+        .then((user) => {
+
+            if ( typeof this.sockets[user.account_id] === 'undefined' )
+              this.sockets[user.account_id] = {};
+          socket.user = user;
+          this.sockets[user.account_id][user.id] = socket;
+
+          socket.on('disconnect', () => delete this.sockets[user.account_id][user.id]);
+        });
     })
   }
 
   /**
-   * @TODO send sockets based on account_id
-   *
    * @param {string} evt   - The event that should be sent
    * @param {any} data     - The data that will be sent with the socket event
    * @param {object} req   - Express request object
    */
-  sendSocket(evt, data, req) {
+  sendSocket(evt, data, user, toUser) {
     if (typeof data === 'undefined')
       data = {};
-    this.sockets.forEach((socket) => {
-      socket.emit(evt, data)
-    });
+
+    if ( typeof toUser === 'undefined' )
+      Object.keys(this.sockets[user.account_id]).forEach(( sk ) => this.sockets[user.account_id][sk].emit(evt, data));
+    else
+      this.sockets[toUser.account_id][toUser.id].emit(evt, data);
+    // this.sockets.forEach((socket) => {
+    //   socket.emit(evt, data)
+    // });
   }
 }
 

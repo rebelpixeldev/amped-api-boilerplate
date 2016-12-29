@@ -18,31 +18,43 @@ import {AmpedAlertService} from "../alerts/amped.alert.service";
 export class AmpedCrudFormComponent implements OnInit {
 
   @Input() params : any;
+  @Input() setFromUrl : string = 'true';
+  
+  @Input() model : string;
+  @Input() id : string;
+  @Input() title : string;
 
   public formData : Object = {};
 
   private sub : any;
-  private model : string;
 
   constructor(private FormService : AmpedFormsService, private route: ActivatedRoute, private ampAlert : AmpedAlertService ) {
   }
 
   ngOnInit() {
-
-    this.sub = this.route.params.subscribe(routeParams => {
-      const {model, id} = this.params || routeParams;
-      this.model = model;
-      // let id = params['id'];
-      // Retrieve Pet with Id route param
-      this.FormService.getCrudData(model, id).then(data => {
-        this.formData = {
-          action : `/api/${model}/${id || ''}`,
-          method : 'POST',
-          fields : data.response
-        };
-      }).catch((err) => {
-          console.log('ERROR', err);
+    
+    if ( this.setFromUrl === 'true' ) {
+      this.sub = this.route.params.subscribe(routeParams => {
+        const {model, id} = this.params || routeParams;
+        this.model = model;
+        this.id = id;
+        // let id = params['id'];
+        // Retrieve Pet with Id route param
+        this.getFormData();
       });
+    } else
+      this.getFormData();
+  }
+  
+  getFormData(){
+    this.FormService.getCrudData(this.model, this.id).then(data => {
+      this.formData = {
+        action: `/api/${this.model}/${this.id || ''}`,
+        method: 'POST',
+        fields: data.response
+      };
+    }).catch((err) => {
+      console.log('ERROR', err);
     });
   }
 

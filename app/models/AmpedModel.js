@@ -138,7 +138,6 @@ class AmpedModel {
       this.isEditRoute(req.url) ?
         this.editSchema.slice(0).map((row) => {
           return row.map((col) => {
-            console.log(col);
             col.value = col.name === 'id' ? data[col.name] : data[this.schemaData[col.name].value_field] || data[col.name] || '';
             return col;
           });
@@ -230,7 +229,7 @@ class AmpedModel {
 
             this.getModelData(req, res, {_id:params._id})
               .then((user) => {
-                this.sendSocket('UPDATE', {user_id: params.id, user });
+                this.sendSocket('UPDATE', {user_id: params.id, user }, req.user);
                 this.logActivity(req, 'update', `${this.modelName} was updated`, user);
               });
           });
@@ -340,13 +339,9 @@ class AmpedModel {
     query.limit = typeof params.limit === 'undefined' ? this.queryPerPage : params.limit;
 
 
-
     //@TODO add json querying
     query.attributes = {exclude: ['deleted_at', 'deleted_by']};
     query.where = Object.assign({}, this.paramsToQuery(params), (query.where || {}));
-
-    // console.log(query);
-
     return query;
 
   }
@@ -417,8 +412,8 @@ class AmpedModel {
    * @param {string} evt  - The event to be emitted
    * @param {any} data    - The data that should be sent with the socket
    */
-  sendSocket(evt, data) {
-    this.socket.sendSocket(this.getEvent(evt), data);
+  sendSocket(evt, data, user) {
+    this.socket.sendSocket(this.getEvent(evt), data, user);
   }
 
   /**

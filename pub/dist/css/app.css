@@ -928,8 +928,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .app-wrapper {
   display: flex;
-  flex-direction: row;
-  height: calc(100vh - 50px); }
+  flex-direction: row; }
   .app-wrapper .app-content-container {
     flex: 1; }
 
@@ -1177,19 +1176,26 @@ amped-form md-input {
 amped-form .amped-form-element {
   width: 100%; }
 
-amped-form amp-file-upload-display {
+amped-form amp-file-upload-display .md-input-placeholder.md-float {
+  transform: translateY(-6px) scale(0.75) !important; }
+
+amped-form amp-file-upload-display .amp-upload-display-container {
   display: flex; }
-  amped-form amp-file-upload-display [md-card-sm-image] {
-    margin: 0 8px 0 0; }
-  amped-form amp-file-upload-display md-card-title-group {
-    margin: 0;
-    flex-direction: row-reverse;
-    align-items: center; }
-  amped-form amp-file-upload-display md-card-title {
-    font-size: 16px;
-    margin-bottom: 8px; }
-  amped-form amp-file-upload-display md-card-subtitle {
-    margin-bottom: 0; }
+
+amped-form amp-file-upload-display [md-card-sm-image] {
+  margin: 0 8px 0 0; }
+
+amped-form amp-file-upload-display md-card-title-group {
+  margin: 0;
+  flex-direction: row-reverse;
+  align-items: center; }
+
+amped-form amp-file-upload-display md-card-title {
+  font-size: 16px;
+  margin-bottom: 8px; }
+
+amped-form amp-file-upload-display md-card-subtitle {
+  margin-bottom: 0; }
 
 amped-form md-card-title:not(:first-child), amped-form md-card-subtitle:not(:first-child) {
   margin-top: 0; }

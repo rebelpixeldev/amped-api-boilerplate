@@ -12,15 +12,8 @@ import {AmpUserCard} from '../amped.user.card';
       <amp-user-card></amp-user-card>
   
       <div class="user-profile-content">
-        <md-card>
-          <md-card-header>
-            <md-card-title>Info</md-card-title>
-          </md-card-header>
-          <md-card-content>
-            {{user.email}}
-          </md-card-content>
-        </md-card>
-  
+        <amped-crud-form *ngIf="user.id" model="users" [id]="user.id" setFromUrl="false"></amped-crud-form>
+        
         <md-card>
           <md-card-title>Latest Activity</md-card-title>
           <amped-table [data]="userActivityData" enableCrud="false" showFilter="false"></amped-table>
@@ -35,6 +28,8 @@ export class UserProfileComponent implements OnInit {
   
   private user: any = {}; // @TODO needs type
   private userActivityData : any = [];
+  
+  // private formModel : string = ;
   
   constructor(private route: ActivatedRoute, private ampedService: AmpedService) {
   }

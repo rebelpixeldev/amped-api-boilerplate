@@ -22,13 +22,13 @@ interface FormDataInterface {
   selector: 'amped-form',
   template: `
 
-       <md-card-title *ngIf="model && model !== ''">Editing {{model}}</md-card-title>  
+       <md-card-title *ngIf="">{{getFormTitle()}}</md-card-title>
        <md-card-content>
             <form *ngIf="form" (ngSubmit)="onFormSubmit()" [formGroup]="form">
             
             <input type="hidden" name="{{field.name}}" value="{{field.value}}" *ngFor="let field of hiddenFields">
             
-              <md-grid-list *ngFor="let row of fields" cols="{{row.length}}" rowHeight="{{rowHeight}}" gutterSize="{{gutterSize}}">
+              <md-grid-list *ngFor="let row of fields" cols="{{row.length}}" rowHeight="{{getRowHeight(row)}}" gutterSize="{{gutterSize}}">
                 <md-grid-tile *ngFor="let field of row" >
                   <div [ngSwitch]="field.type" class="amped-form-element">
                     <!-- Hidden input @TODO hidden here still adds a figure and is styled which takes up space on the form. 
@@ -52,9 +52,9 @@ interface FormDataInterface {
                          <input *ngSwitchCase="'email'" type="email" class="form-control" [formControlName]="field.name" />
                     
                     <!-- Email input -->
-                      <amp-file-upload-display 
-                        *ngSwitchCase="'image'" 
-                        [data]="field.value" (onFileSelect)="handleFileSelect.call(this, $event, field.name)"></amp-file-upload-display>
+                    <div *ngSwitchCase="'image'" >
+                      <amp-file-upload-display [label]="field.name" [data]="field.value" (onFileSelect)="handleFileSelect.call(this, $event, field.name)"></amp-file-upload-display>  
+                    </div>
                       <!--<img [src]="field.value" alt="">-->
                       <div *ngSwitchCase="'select'" class="col-xs-12">
                           <label for="">{{field.label}}</label>
@@ -87,6 +87,8 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   @Input() model : string;
   @Input() rowHeight : number = 65;
   @Input() gutterSize : number = 10;
+  
+  @Input() title : string = null;
   
   @Output() onSubmit: EventEmitter<any> = new EventEmitter();
 
@@ -173,6 +175,10 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   getFormControlName(field: any, name: any) {
     return `${field.name.toString()}.${name}`;
   }
+  
+  getRowHeight(row : any){
+    return row.filter(( r : any ) => r.type === 'image' ).length > 0 ? 110 : this.rowHeight;
+  }
 
   handleFileSelect(data : any, controlName : string){
     Object.keys(data).forEach(( key ) => {
@@ -192,5 +198,14 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   onFormSubmit() {
     this.ampedService[(typeof this.data.method === 'undefined' ? 'get' : this.data.method.toLowerCase())](this.data.action, this.form.value)
       .then(( resp : any ) => this.onSubmit.emit(resp));
+  }
+  
+  getFormTitle(){
+    if ( this.title !== null )
+      return this.title;
+    else if ( this.model && this.model !== '')
+      return `Editing ${this.model}`;
+    else
+      return '';
   }
 }

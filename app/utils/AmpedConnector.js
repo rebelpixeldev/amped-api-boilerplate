@@ -30,9 +30,9 @@ class AmpedConnector {
    *
    * @returns {Sequelize}    - Sequelize database object
    */
-  static getModel(name) {
-    return AmpedConnector.getConnection()[name];
-  }
+  // static getModel(name) {
+  //   return AmpedConnector.getConnection()[name];
+  // }
 
   /**
    * Gets the connection to the database. If it has already been created, the existing connection will be returned
@@ -101,6 +101,10 @@ class AmpedConnector {
       req.dbRef = models;
       next();
     }
+  }
+
+  static getModelRef(name){
+    return models[name]
   }
 
   /**

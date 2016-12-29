@@ -72,7 +72,7 @@ class Users extends AmpedModel {
       },
       {
         model: this.models.uploads.getModel(),
-        attributes: ['id', 'filename', 'extension', 'created_at']
+        attributes: ['id', 'filename', 'extension', 'title', 'created_at']
       }
     ]
   }

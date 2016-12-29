@@ -11,10 +11,6 @@ import { AmpedService } from './amped/common/amped.common.service';
           <md-card-title>Recent Activity Graphed</md-card-title>
           <amp-chart-line [data]="activityData" socketEvent="ACTIVITY_CREATE"></amp-chart-line>
         </md-card>
-        <md-card>
-          <md-card-title>Recent Activity Graphed</md-card-title>
-          <amp-chart-line [data]="activityData" socketEvent="ACTIVITY_CREATE"></amp-chart-line>
-        </md-card>
       </div>
       <md-card>
         <md-card-title i18n>Recent Activity</md-card-title>

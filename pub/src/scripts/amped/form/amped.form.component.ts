@@ -21,8 +21,7 @@ interface FormDataInterface {
   moduleId: module.id,
   selector: 'amped-form',
   template: `
-
-       <md-card-title *ngIf="">{{getFormTitle()}}</md-card-title>
+       <md-card-title *ngIf="getFormTitle() && hideTitle === 'false'">{{getFormTitle()}}</md-card-title>
        <md-card-content>
             <form *ngIf="form" (ngSubmit)="onFormSubmit()" [formGroup]="form">
             
@@ -56,11 +55,10 @@ interface FormDataInterface {
                       <amp-file-upload-display [label]="field.name" [data]="field.value" (onFileSelect)="handleFileSelect.call(this, $event, field.name)"></amp-file-upload-display>  
                     </div>
                       <!--<img [src]="field.value" alt="">-->
-                      <div *ngSwitchCase="'select'" class="col-xs-12">
-                          <label for="">{{field.label}}</label>
-                          <select class="form-control" [formControlName]="field.name">
-                              <option *ngFor="let option of field.options" [value]="option.value">{{option.label}}</option>
-                          </select>
+                      <div *ngSwitchCase="'select'">
+                          <md-select [formControlName]="field.name" placeholder="{{field.label}}">
+                            <md-option [value]="opt" *ngFor="let opt of field.options">{{ opt }}</md-option>
+                          </md-select>
                       </div>
                     </div>
                     <span *ngIf="field.icon" md-suffix>
@@ -89,6 +87,7 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   @Input() gutterSize : number = 10;
   
   @Input() title : string = null;
+  @Input() hideTitle : string = 'false';
   
   @Output() onSubmit: EventEmitter<any> = new EventEmitter();
 
@@ -206,6 +205,6 @@ export class AmpedFormComponent implements OnInit, OnChanges {
     else if ( this.model && this.model !== '')
       return `Editing ${this.model}`;
     else
-      return '';
+      return false;
   }
 }

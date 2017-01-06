@@ -13,7 +13,6 @@ $primary: md-palette($md-deep-purple);
 $accent:  md-palette($md-amber, A200, A100, A400);
 
 
-
 $brand-primary : map-get($md-deep-purple, $color-weight-level);
 $success : map-get($md-green, $color-weight-level);
 $success-color : map-get(map-get($md-green, contrast), $color-weight-level);
@@ -28,7 +27,7 @@ $error-color : map-get(map-get($md-red, contrast), $color-weight-level);
 h1, h2, h3, h4, h5, h6{margin-top:0;}
 
 .app-wrapper{
-  display:flex; flex-direction: row;
+  display:flex; flex-direction: row; min-height:calc(100vh - 64px);
   .app-content-container{flex:1;}
 }
 
@@ -51,6 +50,13 @@ h1, h2, h3, h4, h5, h6{margin-top:0;}
   }
 }
 .flex-middle{display:flex; align-items:center;}
+
+.flex-header{
+  @extend .flex-row;
+  @extend .flex-space-between;
+  align-items:center; margin-bottom:$grid-gutter-width/2;
+  h1,h2,h3,h4,h5,h6{margin:0; padding:0;}
+}
 
 .dashboard-full-width-graph{
   dislpay:flex; width:100%;

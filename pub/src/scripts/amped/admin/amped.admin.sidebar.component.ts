@@ -38,6 +38,7 @@ export class AmpedSidebar implements OnInit {
       links: [
         {icon: 'business', label: 'Account Profile', href: '/edit/accounts/:account_id'},
         {icon: 'photo_library', label: 'Media Library', href: '/files/library'},
+        {icon: 'people', label: 'Users', href: '/account/users'},
         
       ]
     },

@@ -18,7 +18,8 @@ const typeMap = {
   STRING: 'text',
   JSON: 'json_text',
   INTEGER: 'number',
-  DATE: 'date'
+  DATE: 'date',
+  ENUM : 'select'
 };
 
 class AmpedModel {
@@ -31,9 +32,18 @@ class AmpedModel {
   constructor(app, socket) {
     this.app = app;
     this.socket = socket;
+    this.models = {};
     this.editSchema = this.buildEditSchema();
 
     this.registerSchema();
+  }
+
+  /**
+   * Gives the class access to all the models to setup egar loading
+   * @param models
+   */
+  addRelations(models){
+    this.models = models; // @TODO: Not sure I like this so much
   }
 
   /**
@@ -45,6 +55,12 @@ class AmpedModel {
     if (this.buildCrudRoutes) {
 
       this.app.get(this.route, this.getModelDataRoute.bind(this));
+
+      this.app.get(this.route + '/account', (req, res) => {
+        const params = util.getParams(req);
+        params.account_id = req.user.account_id;
+        this.getModelData(req, res, params);
+      });//this.getModelDataRoute.bind(this));
 
       // this.app.route(this.route, acl.can('view', this.model))
       //   .get(this.getModelData.bind(this))
@@ -158,9 +174,16 @@ class AmpedModel {
    */
   getQuery(req, res, params) {
 
-    return (typeof params._id === 'undefined' ?
-      this.DB.findAll(this.buildQuery({}, params)) :
-      this.DB.findOne(this.buildQuery({where:{id: params._id}}, params)));
+    if ( typeof params._id === 'undefined' ){
+      return this.DB.findAll(this.buildQuery({}, params));
+    } else {
+      const where = {};
+      where[this.getIdColumn] = params._id;
+
+      delete params._id;
+
+      return this.DB.findOne(this.buildQuery({where}, params));
+    }
   }
 
   /**
@@ -312,7 +335,13 @@ class AmpedModel {
         if (typeof row.field_type === 'undefined')
           type = (typeof row.type === 'undefined' ? typeMap[row.key] : typeMap[row.type])
 
-        return [...colRet, {type, label: this.colNameToLabel(colName), name: colName}]
+        const resp = {type, label: this.colNameToLabel(colName), name: colName};
+
+        if ( type === 'select')
+          resp.options = row.type.values;
+
+
+        return [...colRet, resp]
       }, [])]
     }, [[{type: 'hidden', name: 'id'}]]);
 
@@ -507,6 +536,14 @@ class AmpedModel {
    */
   get baseName() {
     return util.pascalToUnderscore(this.constructor.name)
+  }
+
+  /**
+   * The default column for getting data through get requests when _id is passed
+   * @returns {string}
+   */
+  get getIdColumn(){
+    return 'id'
   }
 
   get schema() {

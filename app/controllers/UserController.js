@@ -42,6 +42,8 @@ class UserController {
 
     this.app.get('/profile', AmpedPassport.isLoggedIn, this.profile.bind(this));
 
+    this.app.post('/user/invite', AmpedPassport.isLoggedIn, this.userInvite.bind(this));
+
   }
 
   home(req, res) {
@@ -50,6 +52,10 @@ class UserController {
 
   getUser(req, res){
       res.feedback(req.user);
+  }
+
+  userInvite(req, res){
+    res.feedback();
   }
 
   profile(req, res) {

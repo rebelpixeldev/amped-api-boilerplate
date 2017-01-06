@@ -22,19 +22,14 @@ export class AmpedUserThumb implements OnInit, OnChanges {
 
   
   ngOnInit() {
-    
-    console.log(this.user);
-    
     this.socketService.addSocketListener('USERS_UPDATE', (payload : any) => {
-      this.user = payload.user;
-      console.log(this.user);
+      if ( payload.user.id === this.user.id )
+        this.user = payload.user;
     })
-    
   }
   
   ngOnChanges(changes : any){
     if ( typeof changes.user !== 'undefined' ){
-      console.log(changes);
       this.src = this.user === null || this.user === 'undefined' || typeof this.user.upload === 'undefined' || this.user.upload === null? '' : this.user.upload.thumb_url;
       // this.user = changes.user;
     }

@@ -12,11 +12,13 @@ import {AmpUserCard} from '../amped.user.card';
       <amp-user-card></amp-user-card>
   
       <div class="user-profile-content">
-        <amped-crud-form *ngIf="user.id" model="users" [id]="user.id" setFromUrl="false"></amped-crud-form>
+        <amped-crud-form *ngIf="user.id" model="users" [id]="user.id" setFromUrl="false" hideTitle="true"></amped-crud-form>
+        
+        <amped-crud-form *ngIf="user.id" model="user_settings" [id]="user.id" setFromUrl="false" title="Settings"></amped-crud-form>
         
         <md-card>
           <md-card-title>Latest Activity</md-card-title>
-          <amped-table [data]="userActivityData" enableCrud="false" showFilter="false"></amped-table>
+          <amped-table [data]="userActivityData" enableCrud="false" showFilter="false" showPagination="false"></amped-table>
         </md-card>
   
       </div>

@@ -24,7 +24,6 @@ const exportDeclarations : Array<any> = [
   UploadBtnComponent,
   FilesDialogDirective,
   FileLibraryDialog,
-  
   FilesLibraryPage
 ];
 

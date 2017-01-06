@@ -18,7 +18,6 @@ export class AmpedTopbar implements OnInit {
   ngOnInit() {
     this.ampedService.getUser()
       .then( (user:any) => {// @TODO apply User interface to type
-        console.log(user);
         this.user = user;
       });
   }

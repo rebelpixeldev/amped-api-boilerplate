@@ -9,7 +9,7 @@ import {AmpedAlertService} from "../alerts/amped.alert.service";
   template: `
 
     <md-card>
-      <amped-form *ngIf="formData" [data]="formData" [model]="model" (onSubmit)="onFormSubmit($event)"></amped-form>
+      <amped-form *ngIf="formData" [data]="formData" [model]="model" (onSubmit)="onFormSubmit($event)" [hideTitle]="hideTitle" [title]="title"></amped-form>
     </md-card>
     
     <!--<amp-media-library (onFileSelect)="handleFileSelect($event)"></amp-media-library>-->
@@ -19,6 +19,7 @@ export class AmpedCrudFormComponent implements OnInit {
 
   @Input() params : any;
   @Input() setFromUrl : string = 'true';
+  @Input() hideTitle : string = 'false';
   
   @Input() model : string;
   @Input() id : string;

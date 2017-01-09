@@ -17,3 +17,18 @@ amp-media-library{
   md-card-title{display:flex; height:75px; align-items:center; margin-bottom:0;}
 }
 
+.switch-field{
+
+  .md-slider-horizontal .md-slider-track{top:9px;}
+
+  .md-input-placeholder.md-float:not(.md-empty),
+  .md-input-placeholder.md-float.md-focused{margin-top:17px;}
+
+  .md-slider-horizontal .md-slider-track-fill,
+  .md-slider-horizontal .md-slider-track,
+  .md-slider-horizontal .md-slider-ticks-container{height:30px;}
+
+  .md-slider-track{
+  }
+}
+

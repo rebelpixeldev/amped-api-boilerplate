@@ -11,17 +11,17 @@ export class TableCell{
   template: `
       {{label}}
       <button md-icon-button [md-menu-trigger-for]="menu">
-         <md-icon>more_vert</md-icon>
+         <md-icon>remove_red_eye</md-icon>
       </button>
 
-<md-menu #menu="mdMenu">
-  <span md-menu-item *ngFor="let key of keys"> {{key | format : 'slugtotitle'}} - {{ refObject[key] || 'N/A'}} </span>
-</md-menu>`
+      <md-menu #menu="mdMenu">
+        <span md-menu-item *ngFor="let key of keys"> {{key | format : 'slugtotitle'}} - {{ refObject[key] || 'N/A'}} </span>
+      </md-menu>`
 })
 export class JSONCell extends TableCell implements OnInit {
 
   private keys : Array<string>;
-  private label : string;
+  private label : string = '';
   private refObject : any;
 
   ngOnInit() {
@@ -30,7 +30,7 @@ export class JSONCell extends TableCell implements OnInit {
       this.refObject = this.row[this.header].constructor === Array ? this.row[this.header][0] : this.row[this.header];
       
       this.keys = Object.keys(this.refObject);
-      this.label = this.refObject.name || this.refObject.title || this.refObject[this.keys.shift()];
+      // this.label = this.refObject.name || this.refObject.title || this.refObject[this.keys.shift()];
     }
   }
 

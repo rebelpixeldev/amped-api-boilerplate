@@ -19,7 +19,8 @@ const typeMap = {
   JSON: 'json_text',
   INTEGER: 'number',
   DATE: 'date',
-  ENUM : 'select'
+  ENUM : 'select',
+  BOOLEAN : 'switch'
 };
 
 class AmpedModel {
@@ -66,7 +67,17 @@ class AmpedModel {
       //   .get(this.getModelData.bind(this))
       //   .post(this.createModelData.bind(this));
 
-      this.app.post(this.route + '/:_id', this.updateModelData.bind(this));
+      this.app.get(this.route + '/edit', this.getModelDataRoute.bind(this));
+
+      this.app.use((req, res, next) => {
+        console.log(req.url);
+        console.log('YAOO');
+        next();
+      })
+      this.app.route(this.route + '/edit/:_id')
+        .get(this.getModelDataRoute.bind(this));
+
+      // this.app.post(this.route + '/:_id', this.updateModelData.bind(this));
 
       this.app.route(this.route + '/:_id')
         .get(this.getModelDataRoute.bind(this))
@@ -74,8 +85,7 @@ class AmpedModel {
         .put(this.updateModelData.bind(this))
         .delete(this.deleteModelData.bind(this));
 
-      this.app.route(this.route + '/edit/:_id')
-        .get(this.getModelDataRoute.bind(this));
+
     }
   }
 
@@ -154,6 +164,8 @@ class AmpedModel {
       this.isEditRoute(req.url) ?
         this.editSchema.slice(0).map((row) => {
           return row.map((col) => {
+            if ( typeof data === 'undefined' && col.name === 'id' )
+              return col;
             col.value = col.name === 'id' ? data[col.name] : data[this.schemaData[col.name].value_field] || data[col.name] || '';
             return col;
           });
@@ -173,8 +185,12 @@ class AmpedModel {
    * @returns {Promise} - A sequelize promise
    */
   getQuery(req, res, params) {
-
-    if ( typeof params._id === 'undefined' ){
+    console.log(req.url.split('/').pop(), req.url.split('/').pop().indexOf('edit'));
+    if ( this.isEditRoute(req.url) ) {
+      return new Promise((resolve) => {
+          resolve({});
+      })
+    } else if ( typeof params._id === 'undefined' ){
       return this.DB.findAll(this.buildQuery({}, params));
     } else {
       const where = {};
@@ -247,6 +263,8 @@ class AmpedModel {
 
         }, {});
 
+        attrs.updated_at = new Date();
+
         result.updateAttributes(attrs)
           .then(() => {
 
@@ -293,7 +311,7 @@ class AmpedModel {
    * @returns {boolean}
    */
   isEditRoute(url) {
-    return url.split('/')[3] === 'edit';
+    return url.split('/').pop().indexOf('edit') === 0;
   }
 
   /**

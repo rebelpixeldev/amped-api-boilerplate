@@ -30,42 +30,52 @@ interface FormDataInterface {
               <md-grid-list *ngFor="let row of fields" cols="{{row.length}}" rowHeight="{{getRowHeight(row)}}" gutterSize="{{gutterSize}}">
                 <md-grid-tile *ngFor="let field of row" >
                   <div [ngSwitch]="field.type" class="amped-form-element">
-                    <!-- Hidden input @TODO hidden here still adds a figure and is styled which takes up space on the form. 
-                     Either add hidden fields to the response afterwards or pull the out beforehand and append before the loops-->
-                        <md-input *ngSwitchCase="'text'" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
-                        <md-input *ngSwitchCase="'password'" type="password" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
-                        
-                        <!--<md-input *ngSwitchCase="'json_text'" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>-->
+                    
+                    <!-- Text input -->
+                    <md-input *ngSwitchCase="'text'" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
+                    
+                    <!-- Password input -->
+                    <md-input *ngSwitchCase="'password'" type="password" placeholder="{{field.label}}" [formControlName]="field.name"></md-input>
+                    
+                    <!-- Number Fields -->
+                    <md-input *ngSwitchCase="'number'" type="number" class="form-control" [formControlName]="field.name"></md-input>
+                    
+                    <!-- Email input -->
+                    <md-input *ngSwitchCase="'email'" type="email" class="form-control" [formControlName]="field.name"></md-input>
                    
-                    <!-- Number input -->
-                      <div *ngSwitchCase="'json_text'">
-                          <md-grid-list cols="{{getJsonFieldKeys(field.value).length}}" rowHeight="{{rowHeight}}" gutterSize="10">
-                            <md-grid-tile *ngFor="let key of getJsonFieldKeys(field.value)">
-                              <md-input placeholder="{{key}}" [formControlName]="getFormControlName(field, key)"></md-input>  
-                            </md-grid-tile>
-                          </md-grid-list>
-                      </div>
-                         <input *ngSwitchCase="'number'" type="number" class="form-control" [formControlName]="field.name" />
+                    <!-- JSON Field -->
+                    <div *ngSwitchCase="'json_text'">
+                        <md-grid-list cols="{{getJsonFieldKeys(field.value).length}}" rowHeight="{{rowHeight}}" gutterSize="10">
+                          <md-grid-tile *ngFor="let key of getJsonFieldKeys(field.value)">
+                            <md-input placeholder="{{key}}" [formControlName]="getFormControlName(field, key)"></md-input>  
+                          </md-grid-tile>
+                        </md-grid-list>
+                    </div>
                     
-                    <!-- Email input -->
-                         <input *ngSwitchCase="'email'" type="email" class="form-control" [formControlName]="field.name" />
-                    
-                    <!-- Email input -->
+                    <!-- Image Field -->
                     <div *ngSwitchCase="'image'" >
                       <amp-file-upload-display [label]="field.name" [data]="field.value" (onFileSelect)="handleFileSelect.call(this, $event, field.name)"></amp-file-upload-display>  
                     </div>
-                      <!--<img [src]="field.value" alt="">-->
-                      <div *ngSwitchCase="'select'">
-                          <md-select [formControlName]="field.name" placeholder="{{field.label}}">
-                            <md-option [value]="opt" *ngFor="let opt of field.options">{{ opt }}</md-option>
-                          </md-select>
-                      </div>
+                    
+                    <!-- Image Field -->
+                    <div *ngSwitchCase="'select'">
+                        <md-select [formControlName]="field.name" placeholder="{{field.label}}">
+                          <md-option [value]="opt" *ngFor="let opt of field.options">{{ opt }}</md-option>
+                        </md-select>
                     </div>
-                    <span *ngIf="field.icon" md-suffix>
-                      <md-icon>{{field.icon}}</md-icon>
-                    </span>
-                  </md-grid-tile>  
-                </md-grid-list >
+                    
+                    <!-- Switch Field -->
+                    <div *ngSwitchCase="'switch'" class="relative switch-field">
+                      <label class="md-input-placeholder md-float">{{field.label}}</label>
+                      <md-slider min="0" max="1" step="1" [formControlName]="field.name" value="{{field.value ? 1 : 0}}"></md-slider>
+                    </div>
+                    
+                  </div>
+                  <span *ngIf="field.icon" md-suffix>
+                    <md-icon>{{field.icon}}</md-icon>
+                  </span>
+                </md-grid-tile>  
+              </md-grid-list >
               
               <md-grid-list cols="1" rowHeight="{{rowHeight}}" gutterSize="{{gutterSize}}" class="buttons">
                 <md-grid-tile>
@@ -79,23 +89,23 @@ interface FormDataInterface {
   `
 })
 export class AmpedFormComponent implements OnInit, OnChanges {
-
-  @Input() data: FormDataInterface = {action: '', method : 'get', fields: []};
-  @Input() saveLabel : string = 'Save'; // @TODO don't like passing this as a value. Maybe pass it as part of the data?
-  @Input() model : string;
-  @Input() rowHeight : number = 65;
-  @Input() gutterSize : number = 10;
   
-  @Input() title : string = null;
-  @Input() hideTitle : string = 'false';
+  @Input() data: FormDataInterface = {action: '', method: 'get', fields: []};
+  @Input() saveLabel: string = 'Save'; // @TODO don't like passing this as a value. Maybe pass it as part of the data?
+  @Input() model: string;
+  @Input() rowHeight: number = 65;
+  @Input() gutterSize: number = 10;
+  
+  @Input() title: string = null;
+  @Input() hideTitle: string = 'false';
   
   @Output() onSubmit: EventEmitter<any> = new EventEmitter();
-
+  
   public formControls: any = {};
   public fields: Array<FieldInterface> = [];
   public hiddenFields: any = [];
   public form: FormGroup;
-
+  
   private _fieldDefaults: Object = {
     label: 'My Field',
     name: 'my_field',
@@ -104,21 +114,21 @@ export class AmpedFormComponent implements OnInit, OnChanges {
     required: false,
     options: []
   };
-
-  constructor(private _fb: FormBuilder, private ampedService : AmpedService) {
+  
+  constructor(private _fb: FormBuilder, private ampedService: AmpedService) {
   }
-
+  
   ngOnInit() {
     this.buildForm();
-
+    
   }
-
+  
   ngOnChanges(changes: any) {
     this.buildForm();
     // @TODO use an Observable
-
+    
   }
-
+  
   mapDataDefaults() {
     this.separateHiddenFields();
     this.fields = this.data.fields.map((rows: any) => {
@@ -126,24 +136,24 @@ export class AmpedFormComponent implements OnInit, OnChanges {
     });
   }
   
-  separateHiddenFields(){
-    this.data.fields = this.data.fields.filter((row : any) => {
-        return row.filter((field : FieldInterface) => {
-            if ( typeof field.type !== 'undefined' && field.type === 'hidden' ) {
-              this.hiddenFields = [...this.hiddenFields, field];
-              return false;
-            }
-            return true;
+  separateHiddenFields() {
+    this.data.fields = this.data.fields.filter((row: any) => {
+      return row.filter((field: FieldInterface) => {
+          if (typeof field.type !== 'undefined' && field.type === 'hidden') {
+            this.hiddenFields = [...this.hiddenFields, field];
+            return false;
+          }
+          return true;
         }).length > 0;
     })
   }
-
+  
   buildForm() {
     if (typeof this.data.fields !== 'undefined') {
       this.mapDataDefaults();
       this.formControls = this.fields.concat([this.hiddenFields]).reduce((ret: any, row: any) => {
         row.forEach((field: any) => {
-
+          
           if (typeof field.value === 'object') {
             Object.keys(field.value).forEach((name) => {
               ret[`${field.name.toString()}.${name}`] = new FormControl(field.value[name]);
@@ -154,41 +164,41 @@ export class AmpedFormComponent implements OnInit, OnChanges {
               new FormControl(field.value);
           }
         });
-
+        
         return ret;
-
-      }, {} );
+        
+      }, {});
       
       this.form = new FormGroup(this.formControls);
     }
   }
-
+  
   getColumnWidth(cols: any) {
     return Math.ceil(cols / 12);
   }
-
+  
   getJsonFieldKeys(json: any) {
     return Object.keys(json);
   }
-
+  
   getFormControlName(field: any, name: any) {
     return `${field.name.toString()}.${name}`;
   }
   
-  getRowHeight(row : any){
-    return row.filter(( r : any ) => r.type === 'image' ).length > 0 ? 110 : this.rowHeight;
+  getRowHeight(row: any) {
+    return row.filter((r: any) => r.type === 'image').length > 0 ? 110 : this.rowHeight;
   }
-
-  handleFileSelect(data : any, controlName : string){
-    Object.keys(data).forEach(( key ) => {
-      if ( typeof this.formControls[`${controlName}.${key}`] === 'undefined' ) {
+  
+  handleFileSelect(data: any, controlName: string) {
+    Object.keys(data).forEach((key) => {
+      if (typeof this.formControls[`${controlName}.${key}`] === 'undefined') {
         const ctrlName = `${controlName}.${key}`
         this.formControls[ctrlName] = new FormControl(data[key]);
         this.form.addControl(ctrlName, this.formControls[ctrlName]);
         this.form.removeControl(controlName);
       } else
         this.formControls[`${controlName}.${key}`].setValue(data[key])
-    } );
+    });
     // this.formControls[controlName].setValue(data);
   }
   
@@ -196,13 +206,13 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   // @TODO add error handler if this.data.action is undefined
   onFormSubmit() {
     this.ampedService[(typeof this.data.method === 'undefined' ? 'get' : this.data.method.toLowerCase())](this.data.action, this.form.value)
-      .then(( resp : any ) => this.onSubmit.emit(resp));
+      .then((resp: any) => this.onSubmit.emit(resp));
   }
   
-  getFormTitle(){
-    if ( this.title !== null )
+  getFormTitle() {
+    if (this.title !== null)
       return this.title;
-    else if ( this.model && this.model !== '')
+    else if (this.model && this.model !== '')
       return `Editing ${this.model}`;
     else
       return false;

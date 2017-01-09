@@ -10,12 +10,6 @@ import { AmpedFormsService }  from './amped.crud.service';
        <md-card-header>
           <md-card-title><h1>Edit {{model | format : 'capitalize'}}</h1></md-card-title>
           <span class="fill-remaining-space"></span>
-          
-          <md-input placeholder="Filter data" [(ngModel)]="filter">
-            <span md-suffix>
-              <md-icon>search</md-icon>
-            </span>
-          </md-input>
           <amped-add-new></amped-add-new>
        </md-card-header>
        <md-card-content>

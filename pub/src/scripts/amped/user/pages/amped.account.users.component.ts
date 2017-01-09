@@ -13,7 +13,7 @@ import { AmpedService } from '../../common/amped.common.service';
           </button>
       </div>
       <md-card>
-        <amped-table [data]="userData" enableCrud="false" showFilter="false" showPagination="false"></amped-table>
+        <amped-table [data]="userData" enableCrud="false" showFilter="false" showPagination="false" model="users"></amped-table>
       </md-card>
     `
 })

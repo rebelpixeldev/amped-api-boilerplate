@@ -1317,6 +1317,18 @@ amp-media-library md-card-title {
   align-items: center;
   margin-bottom: 0; }
 
+.switch-field .md-slider-horizontal .md-slider-track {
+  top: 9px; }
+
+.switch-field .md-input-placeholder.md-float:not(.md-empty),
+.switch-field .md-input-placeholder.md-float.md-focused {
+  margin-top: 17px; }
+
+.switch-field .md-slider-horizontal .md-slider-track-fill,
+.switch-field .md-slider-horizontal .md-slider-track,
+.switch-field .md-slider-horizontal .md-slider-ticks-container {
+  height: 30px; }
+
 .amp-alert-snack.success {
   background: #66bb6a;
   color: rgba(0, 0, 0, 0.87); }

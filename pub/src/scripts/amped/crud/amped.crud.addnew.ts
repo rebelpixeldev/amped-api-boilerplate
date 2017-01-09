@@ -5,7 +5,7 @@ import {Component, OnInit, Input} from '@angular/core';
   moduleId: module.id,
   selector: 'amped-add-new',
   template: `
-        <button md-raised-button color="primary" (click)="onClick()">
+        <button md-raised-button color="primary" amp-create-crud-dialog-trigger>
            <i class="fa fa-plus" aria-hidden="true"></i>{{label}}
         </button>`,
   providers : [  ]

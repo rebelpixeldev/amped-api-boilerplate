@@ -15,9 +15,11 @@ import {JSONCell, ImageCell, TextCell, DateCell} from "./amped.common.table.cell
         <span *ngIf="showPagination !== 'false'">
         <pagination-controls (pageChange)="page = $event" #controls></pagination-controls>
         </span>
-        <md-input *ngIf="showFilter !== 'false'" placeholder="Filter table" [(ngModel)]="filterValue">
-          <span md-suffix><md-icon>search</md-icon></span>
-        </md-input>
+        <div>
+          <md-input *ngIf="showFilter !== 'false'" placeholder="Filter table" [(ngModel)]="filterValue">
+            <span md-suffix><md-icon>search</md-icon></span>
+          </md-input>
+        </div>
     </div>
     
     <table class="table">
@@ -34,12 +36,39 @@ import {JSONCell, ImageCell, TextCell, DateCell} from "./amped.common.table.cell
           <amped-table-cell [header]="headers[header]" [row]="row"></amped-table-cell>
         </td>
         <td *ngIf="actionsEnabled !== 'false'" class="action-cell">
-          <button md-icon-button (click)="onEditClick(row.id)">
-            <md-icon >edit</md-icon>
-          </button>
-          <button md-icon-button (click)="onDeleteClick(row.id)">
-            <md-icon >delete</md-icon>
-          </button>
+           <!--<button md-icon-button md-menu-trigger-for="mdMenu">-->
+               <!--<md-icon>more_vert</md-icon>-->
+            <!--</button>-->
+            
+            <button md-icon-button [md-menu-trigger-for]="menu">
+               <md-icon>more_vert</md-icon>
+            </button>
+            
+            <md-menu #menu="mdMenu">
+                <button md-menu-item (click)="onEditClick(row.id)"> 
+                  <md-icon >edit</md-icon> Edit 
+                 </button>
+                <button md-menu-item (click)="onDeleteClick(row.id)">
+                  <md-icon >delete</md-icon>Delete 
+                </button>
+            </md-menu>
+          
+          <!--<md-menu #menu="mdMenu">-->
+            <!--<md-nav-list>-->
+              <!--<md-list-item>-->
+                 <!--<a md-line href="...">{{ link }}</a>-->
+                 <!--<button md-icon-button (click)="onEditClick(row.id)">-->
+                    <!--<md-icon >edit</md-icon>-->
+                  <!--</button>-->
+              <!--</md-list-item>-->
+              <!--<md-list-item>-->
+                 <!--<a md-line href="...">{{ link }}</a>-->
+                 <!--<button md-icon-button (click)="onDeleteClick(row.id)">-->
+                    <!--<md-icon >delete</md-icon>-->
+                  <!--</button>-->
+              <!--</md-list-item>-->
+            <!--</md-nav-list>-->
+          <!--</md-menu>-->
         </td>
       </tr>
       </tbody>
@@ -53,6 +82,7 @@ export class AmpedTable implements OnInit, OnChanges {
   @Input() actionsEnabled: boolean = true;
   @Input() filter: string;
   @Input() headers: {} = null;
+  @Input() model : string;
   
   @Input() showFilter : boolean = true;
   @Input() showPagination : boolean = true;
@@ -62,14 +92,17 @@ export class AmpedTable implements OnInit, OnChanges {
   
   private rows: Array<Object> = [];
   private sub: any;
-  private model: string;
+  
   private filterValue : string = '';
   
   constructor(private router: Router, private route: ActivatedRoute) {
   }
   
   ngOnInit() {
-    this.sub = this.route.params.subscribe((params: any) => this.model = params.model);
+    this.sub = this.route.params.subscribe((params: any) => {
+      if ( typeof params.model !== 'undefined' )
+        this.model = params.model
+    });
   }
   
   ngOnDestroy() {
@@ -104,7 +137,7 @@ export class AmpedTable implements OnInit, OnChanges {
       delete row.token;
       
       row.created_at = created;
-      row.updated_at = created;
+      row.updated_at = updated;
       
       return row;
     });
@@ -126,9 +159,6 @@ export class AmpedTable implements OnInit, OnChanges {
         ret[header] = header;
         return ret;
       }, {});
-      
-      console.log(this.headers);
-      console.log(this.rows);
     }
   }
   

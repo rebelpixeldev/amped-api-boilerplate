@@ -42,7 +42,7 @@ export class AmpedService {
     return this.request.apply(this, arguments);
   }
   
-  post(url: any, data: FormData, options: any = {}, reqMethod: string = 'post') {
+  post(url: any, data: FormData, options: any = {}) {
     return this.request.apply(this, [url, data, options, 'post']);
   }
   
@@ -50,8 +50,8 @@ export class AmpedService {
     return this.request.apply(this, [url, data, options, 'put']);
   }
   
-  delete(url: any, data: any = {}, options: any = {}, reqMethod: string = 'delete') {
-    return this.request.apply(this, [url, data, options, 'delete']);
+  delete(url: any, data: any = {}, options: any = {},) {
+    return this.request(url, data, options, 'delete');
   }
   
   request(url: any, data: FormData = new FormData(), options: any = {}, reqMethod: string = 'get') {
@@ -67,15 +67,18 @@ export class AmpedService {
       
       options = Object.assign({}, options, {headers});
       
-      if ( method === 'get')
+      if ( method === 'get' || method === 'delete')
         data = options;
-      
       
       this.http[method](url, data, options)
         .toPromise()
         .then((resp: any) => resp.json())
         .then((resp: any) => {
+        
+        
           if (resp.success) {
+            if ( resp.message !== '' )
+              this.alertService.snackSuccess(resp.message);
             // @TODO plan for meta to be sent as well
             resolve(resp);
           } else {

@@ -1,5 +1,6 @@
 import {Component, OnInit, Input} from '@angular/core';
 
+//@TODO NOT USED ANYWHERE. Tr and deprecate
 
 @Component({
   moduleId: module.id,

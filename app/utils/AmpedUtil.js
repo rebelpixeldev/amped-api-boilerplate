@@ -68,6 +68,25 @@ const Util = {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
+  },
+
+  dotNotationToObject : function(obj) {
+    return Object.keys(obj).reduce((ret, key) => {
+      if (key.indexOf('.') !== -1) {
+
+        const parts = key.split('.');
+
+        if (typeof ret[parts[0]] === 'undefined')
+          ret[parts[0]] = {};
+
+        ret[parts[0]][parts[1]] = obj[key];
+        return ret;
+
+      } else {
+        ret[key] = obj[key];
+        return ret;
+      }
+    }, {});
   }
 };
 

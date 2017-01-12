@@ -11,7 +11,7 @@ export class TableCell{
   template: `
       {{label}}
       <button md-icon-button [md-menu-trigger-for]="menu">
-         <md-icon>remove_red_eye</md-icon>
+         <!--<md-icon>remove_red_eye</md-icon>-->
       </button>
 
       <md-menu #menu="mdMenu">

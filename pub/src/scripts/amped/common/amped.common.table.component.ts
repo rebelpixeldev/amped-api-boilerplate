@@ -1,12 +1,13 @@
 import {
   Component, OnInit, OnDestroy, Input, OnChanges, ViewChild, ElementRef,
-  ComponentFactoryResolver, ViewContainerRef, ComponentRef, Pipe, Injectable, PipeTransform
+  ComponentFactoryResolver, ViewContainerRef, ComponentRef, Pipe, Injectable, PipeTransform, Output, EventEmitter
 } from '@angular/core';
 
 import {Router, ActivatedRoute} from '@angular/router';
 import {DomSanitizer} from "@angular/platform-browser";
 import {MdMenu, MdMenuTrigger} from "@angular/material";
 import {JSONCell, ImageCell, TextCell, DateCell} from "./amped.common.table.cells";
+import {AmpedService} from "./amped.common.service";
 
 @Component({
   selector: 'amped-table',
@@ -40,7 +41,7 @@ import {JSONCell, ImageCell, TextCell, DateCell} from "./amped.common.table.cell
                <!--<md-icon>more_vert</md-icon>-->
             <!--</button>-->
             
-            <button md-icon-button [md-menu-trigger-for]="menu">
+            <button md-icon-button [md-menu-trigger-for]="menu" >
                <md-icon>more_vert</md-icon>
             </button>
             
@@ -48,7 +49,11 @@ import {JSONCell, ImageCell, TextCell, DateCell} from "./amped.common.table.cell
                 <button md-menu-item (click)="onEditClick(row.id)"> 
                   <md-icon >edit</md-icon> Edit 
                  </button>
-                <button md-menu-item (click)="onDeleteClick(row.id)">
+                <button md-menu-item amp-alerts-confirm-trigger
+                        color="warn"
+                        title="Remove Item" 
+                        [onYes]="handleDelete.bind(this, row)"
+                        description="Once deleted you will not be able to get it back.">
                   <md-icon >delete</md-icon>Delete 
                 </button>
             </md-menu>
@@ -90,18 +95,23 @@ export class AmpedTable implements OnInit, OnChanges {
   @Input() perpage : number = 10;
   @Input() page : number = 1;
   
+  @Output() onDelete : EventEmitter<any> = new EventEmitter();
+  
   private rows: Array<Object> = [];
   private sub: any;
   
   private filterValue : string = '';
   
-  constructor(private router: Router, private route: ActivatedRoute) {
+  constructor(private router: Router, private route: ActivatedRoute, private ampedService : AmpedService) {
   }
   
   ngOnInit() {
     this.sub = this.route.params.subscribe((params: any) => {
-      if ( typeof params.model !== 'undefined' )
-        this.model = params.model
+      if ( typeof params.model !== 'undefined' ) {
+        this.model = params.model;
+        this.setHeaders();
+      }
+        
     });
   }
   
@@ -113,15 +123,10 @@ export class AmpedTable implements OnInit, OnChanges {
     this.router.navigate(['/edit', this.model, id]);
   }
   
-  onDeleteClick(id: string) {
-    // this.router.navigate(['/edit', this.model, id]);
-    console.log('@TODO need to build a confirm alert to ask if the user wants to delete');
-  }
-  
   ngOnChanges(changes: any) {
     if (typeof this.data !== 'undefined' && this.data.length > 0) {
       this.filterFields();
-      this.setHeaders();
+      // this.setHeaders();
     }
     // @TODO use an Observable
   }
@@ -144,28 +149,36 @@ export class AmpedTable implements OnInit, OnChanges {
   }
   
   setHeaders() {
-    if ( this.headers === null ) {
-      let headers = Object.keys(this.data[0]);
-      const
-        createdIndex: number = headers.indexOf('created_at'),
-        updatedIndex: number = headers.indexOf('updated_at');
-  
-      if (updatedIndex !== -1)
-        headers = [...headers.slice(0, updatedIndex), ...headers.slice(updatedIndex + 1), 'updated_at'];
-      if (createdIndex !== -1) {
-        headers = [...headers.slice(0, createdIndex), ...headers.slice(createdIndex + 1), 'created_at'];
-      }
-      this.headers = headers.reduce(( ret, header ) => {
-        ret[header] = header;
-        return ret;
-      }, {});
-    }
+    
+    this.ampedService.get(`/api/${this.model}/tableHeaders`)
+      .then(( resp : any ) => this.headers = resp.response );
+    
+    // if ( this.headers === null ) {
+    //   let headers = Object.keys(this.data[0]);
+    //   const
+    //     createdIndex: number = headers.indexOf('created_at'),
+    //     updatedIndex: number = headers.indexOf('updated_at');
+    //
+    //   if (updatedIndex !== -1)
+    //     headers = [...headers.slice(0, updatedIndex), ...headers.slice(updatedIndex + 1), 'updated_at'];
+    //   if (createdIndex !== -1) {
+    //     headers = [...headers.slice(0, createdIndex), ...headers.slice(createdIndex + 1), 'created_at'];
+    //   }
+    //   this.headers = headers.reduce(( ret, header ) => {
+    //     ret[header] = header;
+    //     return ret;
+    //   }, {});
+    // }
   }
   
   keys(obj : any){
     if ( obj === null )
       return [];
     return Object.keys(obj);
+  }
+  
+  handleDelete(row : any){
+    this.onDelete.emit({entry : row});
   }
 }
 
@@ -212,6 +225,8 @@ export class AmpedTableCell {
   ngOnInit() {
     this.isViewInitialized = true;
     let component : any = null;
+    
+    console.log(this.header, typeof this.row[this.header]);
     
     if ( this.header.indexOf('photo') > -1 || this.header.indexOf('image') > -1 || this.header === 'upload' )
       // this.content = '<img md-card-avatar src="{{row[header]}}" title="{{header}}" />';

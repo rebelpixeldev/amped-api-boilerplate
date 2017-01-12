@@ -124,7 +124,9 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
   
   ngOnChanges(changes: any) {
-    this.buildForm();
+    if ( typeof changes.data.currentValue.action !== 'undefined' &&
+        typeof changes.data.currentValue.fields !== 'undefined' )
+      this.buildForm();
     // @TODO use an Observable
     
   }
@@ -153,7 +155,6 @@ export class AmpedFormComponent implements OnInit, OnChanges {
       this.mapDataDefaults();
       this.formControls = this.fields.concat([this.hiddenFields]).reduce((ret: any, row: any) => {
         row.forEach((field: any) => {
-          
           if (typeof field.value === 'object') {
             Object.keys(field.value).forEach((name) => {
               ret[`${field.name.toString()}.${name}`] = new FormControl(field.value[name]);

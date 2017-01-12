@@ -285,8 +285,9 @@ class AmpedPassport {
     this.app.use((req, res, next) => {
       if ( config.routing.isPublic(req.url) ) return next();
       passport.authenticate('jwt', {session: false}, (err, user, info) => {
+
         if (err) return next(err);
-        else if (!user) return res.feedback(user);
+        else if (!user) return res.feedback({message : info.toString()});
         req.payload = user;
         next();
       })(req, res, next);

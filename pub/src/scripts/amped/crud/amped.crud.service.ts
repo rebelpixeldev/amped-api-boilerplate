@@ -26,5 +26,9 @@ export class AmpedFormsService{
   getCrudData(model : string, id : string = '' ) : Promise<any>{
     return this.ampedService.get(id === '' ? `/api/${model}` : `/api/${model}/edit/${id}?cache=${new Date().getTime()}`);
   }
+  
+  deleteCrudEntry( model:string, id:string ){
+    return this.ampedService.delete(`/api/${model}/${id}?cache=${new Date().getTime()}`);
+  }
 
 }

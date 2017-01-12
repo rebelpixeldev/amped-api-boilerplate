@@ -5,7 +5,7 @@ export class BaseDialogDirective {
   
   @Output() onFileSelect : EventEmitter<any> = new EventEmitter();
   
-  private dialogRef: MdDialogRef<any>;
+  protected dialogRef: MdDialogRef<any>;
   
   private dialogOptions : MdDialogConfig;
   
@@ -24,9 +24,12 @@ export class BaseDialogDirective {
   
   openDialog() {
     this.dialogRef = this.dialog.open(this.dialogContent, this.dialogOptions);
+    this.passData();
     
     this.dialogRef.afterClosed().subscribe(result => {
       this.dialogRef = null;
     });
   }
+  
+  passData(){return;}
 }

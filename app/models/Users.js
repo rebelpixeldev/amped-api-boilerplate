@@ -27,6 +27,17 @@ class Users extends AmpedModel {
     ]
   }
 
+  get headerFields() {
+    return {
+      'Display Name': 'display_name',
+      'Provider': 'provider',
+      'Email': 'email',
+      'Profile Image': 'upload',
+      'Last seen': 'updated_at',
+      'Joined': 'created_at'
+    }
+  }
+
   get schema() {
     return {
       account_id: {
@@ -47,7 +58,13 @@ class Users extends AmpedModel {
         type: sequelize.STRING,
         user_editable: false
       },
-      users_name: sequelize.JSON,
+      users_name: {
+        type : sequelize.JSON,
+        defaultValue : {
+          givenName : '',
+          familyName : ''
+        }
+      },
       email: sequelize.STRING,
       upload_id: {
         type: sequelize.INTEGER,

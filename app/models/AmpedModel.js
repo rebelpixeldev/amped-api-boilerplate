@@ -3,11 +3,11 @@
 //@TODO create two way binding for database entries
 
 const
-  AmpedConnector = require('../utils/AmpedConnector'),
-  acl = require('../utils/AmpedAcl')({}),
-  sequelize = require('sequelize'),
-  url = require('url'),
-  util = require('../utils/AmpedUtil');
+  AmpedConnector  = require('../utils/AmpedConnector'),
+  acl             = require('../utils/AmpedAcl')({}),
+  sequelize       = require('sequelize'),
+  url             = require('url'),
+  util            = require('../utils/AmpedUtil');
 
 /**
  * Maps a sequelize type to client side type for use in building the crud forms and data tables
@@ -66,24 +66,22 @@ class AmpedModel {
       // this.app.route(this.route, acl.can('view', this.model))
       //   .get(this.getModelData.bind(this))
       //   .post(this.createModelData.bind(this));
+      this.app.get(`${this.route}/tableHeaders`, this.getTableHeaders.bind(this));
+      this.app.get(`${this.route}/edit`, this.getModelDataRoute.bind(this));
 
-      this.app.get(this.route + '/edit', this.getModelDataRoute.bind(this));
-
-      this.app.use((req, res, next) => {
-        console.log(req.url);
-        console.log('YAOO');
-        next();
-      })
-      this.app.route(this.route + '/edit/:_id')
+      this.app.route(`${this.route}/edit/:id`)
         .get(this.getModelDataRoute.bind(this));
 
       // this.app.post(this.route + '/:_id', this.updateModelData.bind(this));
 
-      this.app.route(this.route + '/:_id')
+      this.app.route(this.route)
+        .post(this.updateModelData.bind(this));
+
+      this.app.route(`${this.route}/:_id`)
         .get(this.getModelDataRoute.bind(this))
         .post(this.updateModelData.bind(this))
-        .put(this.updateModelData.bind(this))
         .delete(this.deleteModelData.bind(this));
+
 
 
     }
@@ -126,17 +124,18 @@ class AmpedModel {
    * This should be overidden if you need to return a custom set of data.
    * By default it will fetch the data from the current model
    *
-   * @param {object} req    - Express request object
-   * @param {object} res    - Express response object
-   * @param {object} params - Parameters that are used in the request
+   * @param {object} req      - Express request object
+   * @param {object} res      - Express response object
+   * @param {object} params   - Parameters that are used in the request
+   * @param {string} message  - Message for the response
    */
-  getModelData(req, res, params) {
+  getModelData(req, res, params, message = '') {
 
     if ( typeof params === 'undefined')
       params = util.getParams(req);
 
     return this.getQuery(req, res, params)
-        .then(this.sendResponse.bind(this, req, res))
+        .then(data => this.sendResponse(req, res, data, message))
         .catch((err) => {
           console.log('ERROR', err);
         });
@@ -149,27 +148,27 @@ class AmpedModel {
    * This will check if the route is an edit route or not.
    *    If it is an edit route the editSchema is copied and the values is added to the orm fields
    *    If it is just a get route, return the data
-   * @param req
-   * @param res
-   * @param data
-   * @returns {*}
+   * @param {object} req      - Express request object
+   * @param {object} res      - Express response object
+   * @param {object} data     - The data for the response
+   * @param {string} message  - Message for the response
    */
-  sendResponse(req, res, data) {
+  sendResponse(req, res, data, message='') {
 
     if (data === null)
       data = [];
     res.setHeader('Content-Type', 'application/json');
 
-    res.feedback(
+    res.feedback({ message , response :
       this.isEditRoute(req.url) ?
         this.editSchema.slice(0).map((row) => {
           return row.map((col) => {
             if ( typeof data === 'undefined' && col.name === 'id' )
               return col;
-            col.value = col.name === 'id' ? data[col.name] : data[this.schemaData[col.name].value_field] || data[col.name] || '';
+            col.value = col.name === 'id' ? data[col.name] : data[this.schemaData[col.name].value_field] || data[col.name] || this.schema[col.name].defaultValue || '';
             return col;
           });
-        }) : data);
+        }) : data});
     return data;
   };
 
@@ -185,11 +184,11 @@ class AmpedModel {
    * @returns {Promise} - A sequelize promise
    */
   getQuery(req, res, params) {
-    console.log(req.url.split('/').pop(), req.url.split('/').pop().indexOf('edit'));
-    if ( this.isEditRoute(req.url) ) {
+    if ( this.isEditRoute(req.url) && typeof params._id === 'undefined' ) {
       return new Promise((resolve) => {
           resolve({});
       })
+
     } else if ( typeof params._id === 'undefined' ){
       return this.DB.findAll(this.buildQuery({}, params));
     } else {
@@ -203,25 +202,6 @@ class AmpedModel {
   }
 
   /**
-   * Deprecate
-   * @param {object} req - Express request object
-   * @param {object} res  - Express response object
-   */
-
-  // createModelData(req, res) {
-  //   // @TODO Check values being sent against the schema
-  //   // @TODO handle errors
-  //   // const
-  //   //     params = this.getParams(req),
-  //   //     entry = new this.DB(params);
-  //   //
-  //   // entry.save((err) => {
-  //   //     this.sendSocket('create', entry);
-  //   //     res.json(entry);
-  //   // });
-  // }
-
-  /**
    * @TODO Check values being sent against the schema
    * @TODO handle errors
    *
@@ -232,56 +212,62 @@ class AmpedModel {
    * @param {object} res  - Express response object
    */
   updateModelData(req, res) {
-    //
-    //
+
     const params = util.getParams(req);
 
     // @TODO Check values being sent against the schema VERRY TEMP ---\/. use this.paramsToQuery
     if ( typeof params.upload_id !== 'undefined' && params.upload_id === '' )
       params.upload_id = 0;
 
-    const data = this.dotNotationToObject(params);
 
-    this.DB.findById(data.id)
-      .then((result) => {
-        // Remove things that are read only in crud
-        delete data.id; delete data.token; delete data._id;
-        const attrs = Object.keys(data).reduce((ret, key) => {
-          if (typeof data[key] === 'object') {
+    const
+      data = util.dotNotationToObject(params),
+      isCreation = typeof data.id === 'undefined' || data.id === null || data.id === 0;
 
-            switch(this.schema[key].key || this.schema[key].type.key){
-              case 'INTEGER':
-                ret[key] = data[key].id;
-                    break;
-              case 'JSON':
-                ret[key] = data[key];
-                    break;
-            }
+    ( isCreation?
+      this.DB.create({display_name : 'foo'}) :
+      this.DB.findById(data.id))
+        .then((result) => {
 
-          } else ret[key] = data[key];
-          return ret;
+          // Remove things that are read only in crud
+          delete data.id;
+          delete data.token;
+          delete data._id;
+          const attrs = Object.keys(data).reduce((ret, key) => {
+            if (typeof data[key] === 'object') {
+              switch (this.schema[key].key || this.schema[key].type.key) {
+                case 'INTEGER':
+                  ret[key] = data[key].id;
+                  break;
+                case 'JSON':
+                  ret[key] = data[key];
+                  break;
+              }
 
-        }, {});
+            } else ret[key] = data[key];
+            return ret;
 
-        attrs.updated_at = new Date();
+          }, {});
 
-        result.updateAttributes(attrs)
-          .then(() => {
 
-            this.getModelData(req, res, {_id:params._id})
-              .then((user) => {
-                this.sendSocket('UPDATE', {user_id: params.id, user }, req.user);
-                this.logActivity(req, 'update', `${this.modelName} was updated`, user);
-              });
-          });
-      });
+          attrs.updated_at = new Date();
+
+          result.updateAttributes(attrs)
+            .then(() => {
+
+              this.getModelData(req, res, {_id: result.id}, isCreation ? this.successMessage : '' )
+                .then((user) => {
+                  this.sendSocket('UPDATE', {user}, req.user);
+                  this.logActivity(req, 'update', `${this.modelName} was updated`, user);
+                });
+            });
+        });
 
   }
 
   /**
-   * @TODO actually build it
-   * @TODO Check values being sent against the schema
    * @TODO handle errors
+   * @TODO check permissions
    * Route handler for the delete route.
    *
    * Deletes a resource from the database
@@ -290,6 +276,14 @@ class AmpedModel {
    * @param {object} res  - Express response object
    */
   deleteModelData(req, res) {
+    const params = util.getParams(req);
+
+    this.DB.destroy({ where : { id : params._id}})
+      .then(() => {
+        this.sendSocket('DELETE', {id:params._id}, req.user);
+        res.feedback();
+      })
+      .catch(res.feedback.bind(this));
     // const params = this.getParams(req);
     //
     // if ( typeof params._id === 'undefined' )
@@ -311,30 +305,8 @@ class AmpedModel {
    * @returns {boolean}
    */
   isEditRoute(url) {
-    return url.split('/').pop().indexOf('edit') === 0;
-  }
-
-  /**
-   * @TODO deprecate - The same function exists in AmpedUtil
-   * @see AmpedUtil.dotNotationToObject
-   */
-  dotNotationToObject(obj) {
-    return Object.keys(obj).reduce((ret, key) => {
-      if (key.indexOf('.') !== -1) {
-
-        const parts = key.split('.');
-
-        if (typeof ret[parts[0]] === 'undefined')
-          ret[parts[0]] = {};
-
-        ret[parts[0]][parts[1]] = obj[key];
-        return ret;
-
-      } else {
-        ret[key] = obj[key];
-        return ret;
-      }
-    }, {});
+    const parts = url.split('/');
+    return parts.pop().indexOf('edit') === 0 || parts[3] === 'edit';
   }
 
   /**
@@ -351,7 +323,11 @@ class AmpedModel {
         let type = row.field_type;
 
         if (typeof row.field_type === 'undefined')
-          type = (typeof row.type === 'undefined' ? typeMap[row.key] : typeMap[row.type])
+          type = (typeof row.type === 'undefined' ? typeMap[row.key] : typeMap[row.type || row.type.key]);
+
+        // Catch JSON type
+        if ( typeof type === 'undefined')
+          type = typeMap[row.type.key];
 
         const resp = {type, label: this.colNameToLabel(colName), name: colName};
 
@@ -364,6 +340,10 @@ class AmpedModel {
     }, [[{type: 'hidden', name: 'id'}]]);
 
     return fields;
+  }
+
+  getTableHeaders(req, res){
+    res.feedback(this.headerFields);
   }
 
   /**
@@ -580,6 +560,17 @@ class AmpedModel {
     return {};
   }
 
+  get headerFields(){
+    const headers = Object.keys(this.schema).reduce((ret, field) => {
+      ret[field] = field;
+      return ret;
+    }, {});
+    headers.updated_at = 'updated_at';
+    headers.created_at = 'created_at';
+
+    return headers;
+  }
+
   get defaultDefineOptions() {
     return {
       underscored: true,
@@ -587,6 +578,10 @@ class AmpedModel {
       freezeTable: true,
       tableName: this.tableName
     }
+  }
+
+  get successMessage(){
+    return 'Entry has been added';
   }
 
   /**

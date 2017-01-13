@@ -2,6 +2,9 @@ const
   path = require('path');
 
 const config = {
+  site : {
+    name : 'Amped Admin'
+  },
   errors : {
     'incorrect-password' :{
       code : 1000,
@@ -14,6 +17,16 @@ const config = {
   routing : {
     noAuth : ['/', '/login', '/register', '/reset' ]
   },
+  email : {
+    mandrillKey : 'HXpT-qveJJv66kY4ToyCpQ',
+    noReply : 'no-reply@rebelpixel.ca',
+    noReplyName : 'Amped Admin',
+    jwt : {
+      secret : 'mandrillsecret',
+      expires : 3600,
+      issues : 'amped-framework.com'
+    }
+  },
   uploads: {
     thumb :{
       width : 300,
@@ -24,8 +37,31 @@ const config = {
     thumbDir: path.join(__dirname, '../uploads/thumb'),
     sourceDir: path.join(__dirname, '../uploads/source'),
     tempDir: path.join(__dirname, '../uploads/tmp')
+  },
+  urls : {
+    api : {
+      protocol : 'http',
+      host : 'localhost',
+      port : '3000'
+    },
+    site : {
+      protocol : 'http',
+      host : 'localhost',
+      port : '3000'
+    }
   }
 };
+
+Object.keys(config.urls).forEach((name) => {
+  const ref = config.urls[name];
+  let url = '';
+  url += (typeof ref.protocol === 'undefined' ? 'http' : ref.protocol) + '://';
+  url += ref.host;
+  if ( typeof ref.port !== 'undefined' )
+    url += `:${ref.port}`;
+  ref.domain = url;
+});
+
 
 // @TODO make this mor comprehensive with regexp
 config.routing.isPublic = (url) => {

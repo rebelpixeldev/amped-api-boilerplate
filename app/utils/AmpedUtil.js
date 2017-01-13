@@ -2,7 +2,8 @@
 // @TODO make external npm module
 
 const
-  url = require('url');
+  JWT       = require('jsonwebtoken'),
+  url       = require('url');
 
 const Util = {
 
@@ -68,6 +69,14 @@ const Util = {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
+  },
+
+  generateJWT : function (data, config) {
+    return JWT.sign(data, config.secret , { expiresIn : config.expires, issuer : config.issuer })
+  },
+
+  decodeJWT : function (token, secret) {
+    return jwt.verify(token, secret);
   },
 
   dotNotationToObject : function(obj) {

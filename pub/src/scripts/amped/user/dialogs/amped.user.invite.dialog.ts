@@ -41,7 +41,7 @@ export class InviteUserDialogDirective {
     <div class="flex-header">
         <h3>Send an Invitation</h3>
     </div>
-    <amped-form [data]="formData" saveLabel="Invite" (onSubmit)="onInvite($event)"></amped-form>
+    <amped-form [data]="formData" saveLabel="Invite" saveLabelActive="Sending Invitation" (onSubmit)="onInvite($event)"></amped-form>
   `
 })
 export class InviteUserDialog implements OnInit {
@@ -53,7 +53,16 @@ export class InviteUserDialog implements OnInit {
       [
         {
           type: 'text',
-          label: 'Users Email',
+          label: 'Name',
+          name: 'name',
+          icon: 'account_circle',
+          required : true
+        }
+      ],
+      [
+        {
+          type: 'text',
+          label: 'Email',
           name: 'email',
           icon: 'account_circle',
           required : true
@@ -68,6 +77,8 @@ export class InviteUserDialog implements OnInit {
   
   onInvite(data : any){
     console.log(data);
+    
+    this.dialogRef.close();
   }
   
 }

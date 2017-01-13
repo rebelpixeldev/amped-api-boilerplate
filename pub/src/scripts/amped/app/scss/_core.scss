@@ -12,8 +12,6 @@ $color-weight-level : 400;
 $primary: md-palette($md-deep-purple);
 $accent:  md-palette($md-amber, A200, A100, A400);
 
-
-
 $brand-primary : map-get($md-deep-purple, $color-weight-level);
 $success : map-get($md-green, $color-weight-level);
 $success-color : map-get(map-get($md-green, contrast), $color-weight-level);
@@ -91,6 +89,9 @@ img{width:100%;}
 md-card{margin-bottom:$grid-gutter-width;}
 md-input{cursor:text;}
 md-sidenav-layout{background:#E0E0E0 !important;} // @TODO bad important
+md-dialog-container {
+  md-card-title, md-card-subtitle, md-card-content, md-card-actions { margin-bottom: 0 }
+}
 
 table{
   width:100%; border-collapse: collapse;

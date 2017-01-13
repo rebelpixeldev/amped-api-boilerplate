@@ -1092,6 +1092,9 @@ md-input {
 md-sidenav-layout {
   background: #E0E0E0 !important; }
 
+md-dialog-container md-card-title, md-dialog-container md-card-subtitle, md-dialog-container md-card-content, md-dialog-container md-card-actions {
+  margin-bottom: 0; }
+
 table {
   width: 100%;
   border-collapse: collapse; }
@@ -1210,6 +1213,14 @@ amped-form md-card-title:not(:first-child), amped-form md-card-subtitle:not(:fir
 
 amped-form .buttons figure {
   justify-content: flex-start; }
+
+amp-async-button button {
+  position: relative; }
+
+amp-async-button amp-spinner {
+  position: relative;
+  top: 4px;
+  padding-left: 10px; }
 
 amp-spinner .spinner, [amp-spinner] .spinner {
   animation: rotator 1.4s linear infinite;

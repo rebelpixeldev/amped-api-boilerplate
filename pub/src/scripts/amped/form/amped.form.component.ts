@@ -79,7 +79,9 @@ interface FormDataInterface {
               
               <md-grid-list cols="1" rowHeight="{{rowHeight}}" gutterSize="{{gutterSize}}" class="buttons">
                 <md-grid-tile>
-                  <button md-raised-button color="primary"  type="submit" [disabled]="!form.valid">{{saveLabel}}</button>
+                  <amp-async-button label="{{saveLabel}}" labelActive="{{saveLabelActive}}" [disabled]="!form.valid" [asyncActive]="formActive"></amp-async-button>
+                
+                  <!--<button md-raised-button color="primary"  type="submit" [disabled]="!form.valid"></button>-->
                 </md-grid-tile>
               </md-grid-list>
               
@@ -92,6 +94,7 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   
   @Input() data: FormDataInterface = {action: '', method: 'get', fields: []};
   @Input() saveLabel: string = 'Save'; // @TODO don't like passing this as a value. Maybe pass it as part of the data?
+  @Input() saveLabelActive: string = 'Saving'; // @TODO don't like passing this as a value. Maybe pass it as part of the data?
   @Input() model: string;
   @Input() rowHeight: number = 65;
   @Input() gutterSize: number = 10;
@@ -105,6 +108,8 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   public fields: Array<FieldInterface> = [];
   public hiddenFields: any = [];
   public form: FormGroup;
+  
+  private formActive : boolean = false;
   
   private _fieldDefaults: Object = {
     label: 'My Field',
@@ -206,8 +211,12 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   
   // @TODO add error handler if this.data.action is undefined
   onFormSubmit() {
+    this.formActive = true;
     this.ampedService[(typeof this.data.method === 'undefined' ? 'get' : this.data.method.toLowerCase())](this.data.action, this.form.value)
-      .then((resp: any) => this.onSubmit.emit(resp));
+      .then((resp: any) => {
+      this.formActive = false;
+        this.onSubmit.emit(resp)
+      });
   }
   
   getFormTitle() {

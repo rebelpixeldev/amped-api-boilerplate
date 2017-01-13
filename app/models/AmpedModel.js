@@ -69,7 +69,7 @@ class AmpedModel {
       this.app.get(`${this.route}/tableHeaders`, this.getTableHeaders.bind(this));
       this.app.get(`${this.route}/edit`, this.getModelDataRoute.bind(this));
 
-      this.app.route(`${this.route}/edit/:id`)
+      this.app.route(`${this.route}/edit/:_id`)
         .get(this.getModelDataRoute.bind(this));
 
       // this.app.post(this.route + '/:_id', this.updateModelData.bind(this));
@@ -197,7 +197,7 @@ class AmpedModel {
 
       delete params._id;
 
-      return this.DB.findOne(this.buildQuery({where}, params));
+      return this.DB.findOne(this.buildQuery({where}, params))
     }
   }
 
@@ -248,7 +248,6 @@ class AmpedModel {
             return ret;
 
           }, {});
-
 
           attrs.updated_at = new Date();
 

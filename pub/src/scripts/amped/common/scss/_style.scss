@@ -25,6 +25,12 @@ amped-form{
   }
 }
 
+amp-async-button{
+  button{position:relative;}
+  amp-spinner{ position: relative; top: 4px; padding-left: 10px;}
+}
+
+
 
 amp-spinner, [amp-spinner]{
   $offset: 187;

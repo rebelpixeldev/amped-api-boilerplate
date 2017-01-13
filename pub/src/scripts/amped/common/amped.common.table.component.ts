@@ -109,7 +109,7 @@ export class AmpedTable implements OnInit, OnChanges {
     this.sub = this.route.params.subscribe((params: any) => {
       if ( typeof params.model !== 'undefined' ) {
         this.model = params.model;
-        this.setHeaders();
+        // this.setHeaders();
       }
         
     });
@@ -125,8 +125,8 @@ export class AmpedTable implements OnInit, OnChanges {
   
   ngOnChanges(changes: any) {
     if (typeof this.data !== 'undefined' && this.data.length > 0) {
-      this.filterFields();
-      // this.setHeaders();
+      this.setHeaders()
+        .then((  ) => this.filterFields() );
     }
     // @TODO use an Observable
   }
@@ -148,10 +148,16 @@ export class AmpedTable implements OnInit, OnChanges {
     });
   }
   
-  setHeaders() {
+  setHeaders(force : boolean = false) {
+    return new Promise((resolve, reject) => {
+      if ( this.headers === null || force )
+        this.ampedService.get(`/api/${this.model}/tableHeaders`)
+          .then(( resp : any ) => this.headers = resp.response )
+          .then(( header : any ) => resolve(header));
+      else
+        resolve(this.headers);
+    })
     
-    this.ampedService.get(`/api/${this.model}/tableHeaders`)
-      .then(( resp : any ) => this.headers = resp.response );
     
     // if ( this.headers === null ) {
     //   let headers = Object.keys(this.data[0]);
@@ -225,8 +231,6 @@ export class AmpedTableCell {
   ngOnInit() {
     this.isViewInitialized = true;
     let component : any = null;
-    
-    console.log(this.header, typeof this.row[this.header]);
     
     if ( this.header.indexOf('photo') > -1 || this.header.indexOf('image') > -1 || this.header === 'upload' )
       // this.content = '<img md-card-avatar src="{{row[header]}}" title="{{header}}" />';

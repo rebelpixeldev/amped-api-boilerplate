@@ -57,10 +57,10 @@ class AmpedAuthorization {
    * @returns {string} - A JWT signed token
    */
   static encodeToken(user){
-    return JWT.sign({
-        id : user.id,
-        email : user.email
-      }, config.jwt.secret , { expiresIn : config.jwt.expires, issuer : config.jwt.issuer })
+    return util.generateJWT({
+      id : user.id,
+      email : user.email
+    }, config.jwt);
   }
 
   /**

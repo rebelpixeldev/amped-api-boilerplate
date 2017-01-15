@@ -46,10 +46,13 @@ export class AmpedAuthRegisterComponent implements OnInit {
   ngOnInit() { }
   
   onSubmit(resp : any){
-    console.log('WAT?');
-    console.log(resp);
-    if ( resp.success )
-      this.router.navigateByUrl('/dashboard');
+    if ( resp.success ) {
+      localStorage.setItem('token', resp.response);
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 250);
+      
+    }
       
   }
   

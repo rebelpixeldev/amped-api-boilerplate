@@ -66,6 +66,10 @@ Object.keys(config.urls).forEach((name) => {
 // @TODO make this mor comprehensive with regexp
 config.routing.isPublic = (url) => {
     return config.routing.noAuth.indexOf(url) !== -1 ||
+            url.indexOf('/setpassword') === 0 ||
+            url.indexOf('/resetpassword') === 0 ||
+            url.indexOf('/logout') === 0 ||
+            url.indexOf('/user/invite-accept') === 0 ||
             url.indexOf('/uploads/source') === 0 ||
             url.indexOf('/uploads/thumb') === 0 ||
             url.indexOf('/auth/google') === 0;

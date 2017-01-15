@@ -18,7 +18,7 @@ import {AmpUserCard} from '../amped.user.card';
         
         <md-card>
           <md-card-title>Latest Activity</md-card-title>
-          <amped-table [data]="userActivityData" enableCrud="false" showFilter="false" showPagination="false"></amped-table>
+          <amped-table [data]="userActivityData" enableCrud="false" showFilter="false" showPagination="false" model="activity"></amped-table>
         </md-card>
   
       </div>

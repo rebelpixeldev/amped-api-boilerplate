@@ -3,9 +3,14 @@
 
 const
   JWT       = require('jsonwebtoken'),
+  SHA1      = require('sha1'),
   url       = require('url');
 
 const Util = {
+
+  capitalize : function (str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  },
 
   /**
    * Gets all params and builds a single object of them.
@@ -75,8 +80,13 @@ const Util = {
     return JWT.sign(data, config.secret , { expiresIn : config.expires, issuer : config.issuer })
   },
 
-  decodeJWT : function (token, secret) {
-    return jwt.verify(token, secret);
+  // @TODO need to get JWT.verify working
+  decodeJWT : function (token) {
+    return JWT.decode(token);
+  },
+
+  encodePassword : function (raw) {
+    return SHA1(raw)
   },
 
   dotNotationToObject : function(obj) {

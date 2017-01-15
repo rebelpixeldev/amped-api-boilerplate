@@ -45,7 +45,7 @@ class AmpedConnector {
       this.connection = new Sequelize('postgres', 'ted', 'Dash111!', {
       // this.connection = new Sequelize('postgres', 'darijaradic', 'M0ther', {
         dialect: 'postgres',
-        logging:false,
+        // logging:false,
         define: {
           underscored: true
         }

@@ -94,14 +94,14 @@ class AmpedAuthorization {
    */
   setUserByToken(req, res, next) {
     const query = url.parse(req.url, true).query;
-    if (typeof req.headers.authorization !== 'undefined') {
+    if (typeof req.headers.authorization === 'undefined' || req.headers.authorization === '') {
+      req.user = null;
+      next();
+    } else {
       AmpedAuthorization.getUserByToken.call(this, req, req.headers.authorization, (user) => {
         req.user = user;
         next();
-      })
-    } else {
-      req.user = null;
-      next()
+      });
     }
 
   }
@@ -118,8 +118,10 @@ class AmpedAuthorization {
    * @param {function} callback   - A callback called when the user data has been fetched or null if the payload is empty or set to an empty string
    */
   static getUserByToken(req, token,  callback) {
-      if ( config.routing.noAuth.indexOf(req.url) !== -1 || typeof req.payload === 'undefined' || req.payload.id === ''|| parseInt(req.payload.id) === '' )
+      if ( config.routing.noAuth.indexOf(req.url) !== -1 || typeof req.payload === 'undefined' || req.payload.id === ''|| parseInt(req.payload.id) === 0  ) {
         callback(null);
+        return false;
+      }
 
       req.dbRef.users.getModel().findOne({where: {id: parseInt(req.payload.id)}, include: req.dbRef.users.queryIncludes})
         .then(callback);

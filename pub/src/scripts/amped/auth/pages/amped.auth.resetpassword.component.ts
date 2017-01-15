@@ -17,10 +17,11 @@ import { Component, OnInit } from '@angular/core';
 export class AmpedAuthResetComponent implements OnInit {
   public btnLabel : string = 'Reset';
   private formData: any = {
-    action: '/',
+    action: '/resetpassword',
+    method : 'POST',
     fields: [
       [
-        { type: 'text', label: 'Email', name: 'email', required: true },
+        { type: 'text', label: 'Email', name: 'email', required: true }
       ]
     ]
   };

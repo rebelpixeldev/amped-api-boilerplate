@@ -1169,6 +1169,16 @@ amp-user-thumb {
     border-radius: 100%;
     margin-right: 15px; }
 
+.default-avatar {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  display: block;
+  line-height: 40px;
+  text-align: center;
+  background: #ff0000;
+  margin-right: 15px; }
+
 .user-profile amped-user-card {
   flex: 1; }
 

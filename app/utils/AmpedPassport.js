@@ -134,7 +134,7 @@ class AmpedPassport {
 
             // bcrypt.hash(password, 10)
             //   .then((hash) => {
-            userObj.password = SHA1(password);
+            userObj.password = util.encodePassword(password);
 
             req.db.users.create(userObj)
               .then((user) => {
@@ -143,10 +143,11 @@ class AmpedPassport {
               .then((user) => {
                 this.createUserAccount(req, user)
                   .then((user) => {
-                    done(null, user);
+                    req.jwt = AmpedAuthorization.encodeToken(user);
+                    req.user = user.dataValues;
+                    done(null, user)
                   })
                   .catch((err) => {
-                    console.log('User create errpr');
                     done(err); // @TODO handle error
                   });
               })
@@ -237,8 +238,7 @@ class AmpedPassport {
                   .then(this.createUserAccount.bind(this, req))
                   .then((user) => {
                     request({
-                      // @TODO hardcoded url
-                      url: `http://localhost:3000/uploads/upload?remote_url=${profile.upload_id[0].value.split('?')[0]}&token=${user.token}`,
+                      url: `${config.urls.api}/uploads/upload?remote_url=${profile.upload_id[0].value.split('?')[0]}&token=${user.token}`,
                       method: 'POST'
                     }, (err, resp, body) => {
                       // @TODO catch if success is false
@@ -272,7 +272,6 @@ class AmpedPassport {
         user.updateAttributes({
           account_id: account.id
         }).then(() => {
-          // @TODO url should come from config
           // @TODO will error out, the GET route has been replaced with POST
           resolve(user);
         })

@@ -11,7 +11,7 @@ export class TableCell{
   template: `
       {{label}}
       <button md-icon-button [md-menu-trigger-for]="menu">
-         <!--<md-icon>remove_red_eye</md-icon>-->
+         <md-icon>remove_red_eye</md-icon>
       </button>
 
       <md-menu #menu="mdMenu">
@@ -29,7 +29,8 @@ export class JSONCell extends TableCell implements OnInit {
       
       this.refObject = this.row[this.header].constructor === Array ? this.row[this.header][0] : this.row[this.header];
       
-      this.keys = Object.keys(this.refObject);
+      if ( typeof this.refObject !== 'undefined' && this.refObject !== null )
+        this.keys = Object.keys(this.refObject);
       // this.label = this.refObject.name || this.refObject.title || this.refObject[this.keys.shift()];
     }
   }

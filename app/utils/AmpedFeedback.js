@@ -35,7 +35,7 @@ class AmpedFeedback{
   onFeedback(req, res, data){
     const
       resp = { success : true, message : '', response : [] },
-      params = Object.assign({}, req.body, req.params, url.parse(req.url, true).query);
+      params = req.amped.params;
 
     if ( data === false || data === null  ) {
       resp.success = false;
@@ -66,6 +66,19 @@ class AmpedFeedback{
 
   }
 
+  onFeedbackError(req, res, message=''){
+    this.onFeedback(req, res, {
+      success : false,
+      message
+    });
+  }
+
+  onFeedbackSuccess(req, res, message=''){
+    this.onFeedback(req, res, {
+      message
+    });
+  }
+
 }
 
 // Export a middleware function to attach the feedback functionality to the request object
@@ -76,6 +89,8 @@ module.exports = function (params) {
 
   return (req, res, next) => {
       res.feedback = feedback.onFeedback.bind(feedback, req, res);
+      res.feedbackError = feedback.onFeedbackError.bind(feedback, req, res);
+      res.feedbackSuccess = feedback.onFeedbackSuccess.bind(feedback, req, res);
       next();
   }
 

@@ -4,9 +4,10 @@
 const
   AmpedActivityLog    = require('./app/utils/AmpedActivityLog'),
   AmpedAuthorization  = require('./app/utils/AmpedAuthorization'),
-  AmpedSocket         = require('./app/utils/AmpedSocket'),
   AmpedConnector      = require('./app/utils/AmpedConnector'),
+  AmpedMiddleware     = require('./app/utils/AmpedMiddleware'),
   AmpedPassport       = require('./app/utils/AmpedPassport'),
+  AmpedSocket         = require('./app/utils/AmpedSocket'),
   ampedFeedback       = require('./app/utils/AmpedFeedback'),
   bodyParser          = require('body-parser'),
   compression         = require('compression'),
@@ -18,7 +19,8 @@ const
   logger              = require('morgan'),
   path                = require('path'),
   session             = require('express-session'),
-  swig                = require('swig');
+  swig                = require('swig'),
+  util                = require('./app/utils/AmpedUtil');
 
 const
   MongoStore = require('connect-mongo')(session);
@@ -49,7 +51,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
+
+
+
 // @TODO think about how to clean this shit up....
+// add the amped object and params to the req object
+app.use(AmpedMiddleware.params);
+
 // Add feedback to the req object so all api responses are the same format
 app.use(ampedFeedback({token : true}));
 

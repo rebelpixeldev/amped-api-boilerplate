@@ -103,6 +103,7 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   @Input() hideTitle: string = 'false';
   
   @Output() onSubmit: EventEmitter<any> = new EventEmitter();
+  @Output() onError: EventEmitter<any> = new EventEmitter();
   
   public formControls: any = {};
   public fields: Array<FieldInterface> = [];
@@ -212,11 +213,14 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   // @TODO add error handler if this.data.action is undefined
   onFormSubmit() {
     this.formActive = true;
-    this.ampedService[(typeof this.data.method === 'undefined' ? 'get' : this.data.method.toLowerCase())](this.data.action, this.form.value)
+    this.ampedService[(typeof this.data.method === 'undefined' ? 'post' : this.data.method.toLowerCase())](this.data.action, this.form.value)
       .then((resp: any) => {
       this.formActive = false;
         this.onSubmit.emit(resp)
-      });
+      }).catch((resp : any) => { // @TODO add resp type
+        this.formActive = false;
+        this.onError.emit(resp);
+      })
   }
   
   getFormTitle() {

@@ -10,7 +10,6 @@ class Activity extends AmpedModel {
     this.app = app;
   }
 
-  // @TODO add account and user relations
   addRelations(models){
     this.models = models;
     this.models.activity.getModel().belongsTo(models.accounts.getModel(), {foreignKey: 'account_id'});

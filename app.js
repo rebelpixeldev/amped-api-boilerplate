@@ -8,7 +8,6 @@ const
   AmpedMiddleware     = require('./app/utils/AmpedMiddleware'),
   AmpedPassport       = require('./app/utils/AmpedPassport'),
   AmpedSocket         = require('./app/utils/AmpedSocket'),
-  ampedFeedback       = require('./app/utils/AmpedFeedback'),
   bodyParser          = require('body-parser'),
   compression         = require('compression'),
   errorHandler        = require('errorhandler'),
@@ -56,13 +55,13 @@ app.use(bodyParser.json());
 
 // @TODO think about how to clean this shit up....
 // add the amped object and params to the req object
-app.use(AmpedMiddleware.params);
+app.use(AmpedMiddleware.params());
 
 // Add feedback to the req object so all api responses are the same format
-app.use(ampedFeedback({token : true}));
+app.use(AmpedMiddleware.feedback({token : true}));
 
 // Build all the models and connect to the database
-AmpedConnector.buildModels(app, socket);
+AmpedConnector.buildModels(app, socket, path.join(__dirname, 'app/models'));
 
 // Add the database models to the req object
 app.use(AmpedConnector.databaseMiddleware(app, socket));
@@ -71,7 +70,7 @@ app.use(AmpedConnector.databaseMiddleware(app, socket));
 new AmpedPassport(app, socket);
 
 // add all the middleware that has to do with getting the user info
-app.use(AmpedAuthorization.middleware());
+app.use(AmpedAuthorization.middleware);
 
 // Add the activity log to the req object
 app.use(AmpedActivityLog.middleware(socket, {}));

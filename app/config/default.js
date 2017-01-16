@@ -1,14 +1,42 @@
 const
   path = require('path');
 
+
+const paths = {
+
+}
+
 const config = {
   site : {
     name : 'Amped Admin'
   },
+  db : {
+    type : 'postgres',
+    user : 'ted',
+    password : 'Dash111!',
+    logging : false,
+    define: {
+      underscored: true
+    }
+  },
+  passport : {
+    google : {
+      clientID: '900264263-3nqlusqgu014h4mb83vo39gdgt2orie4.apps.googleusercontent.com',
+      clientSecret: '5BGqz2HWelkU0heJn2QQXMtn',
+      callbackURL: '/auth/google/callback',
+      session : false,
+      passReqToCallback: true
+    }
+  },
+  jwt : {
+    secret : 'secret',
+    expires : 7200,
+    issuer : 'amped-framework.com'
+  },
   errors : {
-    'incorrect-password' :{
+    'login-error' :{
       code : 1000,
-      message : 'Password Incorrect'
+      message : 'Username or password is incorrect'
     }
   },
   bcrypt : {
@@ -32,7 +60,8 @@ const config = {
       width : 300,
       height: 300
     },
-    sourcefilePath : '/uploads/source',
+    sourceFilePath : '/uploads/source',
+    thumbFilePath : '/uploads/thumb',
     baseDir: path.join(__dirname, '../uploads'),
     thumbDir: path.join(__dirname, '../uploads/thumb'),
     sourceDir: path.join(__dirname, '../uploads/source'),

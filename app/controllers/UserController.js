@@ -1,22 +1,22 @@
 'use strict';
 
 const
-  AmpedAuth     = require('../utils/AmpedAuthorization'),
-  AmpedEmailer  = require('../utils/AmpedEmailer'),
-  AmpedPassport = require('../utils/AmpedPassport'),
-  bcrypt        = require('bcrypt'),
-  config        = require('../config/config'),
-  passport      = require('passport'),
-  SHA1          = require('sha1'),
-  User          = require('../models/Users'),
-  util          = require('../utils/AmpedUtil');
+  AmpedAuthorization    = require('../utils/AmpedAuthorization'),
+  AmpedEmailer          = require('../utils/AmpedEmailer'),
+  AmpedPassport         = require('../utils/AmpedPassport'),
+  bcrypt                = require('bcrypt'),
+  config                = require('../config/config'),
+  passport              = require('passport'),
+  SHA1                  = require('sha1'),
+  User                  = require('../models/Users'),
+  util                  = require('../utils/AmpedUtil'),
+  validator             = require('../utils/AmpedValidator');
 
 class UserController {
 
   constructor(app, socket) {
     this.app = app;
-    // @TODO don't liek the naming here
-    this.auth = new AmpedAuth.AmpedAuthorization();
+    this.auth = new AmpedAuthorization();
   }
 
   setupRoutes() {
@@ -30,7 +30,7 @@ class UserController {
     this.app.post('/register', passport.authenticate('local-signup', {  session : false }), this.register.bind(this));
 
     this.app.get('/profile', AmpedPassport.isLoggedIn, this.profile.bind(this));
-    this.app.post('/user/invite', AmpedPassport.isLoggedIn, this.userInvite.bind(this));
+    this.app.post('/user/invite', [AmpedPassport.isLoggedIn, validator.validateParams.bind(this,['email', 'name'])], this.userInvite.bind(this));
 
 
 
@@ -49,31 +49,45 @@ class UserController {
   login(req, res){
     this.auth.login(req)
       .then(data => {
+        console.log('LOGGIN');
+        console.log(data);
         req.logActivity('login', 'User logged in', {
           ip  :req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
         }, user.get({raw:true}));
         res.feedback(data);
-      })
+      }).catch((err) => {
+      console.log('CAUGHT ERROR');
+        res.feedbackError(err);
+      });
   }
 
   register(req, res){
 
-    new AmpedEmailer('welcome').send(req, {
-      content_name : `${req.user.display_name}!`,
-      content_description : `
-          <p>Welcome to ${config.site.name}! Click the link below and take a look around</p>
-          `,
-      content_button_href : `${config.urls.site.domain}`,
-      content_button_label : `Get access now!`
-    }, `Welcome to ${config.site.name}`)
-      .then(() => {
-        res.feedback(AmpedAuth.encodeToken(req.user));
-      })
-      .catch(res.feedbackError);
+    console.log(req.user);
+
+    if ( typeof req.user === 'string' ){
+      res.feedbackError(req.user);
+    } else {
+      new AmpedEmailer('welcome').send(req, {
+        content_name : `${req.user.display_name}!`,
+        content_description : `
+            <p>Welcome to ${config.site.name}! Click the link below and take a look around</p>
+            `,
+        content_button_href : `${config.urls.site.domain}`,
+        content_button_label : `Get access now!`
+      }, `Welcome to ${config.site.name}`)
+        .then(() => {
+        console.log('REGGISTEr');
+          res.feedback(AmpedAuthorization.encodeToken(req.user));
+        })
+        .catch((err) => {
+        console.log('ERR', err);
+          res.feedbackError(err);
+        });
+    }
   }
 
 
-  // @TODO parameter checking
   // @TODO probably will need to save the token in the database for extra validity
   // @TODO add the user into the database and mark their status as invitation sent or some shit like that
   userInvite(req, res){

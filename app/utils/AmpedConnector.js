@@ -4,6 +4,7 @@
 const
   AmpedAuthorization  = require('./AmpedAuthorization'),
   AmpedAcl            = require('./AmpedAcl'),
+  config              = require('../config/config'),
   connection          = null,
   fs                  = require('fs'),
   path                = require('path'),
@@ -40,15 +41,12 @@ class AmpedConnector {
    * @returns {null|Sequelize} - Sequelize datbase object
    */
   static getConnection() {
-    // @TODO set connection string from config
     if (typeof this.connection === 'undefined') {
-      this.connection = new Sequelize('postgres', 'ted', 'Dash111!', {
+      this.connection = new Sequelize(config.db.type, config.db.user, config.db.password, {
       // this.connection = new Sequelize('postgres', 'darijaradic', 'M0ther', {
-        dialect: 'postgres',
-        // logging:false,
-        define: {
-          underscored: true
-        }
+        dialect: config.db.type,
+        logging: config.db.logging,
+        define: config.db.define
       });
     }
     return this.connection;
@@ -65,10 +63,9 @@ class AmpedConnector {
    * @param {object} app          - Global express app object
    * @param {AmpedSocket} socket  - Amped socket instance
    */
-  static buildModels(app, socket) {
+  static buildModels(app, socket, modelPath) {
     const
-      connection = AmpedConnector.getConnection(),
-      modelPath = path.join(__dirname, '../models'); // @TODO pass a reference
+      connection = AmpedConnector.getConnection();
 
     const dirs = fs.readdirSync(modelPath);
     models = dirs.reduce((carry, filename) => {

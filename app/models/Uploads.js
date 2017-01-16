@@ -1,8 +1,9 @@
 'use strict';
 // @TODO make it come from external files service
 const
-  AmpedModel = require('./AmpedModel'),
-  sequelize = require('sequelize');
+  AmpedModel  = require('./AmpedModel'),
+  config      = require('../config/config'),
+  sequelize   = require('sequelize');
 
 class Uploads extends AmpedModel {
 
@@ -35,18 +36,17 @@ class Uploads extends AmpedModel {
   get defineOptions(){
     return {
       getterMethods : {
-        // @TODO these paths and url should come from the config
         source_path : function(){
-          return `/uploads/source/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
+          return `${config.uploads.sourceFilePath}/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
         },
         thumb_path : function(){
-          return `/uploads/thumb/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
+          return `${config.uploads.thumbFilePath}/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
         },
         source_url : function(){
-          return `http://localhost:3000/uploads/source/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
+          return `${config.urls.site.domain}${config.uploads.sourceFilePath}/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
         },
         thumb_url : function(){
-          return `http://localhost:3000/uploads/thumb/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
+          return `${config.urls.site.domain}${config.uploads.thumbFilePath}/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
         }
       }
     }

@@ -1,22 +1,12 @@
 'use strict';
 
 const
+  config        = require('../config/config'),
   fs            = require('fs'),
   path          = require('path'),
   multer        = require('multer'),
   uploads       = require('../utils/AmpedUploads'),
   util          = require('../utils/AmpedUtil');
-
-
-// @TODO make come from external config file
-const config = {
-  uploads :{
-    baseDir : path.join(__dirname, '../uploads'),
-    thumbDir : path.join(__dirname, '../uploads/thumb'),
-    sourceDir : path.join(__dirname, '../uploads/source'),
-    tempDir : path.join(__dirname, '../uploads/tmp')
-  }
-};
 
 
 var storage =   multer.diskStorage({

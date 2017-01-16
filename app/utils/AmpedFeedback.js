@@ -34,8 +34,8 @@ class AmpedFeedback{
    */
   onFeedback(req, res, data){
     const
-      resp = { success : true, message : '', response : [] },
-      params = req.amped.params;
+      resp = { success : true, message : '', response : [] };
+      // params = req.amped.params;
 
     if ( data === false || data === null  ) {
       resp.success = false;
@@ -61,37 +61,50 @@ class AmpedFeedback{
       resp.response = typeof data !== 'undefined' && data !== null && typeof data.response !== 'undefined' ? data.response : (data || []);
     }
 
-    res.json(resp);
-    return null;
+    if ( typeof res !== 'undefined' && res !== null )
+      res.json(resp);
+    return resp;
 
   }
 
   onFeedbackError(req, res, message=''){
-    this.onFeedback(req, res, {
+    return this.onFeedback(req, res, {
       success : false,
       message
     });
   }
 
   onFeedbackSuccess(req, res, message=''){
-    this.onFeedback(req, res, {
+    return this.onFeedback(req, res, {
+      message
+    });
+  }
+
+  getFeedbackError(message = ''){
+    return this.onFeedback(null, null, {
+      success : false,
+      message
+    });
+  }
+  getFeedbackSuccess(message = ''){
+    return this.onFeedback(null, null, {
+      success : true,
       message
     });
   }
 
 }
 
+module.exports = AmpedFeedback;
+
 // Export a middleware function to attach the feedback functionality to the request object
-module.exports = function (params) {
-
-
-  const feedback = new AmpedFeedback(params);
-
-  return (req, res, next) => {
-      res.feedback = feedback.onFeedback.bind(feedback, req, res);
-      res.feedbackError = feedback.onFeedbackError.bind(feedback, req, res);
-      res.feedbackSuccess = feedback.onFeedbackSuccess.bind(feedback, req, res);
-      next();
-  }
-
-};
+// module.exports = function (params) {
+//
+//
+//   const feedback = new AmpedFeedback(params);
+//
+//   return (req, res, next) => {
+//
+//   }
+//
+// };

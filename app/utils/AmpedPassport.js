@@ -2,6 +2,7 @@
 const
   AmpedAuthorization  = require('./AmpedAuthorization'),
   AmpedConnector      = require('./AmpedConnector'),
+  AmpedFeedback       = require('./AmpedFeedback'),
   bcrypt              = require('bcrypt'),
   config              = require('../config/config'),
   GoogleStrategy      = require('passport-google-oauth').OAuth2Strategy,
@@ -95,9 +96,8 @@ class AmpedPassport {
     }, (req, email, password, done) => {
       req.db.users.findOne({where: {email}})
         .then((user) => {
-          // @TODO user vaildation
           done(null, user);
-        })
+        }).catch(err);
     }));
 
     passport.use('local-signup', new LocalStrategy({
@@ -114,76 +114,62 @@ class AmpedPassport {
         req.db.users.findOne({where: {email: email}})
           .then((user) => {
 
-            // if (user) {
-            //   // @TODO user exists, send message back
-            //   // @TODO take into account email with a different strategy
-            //   console.log('USER EXISTS');
-            //   done('user exists', null);
-            // } else {
-            const userObj = {
-              display_name: params.first_name,
-              users_name: {
-                givenName: params.first_name,
-                familyName: params.last_name
-              },
-              email,
-              upload_id: 0,
-              account: 0,
-              provider: 'local',
-            };
+            if (user) {
+              const feedback = new AmpedFeedback({sendResponse : false});
+                done(null, user.provider === 'local' ? 'This email already exists' : `This email has been logged in with ${util.capitalize(user.provider)}`);
 
-            // bcrypt.hash(password, 10)
-            //   .then((hash) => {
-            userObj.password = util.encodePassword(password);
+            } else {
+              const userObj = {
+                display_name: params.first_name,
+                users_name: {
+                  givenName: params.first_name,
+                  familyName: params.last_name
+                },
+                email,
+                upload_id: 0,
+                account: 0,
+                provider: 'local',
+              };
 
-            req.db.users.create(userObj)
-              .then((user) => {
-                return user;
-              })
-              .then((user) => {
-                this.createUserAccount(req, user)
-                  .then((user) => {
-                    req.jwt = AmpedAuthorization.encodeToken(user);
-                    req.user = user.dataValues;
-                    done(null, user)
-                  })
-                  .catch((err) => {
-                    done(err); // @TODO handle error
-                  });
-              })
-            // .then((user) => {
-            //   done(null, user);
-            // })
-            // .catch((err) => {
-            //   console.log('User create errpr');
-            //   done(err); // @TODO handle error
-            // });
+              // bcrypt.hash(password, 10)
+              //   .then((hash) => {
+              userObj.password = util.encodePassword(password);
+
+              req.db.users.create(userObj)
+                .then((user) => {
+                  return user;
+                })
+                .then((user) => {
+                  this.createUserAccount(req, user)
+                    .then((user) => {
+                      req.jwt = AmpedAuthorization.encodeToken(user);
+                      req.user = user.dataValues;
+                      done(null, user)
+                    })
+                    .catch(done);
+                })
+              // .then((user) => {
+              //   done(null, user);
+              // })
+              // .catch((err) => {
+              //   console.log('User create errpr');
+              //   done(err); // @TODO handle error
+              // });
 
 
-            // })
+              // })
 
-            // }
+            }
           })
       }));
   }
 
 
   googleStategy() {
-
-    // @TODO this is bad here. move this
     this.app.get('/auth/google', this.passport.authenticate('google', {scope: ['profile', 'email']}));
     this.app.get('/auth/google/callback',
       this.passport.authenticate('google', {session:false}), this.strategyCallbackHandler);
-
-    this.passport.use(new GoogleStrategy({
-        // @TODO add config
-        clientID: '900264263-3nqlusqgu014h4mb83vo39gdgt2orie4.apps.googleusercontent.com',
-        clientSecret: '5BGqz2HWelkU0heJn2QQXMtn',
-        callbackURL: '/auth/google/callback',
-        session : false,
-        passReqToCallback: true
-
-      },
+    this.passport.use(new GoogleStrategy(config.passport.google,
       (req, token, refreshToken, profile, done) => {
 
         // make the code asynchronous
@@ -191,7 +177,6 @@ class AmpedPassport {
         process.nextTick(() => {
 
           // try to find the user based on their google id
-          // @TODO handle error
           req.db.users.findOne({where: {service_id : profile.id, provider : 'google'}})
             .then((user) => {
               console.log(user);
@@ -241,8 +226,10 @@ class AmpedPassport {
                       url: `${config.urls.api}/uploads/upload?remote_url=${profile.upload_id[0].value.split('?')[0]}&token=${user.token}`,
                       method: 'POST'
                     }, (err, resp, body) => {
-                      // @TODO catch if success is false
-                      const fileInfo = JSON.parse(body).response;
+                      // Ignore if the file upload is false since there is a backup avatar
+                      const
+                        fileResp = JSON.parse(body),
+                        fileInfo = fileResp.response;
 
                       user.updateAttributes({
                         upload_id: fileInfo.id
@@ -252,11 +239,9 @@ class AmpedPassport {
                       });
                     })
                   })
-                  .catch((err) => {
-                    done(err); // @TODO handle error
-                  });
+                  .catch(done);
               }
-            });
+            }).catch(done);
         });
 
       }));
@@ -343,11 +328,10 @@ class AmpedPassport {
     return passport;
   }
 
-  // @TODO needs to come from options
   get jwtOpts() {
     return {
       secretOrKey: 'secret',
-      issuer: 'amped-framework.com'
+      issuer: config.jwt.issuer
     };
   }
 

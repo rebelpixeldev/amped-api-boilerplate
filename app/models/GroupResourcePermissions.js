@@ -11,10 +11,6 @@ class GroupResourcePermissions extends AmpedModel {
     this.models = {};
   }
 
-  addRelations(models){
-    this.models = models; // @TODO: Not sure I like this so much
-  }
-
   get schema() {
     return {
       group_id        : sequelize.INTEGER,

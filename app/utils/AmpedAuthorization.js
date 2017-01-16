@@ -31,20 +31,16 @@ class AmpedAuthorization {
       req.db.users.findOne({where:{email:params.email}})
         .then((user) => {
 
-          // @TODO verifications for users email
-          if ( SHA1(params.password) === user.password ){
-            // @TODO make it so that we gather more info on login with a helper lib AmpedUserInfo or something
+          if ( user === null || SHA1(params.password) !== user.password ){
+            reject(config.errors.getError('no-user-login'))
+          } else {
+            req.logActivity('login', user);
             resolve({
               token: AmpedAuthorization.encodeToken(user)
-            })
-          } else {
-            reject(config.errors.getError('incorrect-password'))
+            });
           }
 
-        }).catch((err) => {
-            console.log('ERR');
-        console.log(err);
-        })
+        }).catch(reject)
 
     })
   }
@@ -92,42 +88,50 @@ class AmpedAuthorization {
    * @param {object} res      - Express response object
    * @param {function} next   - Express missleware callback
    */
-  setUserByToken(req, res, next) {
+  static setUserByToken(req, res, next) {
     const query = url.parse(req.url, true).query;
     if (typeof req.headers.authorization === 'undefined' || req.headers.authorization === '') {
       req.user = null;
       next();
     } else {
-      AmpedAuthorization.getUserByToken.call(this, req, req.headers.authorization, (user) => {
-        req.user = user;
-        next();
-      });
+      AmpedAuthorization.getUserByPayload(req)
+        .then((user) => {
+          req.user = user;
+          next();
+        }).catch(next);
     }
 
   }
 
   /**
-   * @TODO Named a little incorrect (probably was suppose to do something else when it was created)
-   * @TODO do something on catch
-   * @TODO should probably return a promise. Might work a little nicer
-   *
    * A static call to build the user object by `req.payload` and fetching the data through the database
    *
    * @param {object} req          - Express request object
-   * @param {string} token        - @deprecate
-   * @param {function} callback   - A callback called when the user data has been fetched or null if the payload is empty or set to an empty string
    */
-  static getUserByToken(req, token,  callback) {
-      if ( config.routing.noAuth.indexOf(req.url) !== -1 || typeof req.payload === 'undefined' || req.payload.id === ''|| parseInt(req.payload.id) === 0  ) {
-        callback(null);
-        return false;
-      }
+  static getUserByPayload(req) {
 
-      req.dbRef.users.getModel().findOne({where: {id: parseInt(req.payload.id)}, include: req.dbRef.users.queryIncludes})
-        .then(callback);
+    return new Promise((resolve, reject) => {
+      if ( config.routing.noAuth.indexOf(req.url) !== -1 || typeof req.payload === 'undefined' || req.payload.id === ''|| parseInt(req.payload.id) === 0  ) {
+        resolve(null);
+      } else {
+
+        req.dbRef.users.getModel().findOne({
+          where: {id: parseInt(req.payload.id)},
+          include: req.dbRef.users.queryIncludes
+        })
+          .then(resolve)
+          .catch(reject);
+      }
+    })
+
   }
 
-
+  /**
+   * Gets user based on JWT token
+   *
+   * @param {string} jwt  - JWT encoded string
+   * @returns {object}
+   */
   static getUserByJWT(jwt){
     const
       payload = JWT.decode(jwt),
@@ -159,23 +163,27 @@ class AmpedAuthorization {
       return ret;
     }, {});
   }
+
+  static middleware(req, res, next){
+    AmpedAuthorization.setUserByToken(req, res, next);
+  }
 }
 
 
 // Export AmpedAuthorization as the class to create new instances of
-module.exports.AmpedAuthorization = AmpedAuthorization;
-
-// Export all of the static functions for convenience
-module.exports.getUserByJWT = AmpedAuthorization.getUserByJWT;
-module.exports.decodeToken = AmpedAuthorization.decodeToken;
-module.exports.encodeToken = AmpedAuthorization.encodeToken;
-module.exports.getUserByToken = AmpedAuthorization.getUserByToken;
-module.exports.convertQueryRelations = AmpedAuthorization.convertQueryRelations;
-
-// Export the middleware for each request
-module.exports.middleware = function (params) {
-  const auth = new AmpedAuthorization(params);
-
-  return auth.setUserByToken;
-
-}
+module.exports = AmpedAuthorization;
+//
+// // Export all of the static functions for convenience
+// module.exports.getUserByJWT = AmpedAuthorization.getUserByJWT;
+// module.exports.decodeToken = AmpedAuthorization.decodeToken;
+// module.exports.encodeToken = AmpedAuthorization.encodeToken;
+// module.exports.getUserByToken = AmpedAuthorization.getUserByToken;
+// module.exports.convertQueryRelations = AmpedAuthorization.convertQueryRelations;
+//
+// // Export the middleware for each request
+// module.exports.middleware = function (params) {
+//   const auth = new AmpedAuthorization(params);
+//
+//   return auth.setUserByToken;
+//
+// }

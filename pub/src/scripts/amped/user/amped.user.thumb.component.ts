@@ -41,28 +41,38 @@ export class AmpedUserThumb implements OnInit, OnChanges {
   
   ngOnChanges(changes : any){
     if ( typeof changes.user !== 'undefined' ){
-      this.src = this.user === null || this.user === 'undefined' || typeof this.user.upload === 'undefined' || this.user.upload === null? '' : this.user.upload.thumb_url;
+      this.src = this.user === null ||
+                  this.user === 'undefined' ||
+                  typeof this.user.upload === 'undefined' ||
+                  this.user.upload === null ?
+                    '' : this.user.upload.thumb_url;
       this.defaultAvatarBackground = this.getColor();
       
       // this.user = changes.user;
     }
   }
   
-  getLetter(){
-    return this.user.display_name[0].toUpperCase();
+  getLetter() : string{
+    return typeof this.user.display_name === 'undefined' ? '' : this.user.display_name[0].toUpperCase();
   }
   
-  getColor(){
+  getColor() : string{
     const str = this.user.email;
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    console.log(str, this.user);
+    
+    if ( typeof this.user.email === 'undefined' ) {
+      return 'rgba(0,0,0,0)';
+    } else {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      let colour = '#';
+      for (let i = 0; i < 3; i++) {
+        let value = (hash >> (i * 8)) & 0xFF;
+        colour += ('00' + value.toString(16)).substr(-2);
+      }
+      return colour;
     }
-    let colour = '#';
-    for (let i = 0; i < 3; i++) {
-      let value = (hash >> (i * 8)) & 0xFF;
-      colour += ('00' + value.toString(16)).substr(-2);
-    }
-    return colour;
   }
 }

@@ -11,10 +11,6 @@ class UserRoles extends AmpedModel {
     this.models = {};
   }
 
-  addRelations(models){
-    this.models = models; // @TODO: Not sure I like this so much
-  }
-
   get schema() {
     return {
       user_id     : sequelize.INTEGER,

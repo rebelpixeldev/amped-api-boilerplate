@@ -20,13 +20,14 @@ import {AmpedSocketService} from "../socket/amped.socket.service";
        <md-card-content>
           <amped-table [data]="tableData" enableCrud="true" (onDelete)="handleEntryDelete($event)"></amped-table>
        </md-card-content>
+       <amp-spinner *ngIf="loading"></amp-spinner>
     </md-card>
 `
 })
 export class AmpedCrudTableComponent implements OnInit {
 
   public tableData : Array<any> = [];
-
+  public loading : boolean = true;
   private model : string = '';
 
   private sub : any;
@@ -49,18 +50,19 @@ export class AmpedCrudTableComponent implements OnInit {
   
       this.socketService.addSocketListener(`${this.model.toUpperCase()}_DELETE`, (payload : any) => {
         this.tableData = this.tableData.filter(( row ) => row.id !== parseInt(payload.id));
-      })
+      });
       
+      this.loading = true;
       // Retrieve Pet with Id route param
       this.FormService.getCrudData(model).then(data => {
         this.tableData = data.response;
+        this.loading = false;
       });
     });
   }
   
   handleEntryDelete(data : any){
     console.log('ENTRY', data);
-  
     this.FormService.deleteCrudEntry(this.model, data.entry.id);
     
   }

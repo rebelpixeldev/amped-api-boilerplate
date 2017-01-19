@@ -45,7 +45,8 @@ export class AmpedSidebar implements OnInit {
     {
       title: {label: 'Admin'},
       links: [
-        {icon: 'supervisor_account', label: 'Users', href: '/edit/users'}
+        {icon: 'supervisor_account', label: 'Users', href: '/edit/users'},
+        {icon: 'account_box', label: 'Accounts', href: '/edit/accounts'}
       ]
     }
   ]

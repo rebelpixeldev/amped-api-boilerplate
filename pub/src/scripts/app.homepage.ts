@@ -14,7 +14,8 @@ import { AmpedService } from './amped/common/amped.common.service';
       </div>
       <md-card>
         <md-card-title i18n>Recent Activity</md-card-title>
-        <amped-table [data]="activityData" [headers]="activityHeaders" actionsEnabled="false"></amped-table>
+        <!--@TODO You need to pass the model so the headers are properly mapped. Thats stupid-->
+        <amped-table [data]="activityData" [headers]="activityHeaders" actionsEnabled="false" model="activity"></amped-table>
       </md-card>
     
 

@@ -224,7 +224,7 @@ export class AmpedFormComponent implements OnInit, OnChanges {
   }
   
   getFormTitle() {
-    if (this.title !== null)
+    if (this.title !== null && typeof this.title !== 'undefined')
       return this.title;
     else if (this.model && this.model !== '')
       return `Editing ${this.model}`;

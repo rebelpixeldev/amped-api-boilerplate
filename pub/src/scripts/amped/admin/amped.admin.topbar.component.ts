@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+  import {Component, OnInit} from '@angular/core';
 
 import { AmpedService } from '../common/amped.common.service';
 
@@ -23,7 +23,7 @@ import { AmpedService } from '../common/amped.common.service';
     
     
     <md-menu #menu="mdMenu">
-      <a href="/#/user/profile/{{user.id}}" md-menu-item>Profile</a>
+      <a routerLink="/user/profile/{{user.id}}" md-menu-item>Profile</a>
       <a (click)="handleLogout()" md-menu-item>Logout</a>
     </md-menu>
   `

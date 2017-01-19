@@ -150,12 +150,12 @@ export class AmpedTable implements OnInit, OnChanges {
   
   setHeaders(force : boolean = false) {
     return new Promise((resolve, reject) => {
-      if ( this.headers === null || force )
+      // if ( this.headers === null || force )
         this.ampedService.get(`/api/${this.model}/tableHeaders`)
           .then(( resp : any ) => this.headers = resp.response )
           .then(( header : any ) => resolve(header));
-      else
-        resolve(this.headers);
+      // else
+      //   resolve(this.headers);
     })
     
     

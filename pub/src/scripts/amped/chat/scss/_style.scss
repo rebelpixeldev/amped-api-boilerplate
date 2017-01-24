@@ -1,0 +1,41 @@
+
+amp-conversations{
+  position:fixed; bottom:0; right:$grid-gutter-width/2; display:flex; flex-direction:row; z-index:9999;
+}
+
+amp-chat-window{
+  width:300px;
+  md-card{
+    transition:transform 0.3s ease-out;
+    padding:0; margin-bottom:0;
+    &.collapsed{transform:translateY(252px)}
+  }
+  md-card-header{
+    background:$brand-primary; margin:0; color:#fff; display:flex; flex-direction:row; align-items:center; padding:4px;
+    [md-icon-button]{
+      width:25px; height:25px; line-height:22px;
+      .material-icons{font-size:14px;}
+    }
+  }
+  md-card-title{margin-bottom:0; padding-left:10px;}
+  md-card-content{padding-bottom:4px;}
+  .amp-chat-window-controls{display:flex; flex-direction:row; align-items:center;}
+  .md-card-header-text{display:flex; align-items:center; margin:0;}
+  .amp-chat-form{
+    display:flex; margin: 0 4px;
+    textarea{flex:10; border:solid 1px #E0E0E0; resize:none; padding:3px; font-size:12px;}
+    button{flex:2}
+  }
+
+  .amp-chat-message-display{
+    height:200px; flex:1; margin:4px; border:solid 1px #E0E0E0; display:flex; flex-direction:column; padding:5px; overflow:auto;
+    amp-chat-message{
+      :not(.my-message){border-top-left-radius:0;}
+      .my-message{ border-bottom-right-radius:0; float:right;}
+      div{
+        width: auto; float: left; background: #ccc; display: inline-block; padding: 10px 15px; margin-bottom: 10px; border-radius: 6px;
+      }
+    }
+  }
+
+}

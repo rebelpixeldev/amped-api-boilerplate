@@ -225,7 +225,7 @@ class AmpedModel {
       isCreation = typeof data.id === 'undefined' || data.id === null || data.id === 0;
 
     ( isCreation?
-      this.DB.create({display_name : 'foo'}) :
+      this.DB.build(params).save() :
       this.DB.findById(data.id))
         .then((result) => {
 
@@ -233,11 +233,12 @@ class AmpedModel {
           delete data.id;
           delete data.token;
           delete data._id;
+          console.log(Object.keys(data));
           const attrs = Object.keys(data).reduce((ret, key) => {
             if (typeof data[key] === 'object') {
               switch (this.schema[key].key || this.schema[key].type.key) {
                 case 'INTEGER':
-                  ret[key] = data[key].id;
+                  ret[key] = parseInt(typeof data[key] === 'object' ? data[key].id : data[key]);
                   break;
                 case 'JSON':
                   ret[key] = data[key];
@@ -252,12 +253,17 @@ class AmpedModel {
           attrs.updated_at = new Date();
 
           result.updateAttributes(attrs)
-            .then(() => {
+            .then((modelData) => {
 
               this.getModelData(req, res, {_id: result.id}, isCreation ? this.successMessage : '' )
                 .then((user) => {
-                  this.sendSocket('UPDATE', {user}, req.user);
-                  this.logActivity(req, 'update', `${this.modelName} was updated`, user);
+                  if ( isCreation ){
+                    this.sendSocket('CREATE', {user, data:modelData}, req.user);
+                    this.logActivity(req, 'create', `${this.modelName} was created`, user);
+                  } else {
+                    this.sendSocket('UPDATE', {user, data:modelData}, req.user);
+                    this.logActivity(req, 'update', `${this.modelName} was updated`, user);
+                  }
                 });
             });
         });
@@ -361,13 +367,18 @@ class AmpedModel {
 
 
     const {order_by = this.queryOrderBy, order = this.queryOrder} = params;
-    query.order = typeof params.order === 'undefined' ? `${order_by} ${order}` : params.order;
+    query.order = `${order_by} ${order}`;//typeof params.order === 'undefined' ? `${order_by} ${order}` : params.order;
     query.limit = typeof params.limit === 'undefined' ? this.queryPerPage : params.limit;
-
 
     //@TODO add json querying
     query.attributes = {exclude: ['deleted_at', 'deleted_by']};
     query.where = Object.assign({}, this.paramsToQuery(params), (query.where || {}));
+
+    if ( typeof params.in !== 'undefined'){
+      delete query.where.in;
+      query.where.id = { $in: params.in.split(',')};
+    }
+
     return query;
 
   }
@@ -589,7 +600,10 @@ class AmpedModel {
    */
   get defaultSchema() {
     return {
-      // id : {type : sequelize.INTEGER, primaryKey: true},
+      id : {allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: sequelize.INTEGER},
       created_at: {type: 'TIMESTAMP', user_editable: false},
       updated_at: {type: 'TIMESTAMP', user_editable: false},
       deleted_at: {type: 'TIMESTAMP', user_editable: false},

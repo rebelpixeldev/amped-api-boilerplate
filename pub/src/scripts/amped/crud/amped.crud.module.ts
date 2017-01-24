@@ -10,6 +10,7 @@ import { AmpedCrudFormComponent } from './amped.crud.form.component';
 import { AmpedCrudTableComponent } from './amped.crud.table.component';
 import { AmpedFormsService }  from './amped.crud.service';
 
+import { AmpedTableModule } from '../table/amped.table.module';
 import { AmpedCommonModule } from '../common/amped.common.module';
 import { AmpedFilesModule } from '../files/amped.files.module';
 import { AmpedFormsModule } from '../form/amped.form.module';
@@ -19,7 +20,7 @@ import { AmpedService } from '../common/amped.common.service';
 import { CreateCrudDialogDirective, CrudCreateDialog } from './dialogs/amped.crud.create.dialog';
 
 @NgModule({
-  imports         : [ CommonModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedCommonModule, AmpedFilesModule, AmpedFormsModule, MaterialModule.forRoot() ],
+  imports         : [ CommonModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedCommonModule, AmpedFilesModule, AmpedFormsModule, AmpedTableModule, MaterialModule.forRoot() ],
   declarations    : [ AmpedCrudFormComponent, AmpedCrudTableComponent, AmpedCrudAddnew, CreateCrudDialogDirective, CrudCreateDialog ],
   exports         : [ AmpedCrudFormComponent, AmpedCrudTableComponent, AmpedCrudAddnew, CreateCrudDialogDirective ],
   providers       : [ AmpedFormsService, AmpedService ],

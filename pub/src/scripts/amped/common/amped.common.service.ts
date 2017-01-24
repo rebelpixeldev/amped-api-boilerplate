@@ -38,23 +38,23 @@ export class AmpedService {
     }
   }
   
-  get(url: any, data: any = {}, options: any = {}, reqMethod: string = 'get') {
-    return this.request.apply(this, arguments);
+  get(url: any, data: any = {}, options: any = {}, suppressSnack : boolean = false) {
+    return this.request(url, data, options, 'get', suppressSnack);
   }
   
-  post(url: any, data: FormData, options: any = {}) {
-    return this.request.apply(this, [url, data, options, 'post']);
+  post(url: any, data: any, options: any = {}, suppressSnack : boolean = false) {
+    return this.request(url, data, options, 'post', suppressSnack);
   }
   
-  put(url: any, data: FormData = new FormData(), options: any = {}) {
-    return this.request.apply(this, [url, data, options, 'put']);
+  put(url: any, data: any = {}, options: any = {}, suppressSnack : boolean = false) {
+    return this.request(url, data, options, 'put', suppressSnack);
   }
   
-  delete(url: any, data: any = {}, options: any = {},) {
-    return this.request(url, data, options, 'delete');
+  delete(url: any, data: any = {}, options: any = {},suppressSnack : boolean = false) {
+    return this.request(url, data, options, 'delete', suppressSnack);
   }
   
-  request(url: any, data: FormData = new FormData(), options: any = {}, reqMethod: string = 'get') {
+  request(url: any, data: any = {}, options: any = {}, reqMethod: string = 'get', suppressSnack : boolean = false) {
     
     return new Promise((resolve, reject) => {
       
@@ -74,10 +74,9 @@ export class AmpedService {
         .toPromise()
         .then((resp: any) => resp.json())
         .then((resp: any) => {
-        console.log(resp);
         
           if (resp.success) {
-            if ( resp.message !== '' )
+            if ( resp.message !== '' && !suppressSnack )
               this.alertService.snackSuccess(resp.message);
             // @TODO plan for meta to be sent as well
             resolve(resp);
@@ -87,7 +86,8 @@ export class AmpedService {
           }
         }).catch((err: any) => {
         reject(err);
-        this.alertService.snackError(err);
+        if ( !suppressSnack )
+          this.alertService.snackError(err);
       })
     })
     

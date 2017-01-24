@@ -8,12 +8,6 @@ import { TruncatePipe } from './pipes/amped.common.truncate';
 import { AmpedFilterPipe } from './pipes/amped.common.filter';
 import { AmpedFormatPipe } from './pipes/amped.common.format';
 
-import { AmpedTable, AmpedTableCell, tableFilter } from './amped.common.table.component';
-import {
-  JSONCell,
-  ImageCell,
-  TextCell,
-  DateCell} from "./amped.common.table.cells";
 import { AmpedSpinner } from './amped.common.spinner.component';
 import { AsyncButtonComponent } from './amped.common.async.button';
 
@@ -42,27 +36,22 @@ import {Ng2PaginationModule} from "ng2-pagination";
 //   exports = exportDeclarations.concat(entryComponents);
 
 @NgModule({
-  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedAlertModule, MaterialModule.forRoot(), MomentModule, Ng2PaginationModule],
+  imports       : [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, AmpedAlertModule, MaterialModule.forRoot(), MomentModule],
   declarations  : [
     TruncatePipe,
     AmpedFilterPipe,
     AmpedFormatPipe,
-    AmpedTable,
-    AmpedTableCell,
-    tableFilter,
-    AmpedSpinner, JSONCell, TextCell, ImageCell, DateCell, AmpedSpinner, AsyncButtonComponent
+    AmpedSpinner, AmpedSpinner, AsyncButtonComponent
   ],
   exports       : [
     TruncatePipe,
     AmpedFilterPipe,
     AmpedFormatPipe,
-    AmpedTable,
-    AmpedTableCell,
-    AmpedSpinner, JSONCell, TextCell, ImageCell, DateCell, AmpedSpinner, AsyncButtonComponent
+    AmpedSpinner, AmpedSpinner, AsyncButtonComponent
   ],
   providers       : [ AmpedService ],
   entryComponents : [
-    JSONCell, TextCell, ImageCell, DateCell, AmpedSpinner
+    AmpedSpinner
   ]
 })
 export class AmpedCommonModule { }

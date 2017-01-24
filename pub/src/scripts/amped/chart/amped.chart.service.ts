@@ -10,7 +10,6 @@ export class AmpedChartService {
   }
   
   formatApiData(data : any, durationDays : number = 30, dataIndex : string = 'created_at') {
-    console.log('* * * * * * * * * * * * * * * * *');
     const
       toDate: Date = new Date(),
       fromDate: Date = new Date();
@@ -25,8 +24,6 @@ export class AmpedChartService {
       fromDate.setDate(fromDate.getDate() + 1);
     }
     
-    console.log(Object.assign({}, dataArr));
-  
     data.forEach((row : any) => {
       dataArr[this.formatDate(new Date(row[dataIndex].replace('T', ' ').replace('Z', '')))] += 1;
     });

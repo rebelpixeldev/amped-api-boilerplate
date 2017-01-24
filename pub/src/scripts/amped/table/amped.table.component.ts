@@ -6,8 +6,9 @@ import {
 import {Router, ActivatedRoute} from '@angular/router';
 import {DomSanitizer} from "@angular/platform-browser";
 import {MdMenu, MdMenuTrigger} from "@angular/material";
-import {JSONCell, ImageCell, TextCell, DateCell} from "./amped.common.table.cells";
-import {AmpedService} from "./amped.common.service";
+import {JSONCell, ImageCell, TextCell, DateCell} from "./amped.table.cells";
+import {AmpedService} from "../common/amped.common.service";
+import {AmpedChatService} from "../chat/amped.chat.service";
 
 @Component({
   selector: 'amped-table',
@@ -49,10 +50,14 @@ import {AmpedService} from "./amped.common.service";
                 <button md-menu-item (click)="onEditClick(row.id)"> 
                   <md-icon >edit</md-icon> Edit 
                  </button>
-                <button md-menu-item amp-alerts-confirm-trigger
+                 <button md-menu-item (click)="onStartChat(row.id)"> 
+                  <md-icon>chat</md-icon> Chat
+                 </button>
+                <button md-menu-item 
+                        amp-alerts-confirm-trigger
                         color="warn"
                         title="Remove Item" 
-                        [onYes]="handleDelete.bind(this, row)"
+                        [onAccept]="handleDelete.bind(this, row)"
                         description="Once deleted you will not be able to get it back.">
                   <md-icon >delete</md-icon>Delete 
                 </button>
@@ -102,7 +107,7 @@ export class AmpedTable implements OnInit, OnChanges {
   
   private filterValue : string = '';
   
-  constructor(private router: Router, private route: ActivatedRoute, private ampedService : AmpedService) {
+  constructor(private router: Router, private route: ActivatedRoute, private ampedService : AmpedService, private chatService : AmpedChatService) {
   }
   
   ngOnInit() {
@@ -121,6 +126,10 @@ export class AmpedTable implements OnInit, OnChanges {
   
   onEditClick(id: string) {
     this.router.navigate(['/edit', this.model, id]);
+  }
+  
+  onStartChat(id : number){
+    this.chatService.startChat(id);
   }
   
   ngOnChanges(changes: any) {
@@ -156,7 +165,7 @@ export class AmpedTable implements OnInit, OnChanges {
           .then(( header : any ) => resolve(header));
       // else
       //   resolve(this.headers);
-    })
+    });
     
     
     // if ( this.headers === null ) {

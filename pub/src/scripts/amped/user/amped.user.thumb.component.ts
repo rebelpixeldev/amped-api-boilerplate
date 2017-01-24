@@ -31,12 +31,10 @@ export class AmpedUserThumb implements OnInit, OnChanges {
 
   
   ngOnInit() {
-    this.socketService.addSocketListener('USERS_UPDATE', (payload : any) => {
-      console.log('YAOO', payload.user  );
-      console.log(this.user);
+    this.socketService.getObservable('USERS_UPDATE').subscribe((payload : any) => {
       if ( payload.user.id === this.user.id )
         this.user = payload.user;
-    })
+    });
   }
   
   ngOnChanges(changes : any){
@@ -47,8 +45,6 @@ export class AmpedUserThumb implements OnInit, OnChanges {
                   this.user.upload === null ?
                     '' : this.user.upload.thumb_url;
       this.defaultAvatarBackground = this.getColor();
-      
-      // this.user = changes.user;
     }
   }
   

@@ -14,7 +14,7 @@ const config = {
     type : 'postgres',
     user : 'ted',
     password : 'Dash111!',
-    logging : false,
+    logging : true,
     define: {
       underscored: true
     }

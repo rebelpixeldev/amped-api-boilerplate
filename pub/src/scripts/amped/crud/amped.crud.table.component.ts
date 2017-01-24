@@ -43,12 +43,10 @@ export class AmpedCrudTableComponent implements OnInit {
       
       this.model = model;
       
-      // @TODO this listener needs to be added outside of the subscribe
-      this.socketService.addSocketListener(`${this.model.toUpperCase()}_UPDATE`, (payload : any) => {
+      this.socketService.getObservable(`${this.model.toUpperCase()}_UPDATE`).subscribe((payload:any) => {
         this.tableData = [payload.user, ...this.tableData];
       });
-  
-      this.socketService.addSocketListener(`${this.model.toUpperCase()}_DELETE`, (payload : any) => {
+      this.socketService.getObservable(`${this.model.toUpperCase()}_DELETE`).subscribe((payload:any) => {
         this.tableData = this.tableData.filter(( row ) => row.id !== parseInt(payload.id));
       });
       

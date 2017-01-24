@@ -17,8 +17,6 @@ import { AmpedService } from './amped/common/amped.common.service';
         <!--@TODO You need to pass the model so the headers are properly mapped. Thats stupid-->
         <amped-table [data]="activityData" [headers]="activityHeaders" actionsEnabled="false" model="activity"></amped-table>
       </md-card>
-    
-
 `
 })
 export class HomepageComponent implements OnInit {

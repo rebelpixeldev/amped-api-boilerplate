@@ -9,6 +9,7 @@ import { AmpedCrudModule } from '../crud/amped.crud.module';
 import { AmpedCommonModule } from '../common/amped.common.module';
 import { AmpedFilesModule } from '../files/amped.files.module';
 import { AmpedFormsModule } from '../form/amped.form.module';
+import { AmpedTableModule } from '../table/amped.table.module';
 
 import { AmpedUserThumb } from './amped.user.thumb.component';
 import { AmpUserCard } from './amped.user.card';
@@ -19,7 +20,7 @@ import { InviteUserDialog, InviteUserDialogDirective }      from './dialogs/ampe
 
 
 @NgModule({
-  imports         : [ CommonModule, FormsModule, ReactiveFormsModule, MaterialModule.forRoot(), AmpedCommonModule, AmpedFilesModule, AmpedCrudModule, AmpedFormsModule ],
+  imports         : [ CommonModule, FormsModule, ReactiveFormsModule, MaterialModule.forRoot(), AmpedCommonModule, AmpedFilesModule, AmpedCrudModule, AmpedFormsModule, AmpedTableModule ],
   declarations    : [ AmpedUserThumb, AmpUserCard, UserProfileComponent, AccountUsersComponent, InviteUserDialog, InviteUserDialogDirective ],
   exports         : [ AmpedUserThumb, AmpUserCard, UserProfileComponent, AccountUsersComponent, InviteUserDialog, InviteUserDialogDirective ],
   providers       : [ AmpedService ],

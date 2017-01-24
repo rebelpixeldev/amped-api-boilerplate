@@ -45,9 +45,8 @@ export class AmpedChartLine implements OnInit, OnChanges {
   }
   
   ngOnInit(){
-    if ( this.socketEvent !== null ){
-      this.socketService.addSocketListener(this.socketEvent, this.onSocketCreate.bind(this));
-    }
+    if ( this.socketEvent !== null )
+      this.socketService.getObservable(this.socketEvent).subscribe(this.onSocketCreate.bind(this));
   }
   
   ngOnChanges(changes : any){
@@ -64,7 +63,6 @@ export class AmpedChartLine implements OnInit, OnChanges {
   updateChart(){
     if ( this.apiData ) {
       const dataFull = this.chartService.formatApiData(this.data);
-      console.log(dataFull);
       this.chartLabels = Object.keys(dataFull);
       this.chartData = [
         {data: Object.keys(dataFull).map(( k : string ) => dataFull[k]), label: 'Date'}

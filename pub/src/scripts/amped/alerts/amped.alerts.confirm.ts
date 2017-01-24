@@ -14,8 +14,8 @@ export class AlertsConfirmDialogDirective extends BaseDialogDirective {
   @Input() yesLabel : string = 'Yes';
   @Input() noLabel : string = 'No';
   
-  @Input() onYes : Function = function(){};
-  @Input() onNo : Function = function(){};
+  @Input() onAccept : Function = function(){};
+  @Input() onCancel : Function = function(){};
   
   
   constructor(public dialog: MdDialog) {
@@ -31,8 +31,8 @@ export class AlertsConfirmDialogDirective extends BaseDialogDirective {
     this.dialogRef.componentInstance.color = this.color;
     this.dialogRef.componentInstance.yesLabel = this.yesLabel;
     this.dialogRef.componentInstance.noLabel = this.noLabel;
-    this.dialogRef.componentInstance.onYes = this.onYes;
-    this.dialogRef.componentInstance.onNo = this.onNo;
+    this.dialogRef.componentInstance.onAccept = this.onAccept;
+    this.dialogRef.componentInstance.onCancel = this.onCancel;
   }
 }
 
@@ -58,8 +58,8 @@ export class AlertConfirmDialog implements OnInit {
   public color : string = 'primary';
   public yesLabel : string = 'Yes';
   public noLabel : string = 'No';
-  public onYes : Function = function(){};
-  public onNo : Function = function(){};
+  public onAccept : Function = function(){};
+  public onCancel : Function = function(){};
   
   
   constructor( private dialogRef: MdDialogRef<AlertConfirmDialog> ) { }
@@ -68,12 +68,12 @@ export class AlertConfirmDialog implements OnInit {
   }
   
   handleYesClick(){
-    this.onYes(this.data);
+    this.onAccept(this.data);
     this.dialogRef.close('yes');
   }
   
   handleNoClick(){
-    this.onNo(this.data);
+    this.onCancel(this.data);
     this.dialogRef.close('no');
   }
   

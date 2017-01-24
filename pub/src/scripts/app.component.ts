@@ -16,6 +16,7 @@ import 'rxjs/add/operator/toPromise';
           <div class="app-content-container amped-container">
               <router-outlet></router-outlet>
           </div>
+          <amp-conversations></amp-conversations>
         </div>
       `
 })

@@ -26,7 +26,7 @@
       '@angular/upgrade'          : 'npm:@angular/upgrade/bundles/upgrade.umd.js',
 
       // other libraries
-      'chart.js'                  : 'npm:chart.js/dist/chart.js',
+      'chart.js'                  : 'npm:chart.js/dist/Chart.js',
       'ng2-charts'                : 'npm:ng2-charts',
       'ng2-pagination'            : 'npm:ng2-pagination/dist',
       'moment'                    : 'npm:moment',

@@ -43,10 +43,10 @@ class Uploads extends AmpedModel {
           return `${config.uploads.thumbFilePath}/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
         },
         source_url : function(){
-          return `${config.urls.site.domain}${config.uploads.sourceFilePath}/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
+          return `${config.urls.api.domain}${config.uploads.sourceFilePath}/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
         },
         thumb_url : function(){
-          return `${config.urls.site.domain}${config.uploads.thumbFilePath}/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
+          return `${config.urls.api.domain}${config.uploads.thumbFilePath}/${this.getDataValue('id')}.${this.getDataValue('extension')}`;
         }
       }
     }

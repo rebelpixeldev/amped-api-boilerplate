@@ -23,6 +23,7 @@ class AmpedEmailer{
   }
 
   send(req, data, subject = `${config.site.name} Email`){
+    console.log('SENDING EMAIL');
     const params = util.getParams(req);
 
     return new Promise((resolve, reject) => {
@@ -41,6 +42,7 @@ class AmpedEmailer{
 
           const opts = this.getMandrillOptions(info);
           mandrill_client.messages.send({ message : opts }, function (result) {
+            console.log('MANDRILL', result);
             // @TODO this is only listening to the first email, if multiple are sent we need to loop through and make sure all the email were sent
 
             if ( result[0].reject_reason === null ){

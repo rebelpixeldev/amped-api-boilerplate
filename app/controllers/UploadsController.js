@@ -72,7 +72,9 @@ class UploadsController{
   display(req, res){
     const
       params = util.getParams(req),
-      uploadPath = path.join(__dirname, '../uploads', params.type, params.filename);
+      uploadPath = path.join(config.uploads[`${params.type}Dir`], params.filename);
+
+    console.log(uploadPath);
 
     fs.exists(uploadPath, (exists) => {
         if ( exists )

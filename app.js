@@ -2,41 +2,55 @@
  * Module dependencies.
  */
 const
-  AmpedActivityLog    = require('./app/utils/AmpedActivityLog'),
-  AmpedAuthorization  = require('./app/utils/AmpedAuthorization'),
-  AmpedConnector      = require('./app/utils/AmpedConnector'),
-  AmpedMiddleware     = require('./app/utils/AmpedMiddleware'),
-  AmpedPassport       = require('./app/utils/AmpedPassport'),
-  AmpedSocket         = require('./app/utils/AmpedSocket'),
-  bodyParser          = require('body-parser'),
-  compression         = require('compression'),
-  errorHandler        = require('errorhandler'),
-  express             = require('express'),
-  expressValidator    = require('express-validator'),
-  flash               = require('express-flash'),
-  http                = require('http'),
-  logger              = require('morgan'),
-  path                = require('path'),
-  session             = require('express-session'),
-  swig                = require('swig'),
-  util                = require('./app/utils/AmpedUtil');
+	AmpedActivityLog    = require('./app/utils/AmpedActivityLog'),
+	AmpedAuthorization  = require('./app/utils/AmpedAuthorization'),
+	AmpedConnector      = require('./app/utils/AmpedConnector'),
+	AmpedMiddleware     = require('./app/utils/AmpedMiddleware'),
+	AmpedPassport       = require('./app/utils/AmpedPassport'),
+	AmpedSocket         = require('./app/utils/AmpedSocket'),
+	bodyParser          = require('body-parser'),
+	compression         = require('compression'),
+	errorHandler        = require('errorhandler'),
+	express             = require('express'),
+	expressValidator    = require('express-validator'),
+	flash               = require('express-flash'),
+	formidable          = require("formidable"),
+	http                = require('http'),
+	logger              = require('morgan'),
+	path                = require('path'),
+	session             = require('express-session'),
+	swig                = require('swig'),
+	util                = require('./app/utils/AmpedUtil');
 
 const
-  MongoStore = require('connect-mongo')(session);
+	MongoStore = require('connect-mongo')(session);
 
 /**
  * Create Express server.
  */
 const
-  app             = express(),
-  server          = http.createServer(app),
-  io              = require('socket.io')(server),
-  socket          = new AmpedSocket(io);
+	app = express(),
+	server = http.createServer(app),
+	io = require('socket.io')(server),
+	socket = new AmpedSocket(io);
 
 /**
  * Express configuration.
  */
-app.set('port', process.env.PORT || 3000);
+
+app.all('*', function (req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, authorization, foo');
+	if ('OPTIONS' == req.method) {
+		res.sendStatus(200);
+	} else {
+		next();
+	}
+});
+
+
+app.set('port', process.env.PORT || 4000);
 app.engine('html', swig.renderFile);
 app.set("view engine", "html");
 app.set('views', path.join(__dirname, '/app/views/'));
@@ -46,11 +60,23 @@ app.use('/i18n', express.static(path.join(__dirname, 'i18n')));
 app.use(compression());
 
 // app.use(logger('dev'));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit: 50000}));
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+	if (req.method.toLowerCase() === 'post') {
+		const form = new formidable.IncomingForm();
 
-
+		form.parse(req, ( err, fields, files ) => {
+			if ( err )
+				next(err);
+		    req.body = Object.assign({}, fields);
+		    req.files = files;
+		    next();
+		})
+	} else
+		next();
+})
 
 
 // @TODO think about how to clean this shit up....
@@ -58,7 +84,7 @@ app.use(bodyParser.json());
 app.use(AmpedMiddleware.params());
 
 // Add feedback to the req object so all api responses are the same format
-app.use(AmpedMiddleware.feedback({token : true}));
+app.use(AmpedMiddleware.feedback({token: true}));
 
 // Build all the models and connect to the database
 AmpedConnector.buildModels(app, socket, path.join(__dirname, 'app/models'));
@@ -88,7 +114,7 @@ require('./app/Router')(app, socket, path.join(__dirname, 'app/controllers'));
  * Start Express server.
  */
 server.listen(app.get('port'), () => {
-  console.log('Express server listening on port %d in %s mode', app.get('port'), app.get('env'));
+	console.log('Express server listening on port %d in %s mode', app.get('port'), app.get('env'));
 });
 
 module.exports = app;

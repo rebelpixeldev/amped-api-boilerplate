@@ -26,14 +26,16 @@ class AmpedActivityLog {
   log(req, socket, action, description, data, user) {
 
     return new Promise((resolve, reject) => {
+
+      console.log('USER', user);
       if (typeof user === 'undefined')
         user = req.user;
 
       if ( typeof user !== 'undefined' && user !== null ) {
         // @TODO figure out something to do with the log when there is no user data
         const entry = {
-          user_id: typeof req.user === 'undefined' ? 0 : user.id,
-          account_id: typeof req.user === 'undefined' ? 0 : user.account_id,
+          user_id: typeof user === 'undefined' ? 0 : user.id,
+          account_id: typeof user === 'undefined' ? 0 : user.account_id,
           action : action.toLowerCase()
         };
 
@@ -42,9 +44,13 @@ class AmpedActivityLog {
         if (typeof data !== 'undefined')
           entry.data = data;
 
+        console.log('* * * * * * * * ENTRY  ');
+        console.log(entry);
+
         req.db.activity.create(entry)
           .then(( val ) => {
-            socket.sendSocket('ACTIVITY_CREATE', val.dataValues, req.user);
+          console.log(val.dataValues, user);
+            socket.sendSocket('ACTIVITY_CREATE', val.dataValues, user);
             return val;
           })
           .then((  ) => resolve())

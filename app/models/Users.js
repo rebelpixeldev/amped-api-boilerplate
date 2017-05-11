@@ -23,7 +23,7 @@ class Users extends AmpedModel {
     return [
       ['display_name', 'email'],
       [{field: 'users_name'}],
-      ['upload_id']
+      [{field: 'upload_id', label : 'Profile Image'}]
     ]
   }
 

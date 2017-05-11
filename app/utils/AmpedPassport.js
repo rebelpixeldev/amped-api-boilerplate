@@ -45,9 +45,11 @@ class AmpedPassport {
   strategyCallbackHandler(req, res) {
     res.send(
       `<script>
-            window.opener.onLogin({response : { token : '${req.jwt}' }});
-                window.opener.location.href="/";
-                self.close();
+            window.opener.location.href= 'http://localhost:3000/login/${req.jwt}';
+            self.close();
+            // window.opener.onLogin({response : { token : '${req.jwt}' }});
+            //     window.opener.location.href="http://";
+            //     self.close();
             </script>`
     );
   }
@@ -100,6 +102,8 @@ class AmpedPassport {
         }).catch(err);
     }));
 
+    console.log('SETTING UP LOCAL');
+
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField: 'email',
@@ -108,8 +112,11 @@ class AmpedPassport {
       },
       (req, email, password, done) => {
 
+      console.log('HERRRE');
 
         const params = util.getParams(req);
+
+        console.log(params);
 
         req.db.users.findOne({where: {email: email}})
           .then((user) => {

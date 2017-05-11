@@ -21,7 +21,7 @@ const Util = {
    * @returns {object}
    */
   getParams : function (req) {
-    return Object.assign({}, req.body, req.params, url.parse(req.url, true).query);
+    return Object.assign({}, req.body, req.fields, req.params, url.parse(req.url, true).query);
   },
 
   /**

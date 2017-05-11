@@ -64,6 +64,7 @@ class AmpedConnector {
    * @param {AmpedSocket} socket  - Amped socket instance
    */
   static buildModels(app, socket, modelPath) {
+    console.log('Building models');
     const
       connection = AmpedConnector.getConnection();
 

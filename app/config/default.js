@@ -14,15 +14,18 @@ const config = {
     type : 'postgres',
     user : 'ted',
     password : 'Dash111!',
-    logging : true,
+    logging : console.log,
     define: {
       underscored: true
     }
   },
+  url : {
+    prefix : '/api'
+  },
   passport : {
     google : {
-      clientID: '900264263-3nqlusqgu014h4mb83vo39gdgt2orie4.apps.googleusercontent.com',
-      clientSecret: '5BGqz2HWelkU0heJn2QQXMtn',
+      clientID: '699923594827-p83mqpups4mcohsi4q9r0h9l4tkvnb5b.apps.googleusercontent.com',//'900264263-3nqlusqgu014h4mb83vo39gdgt2orie4.apps.googleusercontent.com',
+      clientSecret: '8FKYDPwJnyE1aG01JhKEdG8e',
       callbackURL: '/auth/google/callback',
       session : false,
       passReqToCallback: true
@@ -42,11 +45,8 @@ const config = {
   bcrypt : {
     saltRounds  :10
   },
-  routing : {
-    noAuth : ['/', '/login', '/register', '/reset' ]
-  },
   email : {
-    mandrillKey : 'HXpT-qveJJv66kY4ToyCpQ',
+    mandrillKey : 'FEgfJYUv1NJYHnyn9Z1fCA',
     noReply : 'no-reply@rebelpixel.ca',
     noReplyName : 'Amped Admin',
     jwt : {
@@ -62,16 +62,16 @@ const config = {
     },
     sourceFilePath : '/uploads/source',
     thumbFilePath : '/uploads/thumb',
-    baseDir: path.join(__dirname, '../uploads'),
-    thumbDir: path.join(__dirname, '../uploads/thumb'),
-    sourceDir: path.join(__dirname, '../uploads/source'),
-    tempDir: path.join(__dirname, '../uploads/tmp')
+    baseDir: path.join(__dirname, '../../uploads'),
+    thumbDir: path.join(__dirname, '../../uploads/thumb'),
+    sourceDir: path.join(__dirname, '../../uploads/source'),
+    tempDir: path.join(__dirname, '../../uploads/tmp')
   },
   urls : {
     api : {
       protocol : 'http',
       host : 'localhost',
-      port : '3000'
+      port : '4000'
     },
     site : {
       protocol : 'http',
@@ -80,6 +80,18 @@ const config = {
     }
   }
 };
+
+config.routing = {
+	noAuth : [
+	    '/',
+        `${config.url.prefix}/user/login`,
+        `${config.url.prefix}/user/register`,
+        `${config.url.prefix}/user/resetpassword`,
+        '/auth/google',
+        '/auth/google/callback',
+        '/uploads/thumb/72.jpg'
+    ]
+},
 
 Object.keys(config.urls).forEach((name) => {
   const ref = config.urls[name];
@@ -94,14 +106,7 @@ Object.keys(config.urls).forEach((name) => {
 
 // @TODO make this mor comprehensive with regexp
 config.routing.isPublic = (url) => {
-    return config.routing.noAuth.indexOf(url) !== -1 ||
-            url.indexOf('/setpassword') === 0 ||
-            url.indexOf('/resetpassword') === 0 ||
-            url.indexOf('/logout') === 0 ||
-            url.indexOf('/user/invite-accept') === 0 ||
-            url.indexOf('/uploads/source') === 0 ||
-            url.indexOf('/uploads/thumb') === 0 ||
-            url.indexOf('/auth/google') === 0;
+  return config.routing.noAuth.indexOf(url.split('?')[0]) !== -1;
 }
 config.errors.getError = (key) => {
   //@TODO can add i18n translations here for message

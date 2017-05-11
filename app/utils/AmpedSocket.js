@@ -40,12 +40,14 @@ class AmpedSocket {
    * @param {object} req   - Express request object
    */
   sendSocket(evt, data, user, toUser) {
+
     if (typeof data === 'undefined')
       data = {};
 
-    if ( typeof toUser === 'undefined' )
-      Object.keys(this.sockets[user.account_id]).forEach(( sk ) => this.sockets[user.account_id][sk].emit(evt, data));
-    else
+    if ( typeof toUser === 'undefined' ) {
+        if ( typeof this.sockets[user.account_id] !== 'undefined' )
+	      Object.keys(this.sockets[user.account_id]).forEach((sk) => this.sockets[user.account_id][sk].emit(evt, data));
+    } else
       this.sockets[toUser.account_id][toUser.id].emit(evt, data);
     // this.sockets.forEach((socket) => {
     //   socket.emit(evt, data)

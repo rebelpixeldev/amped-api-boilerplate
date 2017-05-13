@@ -45,7 +45,7 @@ class AmpedPassport {
   strategyCallbackHandler(req, res) {
     res.send(
       `<script>
-            window.opener.location.href= 'http://localhost:3000/login/${req.jwt}';
+            window.opener.location.href= '${config.urls.site.domain}/login/${req.jwt}';
             self.close();
             // window.opener.onLogin({response : { token : '${req.jwt}' }});
             //     window.opener.location.href="http://";

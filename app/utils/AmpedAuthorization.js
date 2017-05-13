@@ -25,7 +25,6 @@ class AmpedAuthorization {
 	 */
 	login(req, res) {
 		const params = util.getParams(req);
-
 		console.log(params);
 
 		return new Promise((resolve, reject) => {
@@ -33,9 +32,14 @@ class AmpedAuthorization {
 			req.db.users.findOne({where: {email: params.email}})
 				.then((user) => {
 
+				console.log(user);
+
 					if (user === null || SHA1(params.password) !== user.password) {
 						reject(config.errors.getError('no-user-login'))
 					} else {
+
+						console.log('LOGGIN GIN ');
+						console.log(AmpedAuthorization.encodeToken(user));
 						// req.logActivity('login', user);
 						resolve({
 							token: AmpedAuthorization.encodeToken(user),
@@ -101,7 +105,12 @@ class AmpedAuthorization {
 				.then((user) => {
 					req.user = user;
 					next();
-				}).catch(next);
+				}).catch(( err ) => {
+				    next({
+				    	success : false,
+					    message : err
+				    })
+				});
 		}
 
 	}
@@ -121,17 +130,18 @@ class AmpedAuthorization {
 			// console.log(typeof req.payload === 'undefined');
 			// console.log(req.payload.id === '');
 			// console.log(parseInt(req.payload.id) === 0);
-
-			if (config.routing.noAuth.indexOf(req.url) !== -1 || typeof req.payload === 'undefined' || req.payload.id === '' || parseInt(req.payload.id) === 0) {
+			if (config.routing.noAuth.indexOf(req.url) !== -1 && typeof req.payload === 'undefined' ) {
 				resolve(null);
 			} else {
-
-				req.dbRef.users.getModel().findOne({
-					where: {id: parseInt(req.payload.id)},
-					include: req.dbRef.users.queryIncludes
-				})
-					.then(resolve)
-					.catch(reject);
+				if ( typeof req.payload === 'undefined' || req.payload.id === '' || parseInt(req.payload.id) === 0 )
+					resolve(null);
+				else
+					req.dbRef.users.getModel().findOne({
+						where: {id: parseInt(req.payload.id)},
+						include: req.dbRef.users.queryIncludes
+					})
+						.then(resolve)
+						.catch(reject);
 			}
 		})
 

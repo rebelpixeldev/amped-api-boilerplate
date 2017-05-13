@@ -83,10 +83,11 @@ const config = {
 
 config.routing = {
 	noAuth : [
-	    '/',
+        // `${config.url.prefix}/user`,
         `${config.url.prefix}/user/login`,
         `${config.url.prefix}/user/register`,
         `${config.url.prefix}/user/resetpassword`,
+        `${config.url.prefix}/user/setpassword`,
         '/auth/google',
         '/auth/google/callback',
         '/uploads/thumb/72.jpg'

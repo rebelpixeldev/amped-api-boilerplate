@@ -22,13 +22,16 @@ class UserController {
 	setupRoutes() {
 
 		this.app.get(`${config.url.prefix}/user`, this.getUser.bind(this));
+
+		this.app.post(`${config.url.prefix}/user/login`, this.login.bind(this));
+
 		this.app.get(`${config.url.prefix}/user/invite-accept`, this.userInviteAccept.bind(this));
 		this.app.post(`${config.url.prefix}/user/resetpassword`, this.resetPassword.bind(this));
 		this.app.post(`${config.url.prefix}/user/setpassword`, this.setPassword.bind(this));
 		this.app.get(`${config.url.prefix}/user/profile`, AmpedPassport.isLoggedIn, this.profile.bind(this));
 		this.app.post(`${config.url.prefix}/user/invite`, [AmpedPassport.isLoggedIn, validator.validateParams.bind(this, ['email', 'name'])], this.userInvite.bind(this));
 
-		this.app.post(`${config.url.prefix}/user/login`, this.login.bind(this));
+
 		this.app.post(`${config.url.prefix}/user/register`, [validator.validateParams.bind(this, ['email', 'password']), passport.authenticate('local-signup', {session: false})],  this.register.bind(this));
 	}
 
@@ -37,6 +40,8 @@ class UserController {
 	}
 
 	getUser(req, res) {
+		console.log('USSSER');
+		console.log(req.user);
 		res.feedback(req.user);
 	}
 
@@ -45,9 +50,13 @@ class UserController {
 			.then(data => {
 				req.logActivity('login', 'User logged in', {
 					ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress
-				}, data.user);
+				}, data.user)
+					.then(res.feedback.bind( this, data.token))
+					.catch(res.feedback.bind( this, data.token))
 
-				res.feedback(data.token);
+				console.log('HEREERE');
+
+				// res.feedback(data.token);
 			}).catch((err) => {
 			res.feedbackError(err);
 		});
@@ -129,7 +138,7 @@ class UserController {
           <p>Click the link below to reset your password</p>
           <p><strong>The link self destruct in 4 hours</strong></p>
           `,
-						content_button_href: `${config.urls.site.domain}/#/setpassword?token=${encodeURIComponent(util.generateJWT({id: user.id}, config.email.jwt))}`,
+						content_button_href: `${config.urls.site.domain}/setpassword/${encodeURIComponent(util.generateJWT({id: user.id}, config.email.jwt))}`,
 						content_button_label: `Reset`
 					}, `${config.site.name} password reset`)
 						.then(() => {
@@ -147,7 +156,7 @@ class UserController {
 			res.feedback({success: false, message: 'The passwords do not match'});
 			return false;
 		}
-
+console.log('TOKEN', req.amped.params.token);
 		const payload = util.decodeJWT(req.amped.params.token);
 
 		req.db.users.findOne({where: {id: payload.id}})
@@ -158,7 +167,7 @@ class UserController {
 					user.updateAttributes({
 						password: util.encodePassword(req.amped.params.new_password)
 					}).then(() => {
-						res.feedback(AmpedAuth.encodeToken(user))
+						res.feedback(AmpedAuthorization.encodeToken(user))
 					})
 				}
 			})

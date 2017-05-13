@@ -274,11 +274,18 @@ class AmpedPassport {
   addMiddleware() {
     this.app.use(passport.initialize());
     this.app.use((req, res, next) => {
+
+      console.log(config.routing.isPublic(req.url),typeof req.header.authorizaion !== 'undefined' );
+// gets stuck here on login
+
       if ( config.routing.isPublic(req.url) ) return next();
       passport.authenticate('jwt', {session: false}, (err, user, info) => {
-
+console.log('HAY', err, user);
+console.log(req.url);
         if (err) return next(err);
-        else if (!user) return res.feedback({message : info.toString()});
+        // @TODO This is shit. It is here because the code will exit here and not run the rest fo the code when you are logging in
+        else if (req.url === '/api/user/login') next();
+        else if (!user) return res.feedback({success: false, message : info.toString()});
         req.payload = user;
         next();
       })(req, res, next);

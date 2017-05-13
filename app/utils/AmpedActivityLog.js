@@ -26,8 +26,6 @@ class AmpedActivityLog {
   log(req, socket, action, description, data, user) {
 
     return new Promise((resolve, reject) => {
-
-      console.log('USER', user);
       if (typeof user === 'undefined')
         user = req.user;
 
@@ -44,12 +42,8 @@ class AmpedActivityLog {
         if (typeof data !== 'undefined')
           entry.data = data;
 
-        console.log('* * * * * * * * ENTRY  ');
-        console.log(entry);
-
         req.db.activity.create(entry)
           .then(( val ) => {
-          console.log(val.dataValues, user);
             socket.sendSocket('ACTIVITY_CREATE', val.dataValues, user);
             return val;
           })

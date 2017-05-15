@@ -37,6 +37,8 @@ class UploadsController{
   upload(req, res){
     const params = util.getParams(req);
 
+    console.log(params);
+
     if ( typeof params.remote_url === 'undefined' ){
       fileUpload(req,res,(err) => {
         if(err) {

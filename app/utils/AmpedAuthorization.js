@@ -25,21 +25,15 @@ class AmpedAuthorization {
 	 */
 	login(req, res) {
 		const params = util.getParams(req);
-		console.log(params);
-
 		return new Promise((resolve, reject) => {
 
 			req.db.users.findOne({where: {email: params.email}})
 				.then((user) => {
 
-				console.log(user);
-
 					if (user === null || SHA1(params.password) !== user.password) {
 						reject(config.errors.getError('no-user-login'))
 					} else {
 
-						console.log('LOGGIN GIN ');
-						console.log(AmpedAuthorization.encodeToken(user));
 						// req.logActivity('login', user);
 						resolve({
 							token: AmpedAuthorization.encodeToken(user),
@@ -60,6 +54,10 @@ class AmpedAuthorization {
 	 * @returns {string} - A JWT signed token
 	 */
 	static encodeToken(user) {
+
+		if ( typeof user.dataValues !== 'undefined' )
+			user = user.dataValues;
+
 		return util.generateJWT({
 			id: user.id,
 			email: user.email

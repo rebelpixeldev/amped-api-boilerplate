@@ -2,49 +2,44 @@ const config = {
 	urls: {
 		api: {
 			protocol: 'http',
-			host: 'localhost',
-			port: '4000'
+			host: 'api.amped.rebelpixel.ca',
+			port: ''
 		},
 		site: {
 			protocol: 'http',
-			host: 'localhost',
-			port: '3000'
+			host: 'amped.rebelpixel.ca',
+			port: ''
 		}
 	},
-	passport: {
-		google: {
-			strategyOpts : {
-				clientID: '699923594827-p83mqpups4mcohsi4q9r0h9l4tkvnb5b.apps.googleusercontent.com',//'900264263-3nqlusqgu014h4mb83vo39gdgt2orie4.apps.googleusercontent.com',
-				clientSecret: '8FKYDPwJnyE1aG01JhKEdG8e',
-				callbackURL: '/auth/google/callback',
-				session: false,
-				passReqToCallback: true
-			},
-			authenticateOpts : {
-				scope: ['profile', 'email']
-			}
+	passport : {
+		google : {
+			clientID: '699923594827-7ovc9n05ueppmue04vvb1d5fg0u41v2i.apps.googleusercontent.com',//'900264263-3nqlusqgu014$
+			clientSecret: 'E-8UKJJR701ca-jthsGPk2N5',
+			callbackURL: 'http://api.amped.rebelpixel.ca/auth/google/callback',
+			session : false,
+			passReqToCallback: true
 		},
 		facebook: {
 			strategyOpts : {
 				clientID: 1835120096813740,
 				clientSecret: 'dd917a3405a1a637f8c751450dedfe68',
-				callbackURL: 'http://localhost:4000/auth/facebook/callback',
+				callbackURL: 'http://api.amped.rebelpixel.ca/auth/facebook/callback',
 				profileFields   : ['id', 'email', 'gender', 'link', 'locale', 'name', 'timezone', 'updated_time', 'verified', 'picture.type(large)'],
 				passReqToCallback: true
 			},
 			authenticateOpts : {
 				scope : ['public_profile', 'email']
 			}
-
 		}
 	},
-	db: {
-		type: 'postgres',
-		host : 'localhost',
+	db : {
+		table : 'amped_admin',
+		host : 'amped-admin-demo.cgdpjn01zpv6.ca-central-1.rds.amazonaws.com',
+		type : 'postgres',
+		user : 'rebelpixel',
 		port : 5432,
-		user: 'ted',
-		password: 'Dash111!',
-		logging: console.log,
+		password : 'Dash111!',
+		logging : console.log,
 		define: {
 			underscored: true
 		}

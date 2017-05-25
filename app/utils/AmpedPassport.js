@@ -101,8 +101,6 @@ class AmpedPassport {
 				}).catch(err);
 		}));
 
-		console.log('SETTING UP LOCAL');
-
 		passport.use('local-signup', new LocalStrategy({
 				// by default, local strategy uses username and password, we will override with email
 				usernameField: 'email',
@@ -111,11 +109,7 @@ class AmpedPassport {
 			},
 			(req, email, password, done) => {
 
-				console.log('HERRRE');
-
 				const params = util.getParams(req);
-
-				console.log(params);
 
 				req.db.users.findOne({where: {email: email}})
 					.then((user) => {
@@ -178,38 +172,6 @@ class AmpedPassport {
 			(req, token, refreshToken, profile, done) => {
 
 				this.strategySignup(req, profile, 'facebook', done);
-
-				// req.db.users.findOne({where: {email: profile.emails[0].value}})
-				// 	.then(( user ) => {
-				//
-				// 	    if ( user ){
-				// 	    	if ( user.provider === 'facebook') {
-				// 			    req.jwt = AmpedAuthorization.encodeToken(user);
-				// 			    // if a user is found, log them in
-				// 			    return done(null, user);
-				// 		    } else {
-				// 	    		return done(`This email has been used to login with ${user.provider}`)
-				// 		    }
-				// 	    } else {
-				// 		    this.createUserAndAccount(req, this.getNewUserObject(profile, 'facebook'))
-				// 			    .then(( user ) => {
-				//
-				// 				    this.downloadProfileImage(profile.photos[0].value, user.dataValues)
-				// 					    .then(( fileInfo ) => {
-				// 						    user.updateAttributes({
-				// 							    upload_id: fileInfo.id
-				// 						    }).then(() => {
-				// 							    req.jwt = AmpedAuthorization.encodeToken(user);
-				// 							    done(null, user)
-				// 						    });
-				// 					    })
-				// 			    })
-				// 			    .catch(done);
-				//
-				// 	    }
-				// 	})
-
-
 			}));
 	}
 
@@ -227,39 +189,6 @@ class AmpedPassport {
 
 					this.strategySignup(req, profile, 'google', done);
 
-					// try to find the user based on their google id
-					// req.db.users.findOne({where: {email: profile.emails[0].value}})
-					// 	.then(( user ) => {
-					//
-					// 		if ( user ){
-					// 			if ( user.provider === 'google') {
-					// 				req.jwt = AmpedAuthorization.encodeToken(user);
-					// 				// if a user is found, log them in
-					// 				return done(null, user);
-					// 			} else {
-					// 				return done(`This email has been used to login with ${user.provider}`)
-					// 			}
-					// 		} else {
-					// 			this.createUserAndAccount(req, this.getNewUserObject(profile, 'google'))
-					// 				.then(( user ) => {
-					//
-					// 				console.log(profile);
-					// 				console.log(user.dataValues);
-					//
-					// 					this.downloadProfileImage(profile.photos[0].value, user.dataValues)
-					// 						.then(( fileInfo ) => {
-					// 							user.updateAttributes({
-					// 								upload_id: fileInfo.id
-					// 							}).then(() => {
-					// 								req.jwt = AmpedAuthorization.encodeToken(user);
-					// 								done(null, user)
-					// 							});
-					// 						})
-					// 				})
-					// 				.catch(done);
-					//
-					// 		}
-					// 	})
 					// req.db.users.findOne({where: {service_id: profile.id, provider: 'google'}})
 					// 	.then((user) => {
 					// 		console.log(user);
@@ -344,9 +273,6 @@ class AmpedPassport {
 				} else {
 					this.createUserAndAccount(req, this.getNewUserObject(profile, strategy))
 						.then(( user ) => {
-
-							console.log(profile);
-							console.log(user.dataValues);
 
 							this.downloadProfileImage(profile.photos[0].value, user.dataValues)
 								.then(( fileInfo ) => {

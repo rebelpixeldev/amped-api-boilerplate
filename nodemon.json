@@ -4,7 +4,7 @@
     "pub/**"
   ],
   "env": {
-    "NODE_ENV": "development"
+    "NODE_ENV": "local"
   },
   "ext": "js json html"
 }

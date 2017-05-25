@@ -58,7 +58,7 @@ class UserController {
 
 				// res.feedback(data.token);
 			}).catch((err) => {
-			res.feedbackError(err);
+				res.feedbackError(config.errors.loginerror.message, config.errors.loginerror);
 		});
 	}
 

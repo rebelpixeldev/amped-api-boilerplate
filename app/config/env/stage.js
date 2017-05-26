@@ -26,8 +26,8 @@ const config = {
 		},
 		facebook: {
 			strategyOpts : {
-				clientID: 1835120096813740,
-				clientSecret: 'dd917a3405a1a637f8c751450dedfe68',
+				clientID: 1879581989033815,
+				clientSecret: 'ec3b66857140e8580d708b4f36d3ae71',
 				callbackURL: 'http://api.amped.rebelpixel.ca/auth/facebook/callback',
 				profileFields   : ['id', 'email', 'gender', 'link', 'locale', 'name', 'timezone', 'updated_time', 'verified', 'picture.type(large)'],
 				passReqToCallback: true

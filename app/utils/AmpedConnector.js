@@ -42,7 +42,7 @@ class AmpedConnector {
    */
   static getConnection() {
     if (typeof this.connection === 'undefined') {
-      this.connection = new Sequelize(config.db.type, config.db.user, config.db.password, {
+      this.connection = new Sequelize(config.db.database, config.db.user, config.db.password, {
       // this.connection = new Sequelize('postgres', 'darijaradic', 'M0ther', {
           port : config.db.port,
           host : config.db.host,

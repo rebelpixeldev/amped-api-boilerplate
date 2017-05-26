@@ -38,9 +38,9 @@ const config = {
 		}
 	},
 	db : {
-		table : 'amped_admin',
-		host : 'amped-admin-demo.cgdpjn01zpv6.ca-central-1.rds.amazonaws.com',
 		type : 'postgres',
+		database : 'amped_admin',
+		host : 'amped-admin-demo.cgdpjn01zpv6.ca-central-1.rds.amazonaws.com',
 		user : 'rebelpixel',
 		port : 5432,
 		password : 'Dash111!',

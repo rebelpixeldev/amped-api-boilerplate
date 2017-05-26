@@ -13,11 +13,16 @@ const config = {
 	},
 	passport : {
 		google : {
-			clientID: '699923594827-7ovc9n05ueppmue04vvb1d5fg0u41v2i.apps.googleusercontent.com',//'900264263-3nqlusqgu014$
-			clientSecret: 'E-8UKJJR701ca-jthsGPk2N5',
-			callbackURL: 'http://api.amped.rebelpixel.ca/auth/google/callback',
-			session : false,
-			passReqToCallback: true
+			strategyOpts : {
+				clientID: '699923594827-7ovc9n05ueppmue04vvb1d5fg0u41v2i.apps.googleusercontent.com',
+				clientSecret: 'E-8UKJJR701ca-jthsGPk2N5',
+				callbackURL: 'http://api.amped.rebelpixel.ca/auth/google/callback',
+				session: false,
+				passReqToCallback: true
+			},
+			authenticateOpts : {
+				scope: ['profile', 'email']
+			}
 		},
 		facebook: {
 			strategyOpts : {

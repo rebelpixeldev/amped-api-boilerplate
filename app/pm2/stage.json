@@ -1,0 +1,7 @@
+{
+  "name" : "AmpedApi",
+  "script" : "app.js",
+  "env_production" : {
+    "NODE_ENV": "stage"
+  }
+}

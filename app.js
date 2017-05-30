@@ -63,20 +63,22 @@ app.use(compression());
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit: 50000}));
 app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-	if (req.method.toLowerCase() === 'post') {
-		const form = new formidable.IncomingForm();
+// app.use((req, res, next) => {
+	// console.log(req.body);
+// });
 
-		form.parse(req, ( err, fields, files ) => {
-			if ( err )
-				next(err);
-		    req.body = Object.assign({}, fields);
-		    req.files = files;
-		    next();
-		})
-	} else
-		next();
-})
+// app.use((req, res, next) => {
+// 	if (req.method.toLowerCase() === 'post' ) {
+// 		const form = new formidable.IncomingForm();
+// 		form.parse(req, ( err, fields ) => {
+// 			if ( err )
+// 				next(err);
+// 		    req.body = Object.assign({}, fields);
+// 		    next();
+// 		})
+// 	} else
+// 		next();
+// })
 
 
 // @TODO think about how to clean this shit up....

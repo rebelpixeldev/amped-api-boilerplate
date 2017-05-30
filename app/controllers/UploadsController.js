@@ -10,16 +10,15 @@ const
 
 
 var storage =   multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, config.uploads.tempDir);
-  },
-  filename: function (req, file, callback) {
-    console.log();
-    callback(null, util.getTempName(file.originalname));
-  }
+	destination: function (req, file, callback) {
+		callback(null, config.uploads.tempDir);
+	},
+	filename: function (req, file, callback) {
+		console.log();
+		callback(null, util.getTempName(file.originalname));
+	}
 });
 const fileUpload =  multer({ storage : storage }).array('files[]', 200);
-
 
 class UploadsController{
 
@@ -34,49 +33,44 @@ class UploadsController{
   }
 
 
-  upload(req, res){
-    const params = util.getParams(req);
+	upload(req, res){
+		const params = util.getParams(req);
 
-    console.log(params);
+		if ( typeof params.remote_url === 'undefined' ){
+			fileUpload(req,res,(err) => {
+				if(err) {
+					return res.feedback({success:false, message:err});
+				}
 
-    if ( typeof params.remote_url === 'undefined' ){
-      fileUpload(req,res,(err) => {
-        if(err) {
-          return res.end("Error uploading file.");
-        }
+				const promises = req.files.reduce((ret, file) => ret.concat([uploads.saveImage(req, file.path)]), []);
 
-        const promises = req.files.reduce((ret, file) => ret.concat([uploads.saveImage(req, file.path)]), []);
+				Promise.all(promises)
+					.then(( resp ) => {
+						this.socket.sendSocket('UPLOADS_CREATE', {model:'uploads', account_id:req.user.account_id, user: req.user.id, data: resp}, req.user );
+						return resp;
+					})
+					.then((data) => {
+						req.logActivity('upload', `${data.length > 1 ? data.length + ' files were uploaded' : data[0].title + ' was uploaded'}`, data);
+						res.feedback(data);
+					}).catch((err) => {
+					res.feedback({success:false, response:err});
+				})
+			});
 
-        Promise.all(promises)
-          .then(( resp ) => {
-            this.socket.sendSocket('create', req.user.account, {model:'uploads', user: req.user.id, data: resp});
-            return resp;
-          })
-          .then((data) => {
-            req.logActivity('upload', `${data.length > 1 ? data.length + ' files were uploaded' : data[0].title + ' was uploaded'}`, data);
-            res.feedback(data);
-          }).catch((err) => {
-          console.log(err);
-              res.feedback({success:false, response:err});
-          })
-      });
-
-    } else {
-      uploads.downloadRemote(params.remote_url)
-        .then(uploads.saveImage.bind(this, req))
-        .then((resp) => res.feedback(resp))
-        .catch((err) => {
-            console.log(err);
-        })
-    }
-  }
+		} else {
+			uploads.downloadRemote(params.remote_url)
+				.then(uploads.saveImage.bind(this, req))
+				.then((resp) => res.feedback(resp))
+				.catch((err) => {
+					console.log(err);
+				})
+		}
+	}
 
   display(req, res){
     const
       params = util.getParams(req),
       uploadPath = path.join(config.uploads[`${params.type}Dir`], params.filename);
-
-    console.log(uploadPath);
 
     fs.exists(uploadPath, (exists) => {
         if ( exists )

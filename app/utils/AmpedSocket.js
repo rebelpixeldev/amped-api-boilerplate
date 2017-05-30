@@ -21,7 +21,7 @@ class AmpedSocket {
   setup() {
     this.io.on('connection', (socket) => {
 
-      AmpedAuthorization.getUserByJWT(socket.handshake.query.authorization)
+      AmpedAuthorization.getUserByJWT(socket.request._query.authorization)
         .then((user) => {
 
             if ( typeof this.sockets[user.account_id] === 'undefined' )
@@ -40,6 +40,8 @@ class AmpedSocket {
    * @param {object} req   - Express request object
    */
   sendSocket(evt, data, user, toUser) {
+
+    console.log('* * * * * * * Sending socket', evt);
 
     if (typeof data === 'undefined')
       data = {};

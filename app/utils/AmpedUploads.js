@@ -39,12 +39,13 @@ class AmpedUploads {
    * @param {string} tmpFilePath  - The filepath of where the image currently is.
    */
   static saveImage(req, tmpFilePath) {
+    console.log('SAVING ImAGE');
     return new Promise((resolve, reject) => {
       AmpedUploads.getFileInfo(tmpFilePath)
         .then((info) => {
 
 
-        console.log(req.user);
+        console.log('INFO', info);
 
           const
             filename = tmpFilePath.split('/').pop().split('|').pop().split('?')[0],

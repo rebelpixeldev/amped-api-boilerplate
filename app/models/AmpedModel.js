@@ -226,8 +226,6 @@ class AmpedModel {
 			data = util.dotNotationToObject(params),
 			isCreation = typeof data.id === 'undefined' || data.id === null || data.id === 0;
 
-		console.log(data);
-
 		( isCreation ?
 			this.DB.build(params).save() :
 			this.DB.findById(data.id))
@@ -237,7 +235,6 @@ class AmpedModel {
 				delete data.id;
 				delete data.token;
 				delete data._id;
-				console.log(Object.keys(data));
 				const attrs = Object.keys(data).reduce((ret, key) => {
 					if (typeof data[key] === 'object') {
 						switch (this.schema[key].key || this.schema[key].type.key) {
@@ -259,7 +256,7 @@ class AmpedModel {
 				result.updateAttributes(attrs)
 					.then((modelData) => {
 
-						this.getModelData(req, res, {_id: result.id}, isCreation ? this.successMessage : '')
+						this.getModelData(req, res, {_id: result.id}, isCreation ? this.successMessage : this.updateMessage)
 							.then((user) => {
 								if (isCreation) {
 									this.sendSocket('CREATE', {user, data: modelData}, req.user);
@@ -607,7 +604,11 @@ class AmpedModel {
 	}
 
 	get successMessage() {
-		return 'Entry has been added';
+		return `${util.capitalize(this.modelName)} has been added`;
+	}
+
+	get updateMessage() {
+		return ` ${util.capitalize(this.modelName)} has been updated`;
 	}
 
 	/**

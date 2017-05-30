@@ -40,8 +40,6 @@ class UserController {
 	}
 
 	getUser(req, res) {
-		console.log('USSSER');
-		console.log(req.user);
 		res.feedback(req.user);
 	}
 
@@ -53,8 +51,6 @@ class UserController {
 				}, data.user)
 					.then(res.feedback.bind( this, data.token))
 					.catch(res.feedback.bind( this, data.token))
-
-				console.log('HEREERE');
 
 				// res.feedback(data.token);
 			}).catch((err) => {

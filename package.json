@@ -26,6 +26,7 @@
     }
   ],
   "dependencies": {
+    "acl": "^0.4.10",
     "bcrypt": "^1.0.0",
     "body-parser": "^1.17.1",
     "compression": "^1.6.2",

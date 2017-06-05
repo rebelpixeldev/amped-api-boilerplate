@@ -101,7 +101,7 @@ class AmpedAuthorization {
 		} else {
 			AmpedAuthorization.getUserByPayload(req)
 				.then((user) => {
-					req.user = user;
+					req.user = user.get({plain:true});
 					next();
 				}).catch(( err ) => {
 				    next({

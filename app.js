@@ -2,6 +2,7 @@
  * Module dependencies.
  */
 const
+	AmpedAcl            = require('./app/utils/AmpedAcl'),
 	AmpedActivityLog    = require('./app/utils/AmpedActivityLog'),
 	AmpedAuthorization  = require('./app/utils/AmpedAuthorization'),
 	AmpedConnector      = require('./app/utils/AmpedConnector'),
@@ -10,6 +11,7 @@ const
 	AmpedSocket         = require('./app/utils/AmpedSocket'),
 	bodyParser          = require('body-parser'),
 	compression         = require('compression'),
+	config              = require('./app/config/config'),
 	errorHandler        = require('errorhandler'),
 	express             = require('express'),
 	expressValidator    = require('express-validator'),
@@ -93,6 +95,8 @@ AmpedConnector.buildModels(app, socket, path.join(__dirname, 'app/models'));
 
 // Add the database models to the req object
 app.use(AmpedConnector.databaseMiddleware(app, socket));
+
+AmpedAcl.buildACL();
 
 // Connect passport and build the strategies
 new AmpedPassport(app, socket);

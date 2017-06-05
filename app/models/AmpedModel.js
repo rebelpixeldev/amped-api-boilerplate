@@ -4,7 +4,7 @@
 
 const
 	AmpedConnector = require('../utils/AmpedConnector'),
-	acl = require('../utils/AmpedAcl')({}),
+	AmpedAcl = require('../utils/AmpedAcl'),
 	config = require('../config/config'),
 	sequelize = require('sequelize'),
 	url = require('url'),
@@ -58,7 +58,7 @@ class AmpedModel {
 
 			this.app.get(this.route, this.getModelDataRoute.bind(this));
 
-			this.app.get(this.route + '/account', (req, res) => {
+			this.app.get(this.route + '/account', [AmpedAcl.can.bind(this, 'view-account', this.modelName)], (req, res) => {
 				const params = util.getParams(req);
 				params.account_id = req.user.account_id;
 				this.getModelData(req, res, params);
@@ -67,22 +67,18 @@ class AmpedModel {
 			// this.app.route(this.route, acl.can('view', this.model))
 			//   .get(this.getModelData.bind(this))
 			//   .post(this.createModelData.bind(this));
-			this.app.get(`${this.route}/tableHeaders`, this.getTableHeaders.bind(this));
-			this.app.get(`${this.route}/edit`, this.getModelDataRoute.bind(this));
-
-			this.app.route(`${this.route}/edit/:_id`)
-				.get(this.getModelDataRoute.bind(this));
+			this.app.get(`${this.route}/tableHeaders`, [AmpedAcl.can.bind(this, 'view-tableheaders', this.modelName)], this.getTableHeaders.bind(this));
+			this.app.get(`${this.route}/edit`, [AmpedAcl.can.bind(this, 'view-form', this.modelName)], this.getModelDataRoute.bind(this));
+			this.app.get(`${this.route}/edit/:_id`, [AmpedAcl.can.bind(this, 'view-form', this.modelName)], this.getModelDataRoute.bind(this))
 
 			// this.app.post(this.route + '/:_id', this.updateModelData.bind(this));
 
-			this.app.route(this.route)
-				.post(this.updateModelData.bind(this));
+			// this.app.route(this.route)
+			// 	.post(this.updateModelData.bind(this));
 
-			this.app.route(`${this.route}/:_id`)
-				.get(this.getModelDataRoute.bind(this))
-				.post(this.updateModelData.bind(this))
-				.delete(this.deleteModelData.bind(this));
-
+			this.app.get(`${this.route}/:_id`, [AmpedAcl.can.bind(this, 'view', this.modelName)], this.getModelDataRoute.bind(this));
+			this.app.post(`${this.route}/:_id`, [AmpedAcl.can.bind(this, 'update', this.modelName)], this.updateModelData.bind(this));
+			this.app.delete(`${this.route}/:_id`, [AmpedAcl.can.bind(this, 'delete', this.modelName)], this.deleteModelData.bind(this));
 
 		}
 	}
@@ -628,6 +624,22 @@ class AmpedModel {
 			deleted_at: {type: 'TIMESTAMP', user_editable: false},
 			deleted_by: {type: sequelize.INTEGER, user_editable: false}
 		}
+	}
+
+	get supermanAclPermissions(){
+		return ['view', 'update', 'create', 'delete', 'view-account', 'view-form', 'view-tableheaders'];
+	}
+
+	get adminAclPermissions(){
+		return ['view', 'update', 'create', 'delete', 'view-account', 'view-form', 'view-tableheaders'];
+	}
+
+	get managerAclPermissions(){
+		return ['view', 'update', 'create', 'delete', 'view-account', 'view-form', 'view-tableheaders'];
+	}
+
+	get userAclPermissions(){
+		return ['view', 'update', 'create', 'delete', 'view-account', 'view-form', 'view-tableheaders'];
 	}
 }
 

@@ -2,7 +2,6 @@
 // @TODO make external npm module
 
 const
-  AmpedAuthorization  = require('./AmpedAuthorization'),
   AmpedAcl            = require('./AmpedAcl'),
   config              = require('../config/config'),
   connection          = null,
@@ -104,8 +103,16 @@ class AmpedConnector {
   }
 
   static getModelRef(name){
-    return models[name]
+    return models[name];
   }
+
+  static getModels(){
+  	return models;
+  }
+
+	static getModelRefs(){
+		return modelMap;
+	}
 
   /**
    * Middleware function to attach all the model crud routes

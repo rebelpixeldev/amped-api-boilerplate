@@ -14,6 +14,7 @@ class UserGroups extends AmpedModel {
 	get schema() {
 		return {
 			user_id: sequelize.INTEGER,
+			account_id: sequelize.INTEGER,
 			group_id: sequelize.INTEGER
 		}
 	}

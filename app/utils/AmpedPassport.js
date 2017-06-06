@@ -140,6 +140,13 @@ class AmpedPassport {
 									return user;
 								})
 								.then((user) => {
+
+									req.db.user_groups.create({
+										user_id : user.id,
+										account_id : user.account_id,
+										group_id : 2 // @TODO remove hardcoded
+									})
+
 									this.createUserAccount(req, user)
 										.then((user) => {
 											req.jwt = AmpedAuthorization.encodeToken(user);
@@ -273,6 +280,15 @@ class AmpedPassport {
 				} else {
 					this.createUserAndAccount(req, this.getNewUserObject(profile, strategy))
 						.then(( user ) => {
+
+						console.log(user);
+
+							req.db.user_groups.create({
+								user_id : user.id,
+								account_id : user.account_id,
+								group_id : 2 // @TODO remove hardcoded
+							})
+
 
 							this.downloadProfileImage(profile.photos[0].value, user.dataValues)
 								.then(( fileInfo ) => {

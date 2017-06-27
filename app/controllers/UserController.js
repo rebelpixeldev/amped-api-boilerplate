@@ -1,16 +1,16 @@
 'use strict';
 
 const
-	AmpedAuthorization  = require('../utils/AmpedAuthorization'),
-	AmpedEmailer        = require('../utils/AmpedEmailer'),
-	AmpedPassport       = require('../utils/AmpedPassport'),
+	AmpedAuthorization  = require('amped-api').get('AmpedAuthorization'),
+	AmpedEmailer        = require('amped-api').get('AmpedEmailer'),
+	AmpedPassport       = require('amped-api').get('AmpedPassport'),
 	bcrypt              = require('bcrypt'),
 	config              = require('../config/config'),
 	passport            = require('passport'),
 	SHA1                = require('sha1'),
-	User                = require('../models/Users'),
-	util                = require('../utils/AmpedUtil'),
-	validator           = require('../utils/AmpedValidator');
+	// User                = require('./Users'),
+	util                = require('amped-api').get('AmpedUtil'),
+	validator           = require('amped-api').get('AmpedValidator');
 
 class UserController {
 
@@ -22,7 +22,6 @@ class UserController {
 	setupRoutes() {
 
 		this.app.get(`${config.url.prefix}/user`, this.getUser.bind(this));
-
 		this.app.post(`${config.url.prefix}/user/login`, this.login.bind(this));
 
 		this.app.get(`${config.url.prefix}/user/invite-accept`, this.userInviteAccept.bind(this));
@@ -30,7 +29,6 @@ class UserController {
 		this.app.post(`${config.url.prefix}/user/setpassword`, this.setPassword.bind(this));
 		this.app.get(`${config.url.prefix}/user/profile`, AmpedPassport.isLoggedIn, this.profile.bind(this));
 		this.app.post(`${config.url.prefix}/user/invite`, [AmpedPassport.isLoggedIn, validator.validateParams.bind(this, ['email', 'name'])], this.userInvite.bind(this));
-
 
 		this.app.post(`${config.url.prefix}/user/register`, [validator.validateParams.bind(this, ['email', 'password']), passport.authenticate('local-signup', {session: false})],  this.register.bind(this));
 	}

@@ -2,13 +2,6 @@
  * Module dependencies.
  */
 const
-	AmpedAcl            = require('./app/utils/AmpedAcl'),
-	AmpedActivityLog    = require('./app/utils/AmpedActivityLog'),
-	AmpedAuthorization  = require('./app/utils/AmpedAuthorization'),
-	AmpedConnector      = require('./app/utils/AmpedConnector'),
-	AmpedMiddleware     = require('./app/utils/AmpedMiddleware'),
-	AmpedPassport       = require('./app/utils/AmpedPassport'),
-	AmpedSocket         = require('./app/utils/AmpedSocket'),
 	bodyParser          = require('body-parser'),
 	compression         = require('compression'),
 	config              = require('./app/config/config'),
@@ -21,8 +14,8 @@ const
 	logger              = require('morgan'),
 	path                = require('path'),
 	session             = require('express-session'),
-	swig                = require('swig'),
-	util                = require('./app/utils/AmpedUtil');
+	swig                = require('swig');
+
 
 const
 	MongoStore = require('connect-mongo')(session);
@@ -33,8 +26,22 @@ const
 const
 	app = express(),
 	server = http.createServer(app),
-	io = require('socket.io')(server),
-	socket = new AmpedSocket(io);
+	io = require('socket.io')(server);
+	// socket = new AmpedSocket(io);
+
+
+const amped = require('amped-api').setup(config, io, {});
+
+
+const
+	AmpedAcl            = amped.AmpedAcl,
+	AmpedActivityLog    = amped.AmpedActivityLog,
+	AmpedAuthorization  = amped.AmpedAuthorization,
+	AmpedConnector      = amped.AmpedConnector,
+	AmpedMiddleware     = amped.AmpedMiddleware,
+	AmpedPassport       = amped.AmpedPassport,
+	socket              = amped.socket;
+
 
 /**
  * Express configuration.
@@ -65,23 +72,6 @@ app.use(compression());
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit: 50000}));
 app.use(bodyParser.json());
 
-// app.use((req, res, next) => {
-	// console.log(req.body);
-// });
-
-// app.use((req, res, next) => {
-// 	if (req.method.toLowerCase() === 'post' ) {
-// 		const form = new formidable.IncomingForm();
-// 		form.parse(req, ( err, fields ) => {
-// 			if ( err )
-// 				next(err);
-// 		    req.body = Object.assign({}, fields);
-// 		    next();
-// 		})
-// 	} else
-// 		next();
-// })
-
 
 // @TODO think about how to clean this shit up....
 // add the amped object and params to the req object
@@ -91,6 +81,7 @@ app.use(AmpedMiddleware.params());
 app.use(AmpedMiddleware.feedback({token: true}));
 
 // Build all the models and connect to the database
+console.log(path.join(__dirname, 'app/models'));
 AmpedConnector.buildModels(app, socket, path.join(__dirname, 'app/models'));
 
 // Add the database models to the req object

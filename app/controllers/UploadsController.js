@@ -5,8 +5,8 @@ const
   fs            = require('fs'),
   path          = require('path'),
   multer        = require('multer'),
-  uploads       = require('../utils/AmpedUploads'),
-  util          = require('../utils/AmpedUtil');
+  uploads       = require('amped-api').get('AmpedUploads'),
+  util          = require('amped-api').get('AmpedUtil');
 
 
 var storage =   multer.diskStorage({
@@ -14,7 +14,6 @@ var storage =   multer.diskStorage({
 		callback(null, config.uploads.tempDir);
 	},
 	filename: function (req, file, callback) {
-		console.log();
 		callback(null, util.getTempName(file.originalname));
 	}
 });

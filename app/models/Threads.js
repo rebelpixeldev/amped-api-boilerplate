@@ -22,14 +22,29 @@ class Threads extends AmpedModel {
 		}
 	}
 
-	get queryIncludes() {
+	get crudForm() {
 		return [
-			{
-				model: this.models.users.getModel(),
-				attributes: ['display_name', 'id']
-			}
+			['title'],
+			['description']
 		]
 	}
+
+	get headerFields() {
+		return {
+			'Title': 'title',
+			'Description': 'description',
+			'Created': 'created_at'
+		}
+	}
+	//
+	// get queryIncludes() {
+	// 	return [
+	// 		{
+	// 			model: this.models.users.getModel(),
+	// 			attributes: ['display_name', 'id']
+	// 		}
+	// 	]
+	// }
 
 }
 

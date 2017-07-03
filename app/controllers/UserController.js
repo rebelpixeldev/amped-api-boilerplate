@@ -30,7 +30,7 @@ class UserController {
 		this.app.get(`${config.url.prefix}/user/profile`, AmpedPassport.isLoggedIn, this.profile.bind(this));
 		this.app.post(`${config.url.prefix}/user/invite`, [AmpedPassport.isLoggedIn, validator.validateParams.bind(this, ['email', 'name'])], this.userInvite.bind(this));
 
-		this.app.post(`${config.url.prefix}/user/register`, [validator.validateParams.bind(this, ['email', 'password']), passport.authenticate('local-signup', {session: false})],  this.register.bind(this));
+		this.app.post(`${config.url.prefix}/user/register`, [validator.validateParams.bind(this, ['email', 'password']), AmpedPassport.getPassport().authenticate('local-signup', {session: false})],  this.register.bind(this));
 	}
 
 	home(req, res) {

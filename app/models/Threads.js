@@ -17,6 +17,7 @@ class Threads extends AmpedModel {
 
 	get schema() {
 		return {
+			amp_user_id : sequelize.INTEGER,
 			title : sequelize.STRING,
 			description : sequelize.STRING
 		}
@@ -37,14 +38,19 @@ class Threads extends AmpedModel {
 		}
 	}
 	//
-	// get queryIncludes() {
-	// 	return [
-	// 		{
-	// 			model: this.models.users.getModel(),
-	// 			attributes: ['display_name', 'id']
-	// 		}
-	// 	]
-	// }
+	get queryIncludes() {
+		return [
+			{
+				model: this.models.users.getModel(),
+				attributes: ['id', 'display_name'],
+				include : [{
+					model: this.models.uploads.getModel(),
+					attributes: ['id', 'filename', 'extension', 'title', 'created_at']
+				}]
+			},
+
+		]
+	}
 
 }
 

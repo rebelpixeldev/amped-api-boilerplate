@@ -1,6 +1,7 @@
 'use strict';
 const
 	AmpedModel  = require('amped-api').get('AmpedModel'),
+	AmpedUtil   = require('amped-api').get('AmpedUtil'),
 	sequelize   = require('sequelize');
 
 class Threadcomments extends AmpedModel {
@@ -15,7 +16,11 @@ class Threadcomments extends AmpedModel {
 		models.threadcomments.getModel().belongsTo(models.users.getModel(), {foreignKey: 'amp_user_id'});
 	}
 
-	modifyGetData(data){
+	modifyGetData(req, data){
+		const params = AmpedUtil.getParams(req);
+
+		if ( typeof params.flat !== 'undefined' && params.flat )
+			return data;
 
 		data = JSON.parse(JSON.stringify(data));
 

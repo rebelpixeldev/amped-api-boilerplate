@@ -13,6 +13,21 @@ class Threads extends AmpedModel {
 	addRelations(models) {
 		this.models = models;
 		models.threads.getModel().belongsTo(models.users.getModel(), {foreignKey: 'amp_user_id'});
+		models.threads.getModel().hasMany(models.threadcomments.getModel(), {foreignKey: 'amp_thread_id'});
+	}
+
+	modifyGetData(req, data){
+
+		if ( typeof data.reduce === 'undefined' )
+			return data;
+
+		return data.reduce(( ret, d ) => {
+			const comments = d.threadcomments;
+			d.comment_count = comments.length;
+
+			delete d.threadcomments;
+			return [...ret, d];
+		}, []);
 	}
 
 	get schema() {
@@ -48,6 +63,13 @@ class Threads extends AmpedModel {
 					attributes: ['id', 'filename', 'extension', 'title', 'created_at']
 				}]
 			},
+			{
+				model : this.models.threadcomments.getModel(),
+				attributes : [
+					'id'
+				]
+				// attributes : [sequelize.literal('(SELECT COUNT(*) AS comment_count FROM "threadcomments" WHERE "Orders"."CustomerId" = "Customer"."id"')]
+			}
 
 		]
 	}

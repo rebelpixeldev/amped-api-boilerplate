@@ -22,8 +22,6 @@ class Threadcomments extends AmpedModel {
 		if ( typeof params.flat !== 'undefined' && params.flat )
 			return data;
 
-		data = JSON.parse(JSON.stringify(data));
-
 		if ( data.constructor !== Array )
 			return data;
 
@@ -54,7 +52,7 @@ class Threadcomments extends AmpedModel {
 	get schema() {
 		return {
 			amp_user_id : sequelize.INTEGER,
-			thread_id : sequelize.INTEGER,
+			amp_thread_id : sequelize.INTEGER,
 			parent_comment_id : sequelize.INTEGER,
 			comment : sequelize.STRING
 		}

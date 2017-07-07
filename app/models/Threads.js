@@ -34,14 +34,17 @@ class Threads extends AmpedModel {
 		return {
 			amp_user_id : sequelize.INTEGER,
 			title : sequelize.STRING,
-			description : sequelize.STRING
+			description : {
+				type : sequelize.STRING,
+				field_type : 'textarea'
+			}
 		}
 	}
 
 	get crudForm() {
 		return [
 			['title'],
-			['description']
+			[{field:'description', label: 'Description'}]
 		]
 	}
 

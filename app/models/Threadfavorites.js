@@ -41,7 +41,7 @@ class Threadfavorites extends AmpedModel {
 		return true;
 	}
 
-	get queryIncludes() {
+	getQueryIncludes(user, params) {
 		return [
 			{
 				model: this.models.users.getModel(),
@@ -58,6 +58,14 @@ class Threadfavorites extends AmpedModel {
 					attributes : [
 						'id'
 					]
+					// attributes : [sequelize.literal('(SELECT COUNT(*) AS comment_count FROM "threadcomments" WHERE "Orders"."CustomerId" = "Customer"."id"')]
+				}, {
+					model : this.models.users.getModel(),
+					attributes: ['id', 'display_name'],
+					include : [{
+						model: this.models.uploads.getModel(),
+						attributes: ['id', 'filename', 'extension', 'title', 'created_at']
+					}]
 					// attributes : [sequelize.literal('(SELECT COUNT(*) AS comment_count FROM "threadcomments" WHERE "Orders"."CustomerId" = "Customer"."id"')]
 				}]
 			}

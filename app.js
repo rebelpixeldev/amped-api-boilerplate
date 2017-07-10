@@ -81,7 +81,6 @@ app.use(AmpedMiddleware.params());
 app.use(AmpedMiddleware.feedback({token: true}));
 
 // Build all the models and connect to the database
-console.log(path.join(__dirname, 'app/models'));
 AmpedConnector.buildModels(app, socket, path.join(__dirname, 'app/models'));
 
 // Add the database models to the req object

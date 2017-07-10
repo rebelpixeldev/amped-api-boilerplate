@@ -1,7 +1,8 @@
 'use strict';
 const
 	AmpedModel  = require('amped-api').get('AmpedModel'),
-	sequelize   = require('sequelize');
+	sequelize   = require('sequelize'),
+	ThreadFactory   = require('../factories/ThreadFactory');
 
 class Threads extends AmpedModel {
 
@@ -13,21 +14,23 @@ class Threads extends AmpedModel {
 	addRelations(models) {
 		this.models = models;
 		models.threads.getModel().belongsTo(models.users.getModel(), {foreignKey: 'amp_user_id'});
+		models.threads.getModel().hasOne(models.threadfavorites.getModel(), {foreignKey: 'amp_thread_id'});
 		models.threads.getModel().hasMany(models.threadcomments.getModel(), {foreignKey: 'amp_thread_id'});
 	}
 
 	modifyGetData(req, data){
-
-		if ( typeof data.reduce === 'undefined' )
+		const isSingle = typeof data.reduce === 'undefined';
+		if ( data === null )
 			return data;
+		if ( isSingle )
+			data = [data];
 
-		return data.reduce(( ret, d ) => {
-			const comments = d.threadcomments;
-			d.comment_count = comments.length;
+		data = ThreadFactory.commentsToCommentCount(
+			ThreadFactory.isFavorite(data)
+		);
 
-			delete d.threadcomments;
-			return [...ret, d];
-		}, []);
+		return isSingle ? data[0] : data;
+
 	}
 
 	get schema() {
@@ -39,6 +42,10 @@ class Threads extends AmpedModel {
 				field_type : 'textarea'
 			}
 		}
+	}
+
+	getCreateMessage(data){
+		return `Discussion has been created`;
 	}
 
 	get crudForm() {
@@ -56,7 +63,7 @@ class Threads extends AmpedModel {
 		}
 	}
 	//
-	get queryIncludes() {
+	getQueryIncludes(user, params) {
 		return [
 			{
 				model: this.models.users.getModel(),
@@ -71,6 +78,15 @@ class Threads extends AmpedModel {
 				attributes : [
 					'id'
 				]
+				// attributes : [sequelize.literal('(SELECT COUNT(*) AS comment_count FROM "threadcomments" WHERE "Orders"."CustomerId" = "Customer"."id"')]
+			},
+			{
+				model : this.models.threadfavorites.getModel(),
+				attributes : [
+					'id', 'amp_user_id', 'amp_thread_id'
+				],
+				required: false,
+				where : { 'amp_user_id' : user.id  }
 				// attributes : [sequelize.literal('(SELECT COUNT(*) AS comment_count FROM "threadcomments" WHERE "Orders"."CustomerId" = "Customer"."id"')]
 			}
 

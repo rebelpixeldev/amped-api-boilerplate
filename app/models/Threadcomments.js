@@ -71,7 +71,7 @@ class Threadcomments extends AmpedModel {
 	}
 
 	//
-	get queryIncludes() {
+	getQueryIncludes(user, params) {
 		return [
 			{
 				model: this.models.users.getModel(),

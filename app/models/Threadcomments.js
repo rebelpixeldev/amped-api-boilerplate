@@ -42,11 +42,11 @@ class Threadcomments extends AmpedModel {
 	}
 
 	customSocketEmit(sockets, evt, data, user){
-		console.log('SENDING CUSTOM SOCKETS');
-
 		Object.keys(sockets).forEach(( userId ) => sockets[userId].emit(evt, data));
+	}
 
-
+	getCreateMessage(data){
+		return `Comment was added`;
 	}
 
 	get schema() {

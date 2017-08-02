@@ -70,10 +70,20 @@ DROP SEQUENCE IF EXISTS amp_groups_id_seq;
 CREATE SEQUENCE amp_groups_id_seq;
 CREATE TABLE public.amp_groups (
   id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('amp_groups_id_seq'::regclass),
+  account_id INTEGER DEFAULT 0,
   name CHARACTER VARYING(50) NOT NULL,
-  description CHARACTER VARYING(255)
+  description CHARACTER VARYING(255),
+  updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
+    deleted_by INTEGER,
 );
 CREATE UNIQUE INDEX amp_groups_id_uindex ON amp_groups USING BTREE (id);
+
+INSERT INTO public.amp_groups (id, name, description, created_at, updated_at, deleted_at, deleted_by, account_id) VALUES (1, 'superman', 'Super user of the site', '2017-06-04 11:22:32.229770', '2017-06-04 11:22:32.320660', null, null, null);
+INSERT INTO public.amp_groups (id, name, description, created_at, updated_at, deleted_at, deleted_by, account_id) VALUES (2, 'admin', 'Person that manages users', '2017-06-04 11:22:32.229770', '2017-06-04 11:22:32.320660', null, null, null);
+INSERT INTO public.amp_groups (id, name, description, created_at, updated_at, deleted_at, deleted_by, account_id) VALUES (3, 'manager', 'A user that manage other users', '2017-06-04 11:22:32.229770', '2017-06-04 11:22:32.320660', null, null, null);
+INSERT INTO public.amp_groups (id, name, description, created_at, updated_at, deleted_at, deleted_by, account_id) VALUES (4, 'user', 'User of the site', '2017-06-04 11:22:32.229770', '2017-06-04 11:22:32.320660', null, null, null);
 
 
 DROP SEQUENCE IF EXISTS amp_permissions_id_seq;
@@ -81,7 +91,11 @@ CREATE SEQUENCE amp_permissions_id_seq;
 CREATE TABLE public.amp_permissions (
   id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('amp_permissions_id_seq'::regclass),
   name CHARACTER VARYING(50) NOT NULL,
-  description CHARACTER VARYING(255) NOT NULL
+  description CHARACTER VARYING(255) NOT NULL,
+  updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+      created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+      deleted_at TIMESTAMP WITHOUT TIME ZONE,
+      deleted_by INTEGER,
 );
 CREATE UNIQUE INDEX amp_permissions_id_uindex ON amp_permissions USING BTREE (id);
 
@@ -140,14 +154,13 @@ CREATE SEQUENCE amp_user_groups_id_seq;
 CREATE TABLE public.amp_user_groups (
   id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('amp_user_groups_id_seq'::regclass),
   amp_user_id INTEGER NOT NULL,
-  amp_group_id INTEGER NOT NULL,
+  group_id INTEGER NOT NULL,
   FOREIGN KEY (amp_group_id) REFERENCES public.amp_groups (id)
   MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE,
   FOREIGN KEY (amp_user_id) REFERENCES public.amp_users (id)
   MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX amp_user_groups_id_uindex ON amp_user_groups USING BTREE (id);
-
 
 DROP SEQUENCE IF EXISTS amp_user_roles_id_seq;
 CREATE SEQUENCE amp_user_roles_id_seq;
@@ -162,7 +175,7 @@ CREATE TABLE public.amp_user_roles (
 );
 CREATE UNIQUE INDEX amp_user_roles_id_uindex ON amp_user_roles USING BTREE (id);
 
-
+DROP TYPE IF EXISTS E_CONTACT_METHOD;
 CREATE TYPE E_CONTACT_METHOD AS ENUM ('email','sms', 'message');
 
 DROP SEQUENCE IF EXISTS amp_user_settings_id_seq;
@@ -182,3 +195,45 @@ CREATE TABLE public.amp_user_settings (
 );
 CREATE UNIQUE INDEX amp_user_settings_id_uindex ON amp_user_settings USING BTREE (id);
 CREATE UNIQUE INDEX amp_user_settings_user_id_uindex ON amp_user_settings USING BTREE (user_id);
+
+DROP SEQUENCE IF EXISTS amp_threadcomments_id_seq;
+CREATE SEQUENCE amp_threadcomments_id_seq;
+CREATE TABLE public.amp_threadcomments (
+  id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('amp_threadcomments_id_seq'::regclass),
+  amp_user_id INTEGER NOT NULL,
+  thread_id INTEGER NOT NULL,
+  parent_comment_id INTEGER NOT NULL DEFAULT 0,
+  description TEXT,
+  created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+  deleted_at TIMESTAMP WITHOUT TIME ZONE,
+  deleted_by INTEGER
+);
+CREATE UNIQUE INDEX amp_threadcomments_id_uindex ON amp_threadcomments USING BTREE (id);
+
+DROP SEQUENCE IF EXISTS amp_threadfavorites_id_seq;
+CREATE SEQUENCE amp_threadfavorites_id_seq;
+CREATE TABLE public.amp_threadfavorites (
+  id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('amp_threadfavorites_id_seq'::regclass),
+  amp_user_id INTEGER NOT NULL,
+  amp_thread_id INTEGER NOT NULL,
+  created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+  deleted_at TIMESTAMP WITHOUT TIME ZONE,
+  deleted_by INTEGER
+);
+CREATE UNIQUE INDEX amp_threadfavorites_id_uindex ON amp_threadfavorites USING BTREE (id);
+
+DROP SEQUENCE IF EXISTS amp_threads_id_seq;
+CREATE SEQUENCE amp_threads_id_seq;
+CREATE TABLE public.amp_threads (
+  id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('amp_threads_id_seq'::regclass),
+  amp_user_id INTEGER NOT NULL,
+  title CHARACTER VARYING(255) NOT NULL,
+  description TEXT NOT NULL,
+  created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+  deleted_at TIMESTAMP WITHOUT TIME ZONE,
+  deleted_by INTEGER
+);
+CREATE UNIQUE INDEX amp_threads_id_uindex ON amp_threads USING BTREE (id);

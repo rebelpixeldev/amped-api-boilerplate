@@ -71,6 +71,8 @@ class UploadsController{
       params = util.getParams(req),
       uploadPath = path.join(config.uploads[`${params.type}Dir`], params.filename);
 
+    console.log(uploadPath);
+
     fs.exists(uploadPath, (exists) => {
         if ( exists )
           fs.createReadStream(uploadPath).pipe(res);

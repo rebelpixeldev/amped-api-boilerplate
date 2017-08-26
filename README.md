@@ -15,6 +15,10 @@ npm install
 
 Running `npm start` will startup the project and listen for changes to restart the server. Once started you cn find the api on [`http://localhost:4000`](http://localhost:4000) by default
 
+#### Dependencies
+
+Internally this uses `graphicsmagick` so that will need to be installed on the computer the api api is being run on.
+
 *Note* Currently the `app.js` is very tied to the `amped-api` project. There are many middleware setup and function calls in there that are in a specific order. There are plans to simplify this but for now if you want to use the amped api, keep them in that order and position in the file. (They are marked with a comment)
 
 ### The database

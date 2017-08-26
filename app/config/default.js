@@ -51,7 +51,7 @@ config.routing = {
 		'/auth/google/callback',
 		'/auth/facebook',
 		'/auth/facebook/callback',
-		'/uploads/thumb/72.jpg'
+		'/uploads/thumb'
 	],
 	openRoutes : [
 		'/uploads/thumb',

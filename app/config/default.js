@@ -62,8 +62,15 @@ config.routing = {
 
 // @TODO make this mor comprehensive with regexp
 config.routing.isPublic = (url) => {
+
+	console.log('IS PUBLIC', url);
+
 	const base = url.split('?')[0];
 	const parts = url.split('/');
+	console.log(config.routing.noAuth.indexOf(base) !== -1);
+	console.log(config.routing.openRoutes.filter(( route ) => url.indexOf(route) === 0 ));
+	console.log(config.routing.noAuth.indexOf(base) !== -1 || config.routing.openRoutes.filter(( route ) => url.indexOf(route) === 0 ).length > 0);
+
 	return config.routing.noAuth.indexOf(base) !== -1 || config.routing.openRoutes.filter(( route ) => url.indexOf(route) === 0 ).length > 0;
 }
 config.errors.getError = (key) => {

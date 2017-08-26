@@ -1,6 +1,6 @@
 'use strict';
 const
-	AmpedModel = require('amped-api/AmpedModel')(),
+	AmpedModel  = require('amped-api').get('AmpedModel'),
 	sequelize = require('sequelize');
 
 class Example extends AmpedModel {

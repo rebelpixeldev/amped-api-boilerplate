@@ -4,6 +4,12 @@ Amped API Boilerplate is a project that has everything setup to get your api for
 
 The idea behind the Amped project is to get you up and started with the basics you need with for any project and allowing you to focus on the business logic of your app.
 
+**A demo can be found at: [http://demo.rebelpixel.ca/](http://demo.rebelpixel.ca/)**
+
+**Username:** demo@demo.com
+
+**Password:** 123
+
 ### Setup
 
 If you are on mac or linux you can just run `./install.sh`
